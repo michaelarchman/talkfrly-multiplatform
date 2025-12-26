@@ -8,6 +8,6 @@ val DarkText = Color(0xFFE2E8F0)
 val DarkPrimary = Color(0xFFd3ec39)
 
 // Light Theme
-val LightBackground = Color(0xFFE2E8F0)
+val LightBackground = Color(0xFFFFFFFF)
 val LightText = Color(0xFF181818)
 val LightPrimary = Color(0xFFd3ec39)
