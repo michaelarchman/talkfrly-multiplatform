@@ -59,7 +59,7 @@ private fun LoginScreen(
 ) {
     val username = state.email
     val password = state.password
-     val message = state.message
+//    val message = state.message
 
     Scaffold(
         containerColor = LocalTalkfrlyColors.current.background,

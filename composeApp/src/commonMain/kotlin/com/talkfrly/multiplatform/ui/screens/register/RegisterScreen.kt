@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -66,105 +67,110 @@ private fun RegisterScreen(
     val passwordValid = password.isNullOrBlank() || password.length >= 8
     val emailValid = email.isNullOrBlank() || isValidEmail(email)
 
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 32.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(
-            alignment = Alignment.CenterVertically,
-            space = 8.dp
-        )
+    Scaffold(
+        containerColor = LocalTalkfrlyColors.current.background,
+        contentColor = LocalTalkfrlyColors.current.body,
     ) {
-        Image(
-            bitmap = if (isSystemInDarkTheme())
-                imageResource(Res.drawable.talkfrly_logo_dark)
-                        else imageResource(Res.drawable.talkfrly_logo_light),
-            contentDescription = null,
-            modifier = Modifier.size(128.dp),
-        )
-        Text(
-            text = "Create your account",
-            textAlign = TextAlign.Center,
-        )
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 8.dp),
-            color = LocalTalkfrlyColors.current.surface
-        )
-        if (message != null) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(
+                alignment = Alignment.CenterVertically,
+                space = 8.dp
+            )
+        ) {
+            Image(
+                bitmap = if (isSystemInDarkTheme())
+                    imageResource(Res.drawable.talkfrly_logo_dark)
+                else imageResource(Res.drawable.talkfrly_logo_light),
+                contentDescription = null,
+                modifier = Modifier.size(128.dp),
+            )
             Text(
-                text = message,
-                color = LocalTalkfrlyColors.current.error,
+                text = "Create your account",
                 textAlign = TextAlign.Center,
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = LocalTalkfrlyColors.current.surface
+            )
+            if (message != null) {
+                Text(
+                    text = message,
+                    color = LocalTalkfrlyColors.current.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            InputText(
+                value = email ?: "",
+                placeholder = "Your e-mail",
+                onValueChange = { onAction(RegisterIntent.UpdateFieldEmail(it)) },
+                label = "E-mail",
+                isError = !emailValid,
+                errorMessage = if (!email.isNullOrBlank() && !emailValid) "Please enter a valid email" else null,
                 modifier = Modifier.fillMaxWidth()
             )
-        }
-        InputText(
-            value = email ?: "",
-            placeholder = "Your e-mail",
-            onValueChange = { onAction(RegisterIntent.UpdateFieldEmail(it)) },
-            label = "E-mail",
-            isError = !emailValid,
-            errorMessage = if (!email.isNullOrBlank() && !emailValid) "Please enter a valid email" else null,
-            modifier = Modifier.fillMaxWidth()
-        )
-        InputText(
-            value = displayName ?: "",
-            placeholder = "Display name",
-            onValueChange = { onAction(RegisterIntent.UpdateFieldDisplayName(it)) },
-            label = "Display name",
-            modifier = Modifier.fillMaxWidth()
-        )
-        InputText(
-            value = password ?: "",
-            placeholder = "Password",
-            onValueChange = { onAction(RegisterIntent.UpdateFieldPassword(it)) },
-            label = "Password",
-            isPassword = true,
-            isError = !passwordValid || !passwordsMatch,
-            errorMessage = when {
-                !password.isNullOrBlank() && password.length < 8 -> "Password must be at least 8 characters"
-                !passwordsMatch -> "Passwords do not match"
-                else -> null
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        InputText(
-            value = confirmPassword ?: "",
-            placeholder = "Confirm password",
-            onValueChange = { onAction(RegisterIntent.UpdateFieldConfirmPassword(it)) },
-            label = "Confirm password",
-            isPassword = true,
-            isError = !passwordsMatch,
-            errorMessage = if (!passwordsMatch) "Passwords do not match" else null,
-            modifier = Modifier.fillMaxWidth()
-        )
-        ButtonPrimary(
-            text = "Register account",
-            enabled = true,
-            size = ButtonSizeType.LARGE,
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            onClick = { onAction(RegisterIntent.CreateAccount) }
-        )
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 8.dp),
-            color = LocalTalkfrlyColors.current.surface
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = "Already have an account?",
-                textAlign = TextAlign.Center,
-                color = LocalTalkfrlyColors.current.bodyMuted
+            InputText(
+                value = displayName ?: "",
+                placeholder = "Display name",
+                onValueChange = { onAction(RegisterIntent.UpdateFieldDisplayName(it)) },
+                label = "Display name",
+                modifier = Modifier.fillMaxWidth()
             )
-            Text(
-                text = "Login",
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight(800),
-                color = LocalTalkfrlyColors.current.body,
-                modifier = Modifier.clickable { navController.navigate(Route.Login.id) }
+            InputText(
+                value = password ?: "",
+                placeholder = "Password",
+                onValueChange = { onAction(RegisterIntent.UpdateFieldPassword(it)) },
+                label = "Password",
+                isPassword = true,
+                isError = !passwordValid || !passwordsMatch,
+                errorMessage = when {
+                    !password.isNullOrBlank() && password.length < 8 -> "Password must be at least 8 characters"
+                    !passwordsMatch -> "Passwords do not match"
+                    else -> null
+                },
+                modifier = Modifier.fillMaxWidth()
             )
+            InputText(
+                value = confirmPassword ?: "",
+                placeholder = "Confirm password",
+                onValueChange = { onAction(RegisterIntent.UpdateFieldConfirmPassword(it)) },
+                label = "Confirm password",
+                isPassword = true,
+                isError = !passwordsMatch,
+                errorMessage = if (!passwordsMatch) "Passwords do not match" else null,
+                modifier = Modifier.fillMaxWidth()
+            )
+            ButtonPrimary(
+                text = "Register account",
+                enabled = true,
+                size = ButtonSizeType.LARGE,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                onClick = { onAction(RegisterIntent.CreateAccount) }
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = LocalTalkfrlyColors.current.surface
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "Already have an account?",
+                    textAlign = TextAlign.Center,
+                    color = LocalTalkfrlyColors.current.bodyMuted
+                )
+                Text(
+                    text = "Login",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight(800),
+                    color = LocalTalkfrlyColors.current.body,
+                    modifier = Modifier.clickable { navController.navigate(Route.Login.id) }
+                )
 
+            }
         }
     }
 }
