@@ -1,6 +1,7 @@
 package com.talkfrly.multiplatform
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -12,17 +13,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.rememberWebViewState
+import com.multiplatform.webview.web.rememberWebViewNavigator
 
 @Composable
 fun WebViewScreen(url: String) {
     val webViewState = rememberWebViewState(url = url)
+    val isDarkTheme = isSystemInDarkTheme()
+    val navigator = rememberWebViewNavigator()
 
-    LaunchedEffect(webViewState.isLoading) {
-        println("WebView loading: ${webViewState.isLoading}")
-    }
-
-    LaunchedEffect(webViewState.pageTitle) {
-        println("Page title: ${webViewState.pageTitle}")
+    LaunchedEffect(webViewState.isLoading, isDarkTheme) {
+        if (!webViewState.isLoading) {
+            val themeValue = if (isDarkTheme) "dark" else "light"
+            val script = """
+                window.appTheme = '$themeValue';
+                window.dispatchEvent(new Event('appThemeChange'));
+            """.trimIndent()
+            navigator.evaluateJavaScript(script)
+        }
     }
 
     DisposableEffect(Unit) {
@@ -39,6 +46,7 @@ fun WebViewScreen(url: String) {
     Box(modifier = Modifier.fillMaxSize()) {
         WebView(
             state = webViewState,
+            navigator = navigator,
             modifier = Modifier.fillMaxSize()
         )
 

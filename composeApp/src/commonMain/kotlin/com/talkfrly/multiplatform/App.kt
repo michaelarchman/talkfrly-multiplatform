@@ -1,5 +1,6 @@
 package com.talkfrly.multiplatform
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +20,9 @@ const val TALKFRLY_URL = "https://talkfrly.com/"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
-    TalkfrlyTheme {
+    val isDarkTheme = isSystemInDarkTheme()
+
+    TalkfrlyTheme(darkTheme = isDarkTheme) {
         Scaffold (
             topBar = {
                 TopAppBar(

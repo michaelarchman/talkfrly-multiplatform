@@ -29,7 +29,6 @@ class MainActivity : ComponentActivity() {
             insetsController?.isAppearanceLightNavigationBars = true
         }
 
-
         setContent {
             App()
         }
