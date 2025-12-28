@@ -64,7 +64,6 @@ fun WebViewScreen(url: String) {
             ) {
                 CircularProgressIndicator()
             }
-
         }
     }
 }
