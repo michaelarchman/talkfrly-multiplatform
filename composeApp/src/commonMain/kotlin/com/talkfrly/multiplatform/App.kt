@@ -13,32 +13,40 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.talkfrly.multiplatform.ui.TalkfrlyTheme
 
-const val TALKFRLY_URL = "https://talkfrly.com/"
+const val TALKFRLY_URL = "https://talkfrly.com"
+
+val LocalFileChooserLauncher = compositionLocalOf<((Any, (Any?) -> Unit) -> Unit)?> { null }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App() {
+fun App(fileChooserLauncher: ((Any, (Any?) -> Unit) -> Unit)? = null) {
     val isDarkTheme = isSystemInDarkTheme()
 
-    TalkfrlyTheme(darkTheme = isDarkTheme) {
-        Scaffold (
-            topBar = {
-                TopAppBar(
-                    title = { Text("Talkfrly") },
-                    modifier = Modifier
-                        .height(40.dp)
-                        .background(MaterialTheme.colorScheme.background),
-                )
-            },
-            modifier = Modifier.fillMaxSize(),
-            contentWindowInsets = WindowInsets()
-        ) { paddingValues ->
-            Column (modifier = Modifier.padding(paddingValues)) {
-                WebViewScreen(TALKFRLY_URL)
+    CompositionLocalProvider(
+        LocalFileChooserLauncher provides fileChooserLauncher
+    ) {
+        TalkfrlyTheme(darkTheme = isDarkTheme) {
+            Scaffold (
+                topBar = {
+                    TopAppBar(
+                        title = { Text("Talkfrly") },
+                        modifier = Modifier
+                            .height(40.dp)
+                            .background(MaterialTheme.colorScheme.background),
+                    )
+                },
+                modifier = Modifier.fillMaxSize(),
+                contentWindowInsets = WindowInsets()
+            ) { paddingValues ->
+                Column (modifier = Modifier.padding(paddingValues)) {
+                    WebViewScreen(TALKFRLY_URL)
+                }
             }
         }
     }
