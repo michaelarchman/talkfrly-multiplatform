@@ -17,7 +17,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.talkfrly.multiplatform.ui.TalkfrlyTheme
+import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
 
 const val TALKFRLY_URL = "https://talkfrly.com"
 

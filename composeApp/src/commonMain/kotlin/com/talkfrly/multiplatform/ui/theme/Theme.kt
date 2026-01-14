@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui
+package com.talkfrly.multiplatform.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
