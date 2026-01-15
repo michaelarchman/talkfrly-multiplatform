@@ -1,0 +1,10 @@
+package com.talkfrly.multiplatform.data.dto
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ErrorDto(
+    val status: Int? = null,
+    val error: String? = null,
+    val message: String? = null,
+)
