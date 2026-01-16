@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.talkfrly.multiplatform.di.androidModule
 import com.talkfrly.multiplatform.di.initKoin
+import com.talkfrly.multiplatform.di.platformModule
 import org.koin.android.ext.koin.androidContext
 
 class Application : Application() {

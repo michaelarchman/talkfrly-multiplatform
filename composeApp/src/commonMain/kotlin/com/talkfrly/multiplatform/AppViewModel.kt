@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class AppViewModel(
 
-) {
+): BaseViewModel() {
     private val _state = MutableStateFlow(AppState())
     val state: StateFlow<AppState> = _state
 }

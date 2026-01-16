@@ -14,18 +14,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
-
-const val TALKFRLY_URL = "https://talkfrly.com"
+import org.koin.compose.viewmodel.koinViewModel
 
 val LocalFileChooserLauncher = compositionLocalOf<((Any, (Any?) -> Unit) -> Unit)?> { null }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(fileChooserLauncher: ((Any, (Any?) -> Unit) -> Unit)? = null) {
+fun App(
+    fileChooserLauncher: ((Any, (Any?) -> Unit) -> Unit)? = null,
+    viewModel: AppViewModel = koinViewModel<AppViewModel>()
+) {
     val isDarkTheme = isSystemInDarkTheme()
+    val state by viewModel.state.collectAsState()
 
     CompositionLocalProvider(
         LocalFileChooserLauncher provides fileChooserLauncher

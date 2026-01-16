@@ -13,7 +13,7 @@ fun initKoin(
     if (!isKoinStarted) {
         startKoin {
             appDeclaration()
-            modules(sharedModule, *platformModules)
+            modules(sharedModule, platformModule, *platformModules)
         }
         isKoinStarted = true
     }
