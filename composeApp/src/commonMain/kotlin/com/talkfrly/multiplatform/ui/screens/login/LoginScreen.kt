@@ -2,13 +2,16 @@ package com.talkfrly.multiplatform.ui.screens.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,9 +45,15 @@ private fun LoginScreen(
     val message = state.message
 
     Column(
-        modifier = Modifier.padding(28.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier
+            .padding(28.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(
+            alignment = Alignment.CenterVertically,
+            space = 16.dp
+        )
     ) {
+
         Text(
             text = "Witaj,",
             textAlign = TextAlign.Start,
@@ -71,13 +80,12 @@ private fun LoginScreen(
             isPassword = true,
             modifier = Modifier.fillMaxWidth()
         )
-//        ButtonPrimary(
-//            enabled = !domainError,
-//            text = "Zaloguj",
-//            modifier = Modifier.fillMaxWidth(),
-//            onClick = {
-//                onAction(LoginIntent.GetToken)
-//            }
-//        )
+        Button(
+            enabled = true,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { }
+        ) {
+            Text( text = "Login")
+        }
     }
 }
