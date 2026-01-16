@@ -3,6 +3,8 @@ package com.talkfrly.multiplatform.di
 import com.talkfrly.multiplatform.data.api.AuthApi
 import com.talkfrly.multiplatform.data.api.AuthApiImpl
 import com.talkfrly.multiplatform.data.core.HttpClientFactory
+import com.talkfrly.multiplatform.data.repository.auth.AuthRepository
+import com.talkfrly.multiplatform.data.repository.auth.AuthRepositoryImpl
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -16,6 +18,7 @@ val sharedModule: Module = module {
     singleOf(::AuthApiImpl).bind<AuthApi>()
 
     // Repositories
+    singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
 
     // ViewModels
 
