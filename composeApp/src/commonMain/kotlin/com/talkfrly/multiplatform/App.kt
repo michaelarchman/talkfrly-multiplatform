@@ -19,6 +19,8 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.talkfrly.multiplatform.ui.nav.AppNavHost
+import com.talkfrly.multiplatform.ui.session.Session
 import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -36,6 +38,7 @@ fun App(
     CompositionLocalProvider(
         LocalFileChooserLauncher provides fileChooserLauncher
     ) {
+        Session()
         TalkfrlyTheme(darkTheme = isDarkTheme) {
             Scaffold (
                 topBar = {
@@ -46,12 +49,7 @@ fun App(
                 modifier = Modifier.fillMaxSize(),
                 contentWindowInsets = WindowInsets.systemBars
             ) { paddingValues ->
-                Box(
-                    modifier = Modifier
-                            .padding(paddingValues)
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background)
-                )
+                AppNavHost()
             }
         }
     }
