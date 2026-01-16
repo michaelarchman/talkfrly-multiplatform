@@ -1,6 +1,5 @@
 package com.talkfrly.multiplatform.data.api
 
-import com.talkfrly.multiplatform.data.core.BASE_API
 import com.talkfrly.multiplatform.data.core.makeFormRequest
 import com.talkfrly.multiplatform.data.core.makeRequest
 import com.talkfrly.multiplatform.data.dto.LoginResponseDto
@@ -10,10 +9,7 @@ import com.talkfrly.multiplatform.data.repository.preferences.PreferencesReposit
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.models.DataError
 import com.talkfrly.multiplatform.domain.models.LoginRequest
-import com.talkfrly.multiplatform.domain.models.LoginResponse
 import com.talkfrly.multiplatform.domain.models.RegisterRequest
-import com.talkfrly.multiplatform.domain.models.RegisterResponse
-import com.talkfrly.multiplatform.domain.models.User
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpMethod
 
@@ -30,7 +26,7 @@ class AuthApiImpl(
     override suspend fun login(loginRequest: LoginRequest): DataResult<LoginResponseDto, DataError.Remote> {
         return makeFormRequest(
             httpClient = httpClient,
-            url = "$BASE_API/auth/login",
+            urlString = "/auth/login",
             preferencesRepository = preferencesRepository,
             formParameters = mapOf(
                 "email" to loginRequest.email,
@@ -47,7 +43,7 @@ class AuthApiImpl(
         }
         return makeFormRequest(
             httpClient = httpClient,
-            url = "$BASE_API/auth/register",
+            urlString = "/auth/register",
             preferencesRepository = preferencesRepository,
             formParameters = formParams
         )
@@ -58,7 +54,7 @@ class AuthApiImpl(
             requireAuth = true,
             httpMethod = HttpMethod.Get,
             httpClient = httpClient,
-            urlString = "$BASE_API/auth/me",
+            urlString = "/auth/me",
             preferencesRepository = preferencesRepository,
         )
     }

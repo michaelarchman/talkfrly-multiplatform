@@ -38,16 +38,8 @@ suspend inline fun <reified T> makeRequest(
     queryParams: Map<String, Any> = emptyMap(),
     requireAuth: Boolean = false,
 ): DataResult<T, DataError.Remote> {
-    val serverUrl = preferencesRepository.getServerUrl().firstOrNull()
-    if (serverUrl.isNullOrEmpty()) {
-        return DataResult.ResultError(DataError.Remote(
-            code = DataError.HttpErrorCode.BAD_REQUEST,
-            message = "Brak skonfigurowanego adresu serwera"
-        ))
-    }
-
     val token = if (requireAuth) {
-        preferencesRepository.getToken().firstOrNull()
+        preferencesRepository.getAccessToken().firstOrNull()
             ?: return DataResult.ResultError(
                 DataError.Remote(DataError.HttpErrorCode.UNAUTHORIZED)
             )
@@ -58,7 +50,7 @@ suspend inline fun <reified T> makeRequest(
             method = httpMethod
 
             url {
-                takeFrom("$serverUrl/$urlString")
+                takeFrom("$BASE_API/$urlString")
                 queryParams.forEach { (key, value) ->
                     parameters.append(key, value.toString())
                 }
@@ -124,14 +116,14 @@ suspend inline fun <reified T> makeRequest(
  */
 suspend inline fun <reified T> makeFormRequest(
     httpClient: HttpClient,
-    url: String,
+    urlString: String,
     method: HttpMethod = HttpMethod.Post,
     formParameters: Map<String, String>,
     preferencesRepository: PreferencesRepository
 ): DataResult<T, DataError.Remote> {
     return try {
         val response = httpClient.request {
-            this.url(url)
+            this.url("${BASE_API}$urlString")
             this.method = method
             contentType(ContentType.Application.FormUrlEncoded)
             setBody(
