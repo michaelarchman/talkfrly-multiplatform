@@ -7,6 +7,7 @@ import com.talkfrly.multiplatform.data.core.HttpClientFactory
 import com.talkfrly.multiplatform.data.repository.auth.AuthRepository
 import com.talkfrly.multiplatform.data.repository.auth.AuthRepositoryImpl
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
+import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -28,6 +29,7 @@ val sharedModule: Module = module {
     viewModelOf(::AppViewModel)
     viewModelOf(::SessionViewModel)
     viewModelOf(::LoginViewModel)
+    viewModelOf(::RegisterViewModel)
 
 }
 

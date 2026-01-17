@@ -2,6 +2,7 @@ package com.talkfrly.multiplatform.ui.nav
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.compose.NavHost
@@ -9,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
+import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
 
 @Composable
 fun AppNavHost(
@@ -24,8 +26,14 @@ fun AppNavHost(
         composable(Route.Login.id) {
             LoginScreenRoot(
                 viewModel = koinViewModel(),
+                navController = navController,
                 onLoginSuccess = { sessionViewModel.checkSession() },
-                modifier = modifier,
+            )
+        }
+        composable(Route.Register.id) {
+            RegisterScreenRoot(
+                viewModel = koinViewModel(),
+                navController = navController,
             )
         }
     }

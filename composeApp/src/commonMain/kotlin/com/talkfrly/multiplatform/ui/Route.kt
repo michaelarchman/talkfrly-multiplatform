@@ -13,7 +13,7 @@ sealed interface Route {
     }
 
     @Serializable data object Register : Route {
-        override val id = "Register"
+        override val id = "REGISTER"
         override val title = "Sign up"
     }
 }

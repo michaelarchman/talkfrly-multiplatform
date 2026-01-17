@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.login
+package com.talkfrly.multiplatform.ui.screens.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.talkfrly.multiplatform.ui.Route
@@ -34,33 +34,36 @@ import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
 
 @Composable
-fun LoginScreenRoot(
-    viewModel: LoginViewModel = koinViewModel(),
+fun RegisterScreenRoot(
+    viewModel: RegisterViewModel = koinViewModel(),
     navController: NavController,
-    onLoginSuccess: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
-    LoginScreen(
+    RegisterScreen(
         state = state,
         navController = navController,
         onAction = { intent ->
-            viewModel.onIntent(intent) {
-                onLoginSuccess()
-            }
+            viewModel.onIntent(intent) { }
         }
     )
 }
 
 @Composable
-private fun LoginScreen(
-    state: LoginState,
+private fun RegisterScreen(
+    state: RegisterState,
     navController: NavController,
-    onAction: (LoginIntent) -> Unit,
+    onAction: (RegisterIntent) -> Unit,
 ) {
-    val username = state.email
+    val email = state.email
     val password = state.password
+    val confirmPassword = state.confirmPassword
+    val displayName = state.displayName
     val message = state.message
+
+    val passwordsMatch = password.isNullOrBlank() || confirmPassword.isNullOrBlank() || password == confirmPassword
+    val passwordValid = password.isNullOrBlank() || password.length >= 8
+    val emailValid = email.isNullOrBlank() || isValidEmail(email)
 
     Column(
         modifier = Modifier
@@ -75,44 +78,71 @@ private fun LoginScreen(
             bitmap = if (isSystemInDarkTheme())
                 imageResource(Res.drawable.talkfrly_logo_dark)
                         else imageResource(Res.drawable.talkfrly_logo_light),
-            contentDescription = null
+            contentDescription = null,
+            modifier = Modifier.size(128.dp),
         )
         Text(
-            text = "Log in to your account",
+            text = "Create your account",
             textAlign = TextAlign.Center,
         )
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
             color = LocalTalkfrlyColors.current.surface
         )
+        if (message != null) {
+            Text(
+                text = message,
+                color = LocalTalkfrlyColors.current.error,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         InputText(
-            value = username ?: "",
+            value = email ?: "",
             placeholder = "Your e-mail",
-            onValueChange = { onAction(LoginIntent.UpdateFieldUsername(it)) },
+            onValueChange = { onAction(RegisterIntent.UpdateFieldEmail(it)) },
             label = "E-mail",
+            isError = !emailValid,
+            errorMessage = if (!email.isNullOrBlank() && !emailValid) "Please enter a valid email" else null,
+            modifier = Modifier.fillMaxWidth()
+        )
+        InputText(
+            value = displayName ?: "",
+            placeholder = "Display name",
+            onValueChange = { onAction(RegisterIntent.UpdateFieldDisplayName(it)) },
+            label = "Display name",
             modifier = Modifier.fillMaxWidth()
         )
         InputText(
             value = password ?: "",
             placeholder = "Password",
-            onValueChange = { onAction(LoginIntent.UpdateFieldPassword(it)) },
+            onValueChange = { onAction(RegisterIntent.UpdateFieldPassword(it)) },
             label = "Password",
             isPassword = true,
+            isError = !passwordValid || !passwordsMatch,
+            errorMessage = when {
+                !password.isNullOrBlank() && password.length < 8 -> "Password must be at least 8 characters"
+                !passwordsMatch -> "Passwords do not match"
+                else -> null
+            },
             modifier = Modifier.fillMaxWidth()
         )
-        Text(
-            text = "Forgot password",
-            color = LocalTalkfrlyColors.current.bodyMuted,
-            textAlign = TextAlign.Right,
-            modifier = Modifier.fillMaxWidth(),
-            fontWeight = FontWeight(800),
+        InputText(
+            value = confirmPassword ?: "",
+            placeholder = "Confirm password",
+            onValueChange = { onAction(RegisterIntent.UpdateFieldConfirmPassword(it)) },
+            label = "Confirm password",
+            isPassword = true,
+            isError = !passwordsMatch,
+            errorMessage = if (!passwordsMatch) "Passwords do not match" else null,
+            modifier = Modifier.fillMaxWidth()
         )
         ButtonPrimary(
-            text = "Login",
+            text = "Register account",
             enabled = true,
             size = ButtonSizeType.LARGE,
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            onClick = { }
+            onClick = { onAction(RegisterIntent.CreateAccount) }
         )
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
@@ -122,17 +152,23 @@ private fun LoginScreen(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "Don't have an account?",
+                text = "Already have an account?",
                 textAlign = TextAlign.Center,
                 color = LocalTalkfrlyColors.current.bodyMuted
             )
             Text(
-                text = "Sign up",
+                text = "Login",
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight(800),
                 color = LocalTalkfrlyColors.current.body,
-                modifier = Modifier.clickable { navController.navigate(Route.Register.id) }
+                modifier = Modifier.clickable { navController.navigate(Route.Login.id) }
             )
+
         }
     }
+}
+
+private fun isValidEmail(email: String): Boolean {
+    val emailRegex = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
+    return emailRegex.matches(email)
 }

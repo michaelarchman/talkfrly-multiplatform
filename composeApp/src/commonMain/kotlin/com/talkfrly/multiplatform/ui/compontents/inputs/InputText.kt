@@ -61,6 +61,7 @@ fun InputText(
             unfocusedTextColor = LocalTalkfrlyColors.current.body,
             errorBorderColor = LocalTalkfrlyColors.current.error,
             errorContainerColor = LocalTalkfrlyColors.current.error20,
+            errorTextColor = LocalTalkfrlyColors.current.body,
             focusedLabelColor = LocalTalkfrlyColors.current.primary,
             unfocusedLabelColor = LocalTalkfrlyColors.current.body
         ),
