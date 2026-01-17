@@ -38,8 +38,8 @@ fun talkfrlyLightThemeColors(): TalkfrlyColors = TalkfrlyColors(
 
     surface = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.7f),
 
-    black = Color.hsl(hue = 0f, saturation = 0.1f, lightness = 0.09f),
-    white = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.87f),
+    black = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.05f),
+    white = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.95f),
 
     error = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f),
     error60 = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f, alpha = 0.6f),
@@ -60,8 +60,8 @@ fun talkfrlyDarkThemeColors(): TalkfrlyColors = TalkfrlyColors(
 
     surface = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.3f),
 
-    black = Color.hsl(hue = 0f, saturation = 0.1f, lightness = 0.09f),
-    white = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.87f),
+    black = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.05f),
+    white = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.95f),
 
     error = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f),
     error60 = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f, alpha = 0.6f),
