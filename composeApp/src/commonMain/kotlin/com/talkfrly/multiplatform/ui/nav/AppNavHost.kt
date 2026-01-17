@@ -1,6 +1,7 @@
 package com.talkfrly.multiplatform.ui.nav
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -12,7 +13,8 @@ import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 
 @Composable
 fun AppNavHost(
-    sessionViewModel: SessionViewModel = koinViewModel<SessionViewModel>()
+    sessionViewModel: SessionViewModel = koinViewModel<SessionViewModel>(),
+    modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
 
@@ -23,7 +25,8 @@ fun AppNavHost(
         composable(Route.Login.id) {
             LoginScreenRoot(
                 viewModel = koinViewModel(),
-                onLoginSuccess = { sessionViewModel.checkSession() }
+                onLoginSuccess = { sessionViewModel.checkSession() },
+                modifier = modifier,
             )
         }
     }

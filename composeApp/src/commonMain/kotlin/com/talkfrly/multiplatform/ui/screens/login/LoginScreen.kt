@@ -1,5 +1,7 @@
 package com.talkfrly.multiplatform.ui.screens.login
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,17 +18,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.talkfrly.multiplatform.ui.compontents.inputs.InputText
+import org.jetbrains.compose.resources.imageResource
 import org.koin.compose.viewmodel.koinViewModel
+import talkfrly_multiplatform.composeapp.generated.resources.Res
+import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
+import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
 
 @Composable
 fun LoginScreenRoot(
     viewModel: LoginViewModel = koinViewModel(),
     onLoginSuccess: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
 
     LoginScreen(
         state = state,
+        modifier = modifier,
         onAction = { intent ->
             viewModel.onIntent(intent) {
                 onLoginSuccess()
@@ -38,6 +46,7 @@ fun LoginScreenRoot(
 @Composable
 private fun LoginScreen(
     state: LoginState,
+    modifier: Modifier = Modifier,
     onAction: (LoginIntent) -> Unit,
 ) {
     val username = state.email
@@ -45,38 +54,39 @@ private fun LoginScreen(
     val message = state.message
 
     Column(
-        modifier = Modifier
-            .padding(28.dp)
+        modifier = modifier
+            .padding(32.dp)
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(
             alignment = Alignment.CenterVertically,
             space = 16.dp
         )
     ) {
-
-        Text(
-            text = "Witaj,",
-            textAlign = TextAlign.Start,
+        Image(
+            bitmap = if (isSystemInDarkTheme())
+                imageResource(Res.drawable.talkfrly_logo_dark)
+                        else imageResource(Res.drawable.talkfrly_logo_light),
+            contentDescription = null
         )
         Text(
-            text = "zaloguj się używając danych przekazanych przez Administratora.",
-            textAlign = TextAlign.Start,
+            text = "Log in to your account",
+            textAlign = TextAlign.Center,
         )
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
         )
         InputText(
             value = username ?: "",
-            placeholder = "Nazwa użytkownika",
+            placeholder = "Your e-mail",
             onValueChange = { onAction(LoginIntent.UpdateFieldUsername(it)) },
-            label = "",
+            label = "E-mail",
             modifier = Modifier.fillMaxWidth()
         )
         InputText(
             value = password ?: "",
-            placeholder = "Hasło",
+            placeholder = "Password",
             onValueChange = { onAction(LoginIntent.UpdateFieldPassword(it)) },
-            label = "",
+            label = "Password",
             isPassword = true,
             modifier = Modifier.fillMaxWidth()
         )

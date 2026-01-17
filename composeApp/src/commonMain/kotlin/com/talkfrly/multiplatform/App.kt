@@ -1,8 +1,10 @@
 package com.talkfrly.multiplatform
 
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -14,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.talkfrly.multiplatform.ui.nav.AppNavHost
 import com.talkfrly.multiplatform.ui.session.Session
+import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -32,10 +35,14 @@ fun App(
                     title = { Text("Talkfrly") }
                 )
             },
+            containerColor = LocalTalkfrlyColors.current.background,
+            contentColor = LocalTalkfrlyColors.current.body,
             modifier = Modifier.fillMaxSize(),
             contentWindowInsets = WindowInsets.systemBars
         ) { paddingValues ->
-            AppNavHost()
+            AppNavHost(
+                modifier = Modifier.padding(paddingValues)
+            )
         }
     }
 
