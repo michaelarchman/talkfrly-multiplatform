@@ -3,6 +3,7 @@ package com.talkfrly.multiplatform.ui.screens.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,6 +17,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
     navController: NavController,
+    onLogout: (() -> Unit)? = null,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -24,7 +26,8 @@ fun HomeScreenRoot(
         navController = navController,
         onAction = { intent ->
             viewModel.onIntent(intent)
-        }
+        },
+        onLogout = onLogout
     )
 }
 
@@ -33,6 +36,7 @@ private fun HomeScreen(
     state: HomeState,
     navController: NavController,
     onAction: (HomeIntent) -> Unit,
+    onLogout: (() -> Unit)? = null,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -40,5 +44,8 @@ private fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = state.message)
+        Button(onClick = { onAction(HomeIntent.Logout) }) {
+            Text("Logout")
+        }
     }
 }

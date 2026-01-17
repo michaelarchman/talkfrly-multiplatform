@@ -1,6 +1,8 @@
 package com.talkfrly.multiplatform.ui.nav
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
@@ -14,43 +16,60 @@ import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
+import com.talkfrly.multiplatform.ui.session.SessionState
 
 @Composable
 fun AppNavHost(
-    sessionViewModel: SessionViewModel = koinViewModel<SessionViewModel>(),
+    sessionViewModel: SessionViewModel,
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+    val state by sessionViewModel.state.collectAsState()
 
-    NavHost(
-        startDestination = Route.Login.id,
-        navController = navController
-    ) {
-        composable(Route.Login.id) {
-            LoginScreenRoot(
-                viewModel = koinViewModel(),
-                navController = navController,
-                onLoginSuccess = { sessionViewModel.checkSession() },
-            )
+    when (state) {
+        SessionState.Loading -> {}
+        SessionState.LoggedOut -> {
+            NavHost(
+                startDestination = Route.Login.id,
+                navController = navController
+            ) {
+                composable(Route.Login.id) {
+                    LoginScreenRoot(
+                        viewModel = koinViewModel(),
+                        navController = navController,
+                        onLoginSuccess = { sessionViewModel.checkSession() },
+                    )
+                }
+                composable(Route.Register.id) {
+                    RegisterScreenRoot(
+                        viewModel = koinViewModel(),
+                        navController = navController,
+                    )
+                }
+                composable(Route.VerifyEmail.id) {
+                    VerifyEmailScreenRoot(
+                        viewModel = koinViewModel<VerifyEmailViewModel>(),
+                        navController = navController,
+                        onVerifySuccess = { sessionViewModel.checkSession() } as (() -> Unit)?,
+                    )
+                }
+            }
         }
-        composable(Route.Register.id) {
-            RegisterScreenRoot(
-                viewModel = koinViewModel(),
-                navController = navController,
-            )
-        }
-        composable(Route.VerifyEmail.id) {
-            VerifyEmailScreenRoot(
-                viewModel = koinViewModel<VerifyEmailViewModel>(),
-                navController = navController,
-                onVerifySuccess = { sessionViewModel.checkSession() } as (() -> Unit)?,
-            )
-        }
-        composable(Route.Home.id) {
-            HomeScreenRoot(
-                viewModel = koinViewModel(),
-                navController = navController,
-            )
+        SessionState.LoggedIn-> {
+            NavHost(
+                startDestination = Route.Home.id,
+                navController = navController
+            ) {
+                composable(Route.Home.id) {
+                    HomeScreenRoot(
+                        viewModel = koinViewModel(),
+                        navController = navController,
+                        onLogout = { sessionViewModel.logout() }
+                    )
+                }
+            }
         }
     }
+
+
 }

@@ -112,7 +112,7 @@ private fun LoginScreen(
             enabled = true,
             size = ButtonSizeType.LARGE,
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            onClick = { }
+            onClick = { onAction(LoginIntent.GetAccessToken) }
         )
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),

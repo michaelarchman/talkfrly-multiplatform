@@ -47,8 +47,12 @@ class LoginViewModel(
 
             authRepository.login(loginRequest)
                 .onSuccess { response ->
-                    preferencesRepository.saveAccessToken(response.accessToken)
-                    preferencesRepository.saveRefreshToken(response.refreshToken)
+                    // Tokens are in httpOnly cookies (managed by Ktor HttpClient)
+                    // Only save them if they're in the response body
+                    if (!response.accessToken.isNullOrEmpty() && !response.refreshToken.isNullOrEmpty()) {
+                        preferencesRepository.saveAccessToken(response.accessToken)
+                        preferencesRepository.saveRefreshToken(response.refreshToken)
+                    }
                     onLoginSuccess?.invoke()
                 }
                 .onError { error ->

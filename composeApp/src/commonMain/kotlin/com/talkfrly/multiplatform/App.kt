@@ -17,6 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.talkfrly.multiplatform.ui.nav.AppNavHost
 import com.talkfrly.multiplatform.ui.session.Session
+import com.talkfrly.multiplatform.ui.session.SessionState
+import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
 import org.koin.compose.viewmodel.koinViewModel
@@ -27,8 +29,9 @@ fun App(
     viewModel: AppViewModel = koinViewModel<AppViewModel>()
 ) {
     val state by viewModel.state.collectAsState()
+    val sessionViewModel: SessionViewModel = koinViewModel<SessionViewModel>()
+    val sessionState by sessionViewModel.state.collectAsState()
 
-    Session()
     TalkfrlyTheme() {
         Scaffold (
             topBar = {
@@ -45,10 +48,15 @@ fun App(
             modifier = Modifier.fillMaxSize(),
             contentWindowInsets = WindowInsets.systemBars
         ) { paddingValues ->
-            AppNavHost(
-                modifier = Modifier.padding(paddingValues)
-            )
+            when (sessionState) {
+                SessionState.Loading -> Text("Loading...")
+                SessionState.LoggedIn, SessionState.LoggedOut -> {
+                    AppNavHost(
+                        sessionViewModel = sessionViewModel,
+                        modifier = Modifier.padding(paddingValues),
+                    )
+                }
+            }
         }
     }
-
 }
