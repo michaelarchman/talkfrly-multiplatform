@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonPrimary
 import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonSizeType
 import com.talkfrly.multiplatform.ui.compontents.inputs.InputText
+import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.imageResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
@@ -92,11 +92,17 @@ private fun LoginScreen(
             isPassword = true,
             modifier = Modifier.fillMaxWidth()
         )
+        Text(
+            text = "Forgot password",
+            color = LocalTalkfrlyColors.current.primary60,
+            textAlign = TextAlign.Right,
+            modifier = Modifier.fillMaxWidth()
+        )
         ButtonPrimary(
             text = "Login",
             enabled = true,
             size = ButtonSizeType.LARGE,
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             onClick = { }
         )
     }
