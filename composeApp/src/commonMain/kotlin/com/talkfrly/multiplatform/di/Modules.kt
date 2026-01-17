@@ -6,6 +6,7 @@ import com.talkfrly.multiplatform.data.api.AuthApiImpl
 import com.talkfrly.multiplatform.data.core.HttpClientFactory
 import com.talkfrly.multiplatform.data.repository.auth.AuthRepository
 import com.talkfrly.multiplatform.data.repository.auth.AuthRepositoryImpl
+import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
@@ -32,6 +33,7 @@ val sharedModule: Module = module {
     viewModelOf(::LoginViewModel)
     viewModelOf(::RegisterViewModel)
     viewModelOf(::VerifyEmailViewModel)
+    viewModelOf(::HomeViewModel)
 
 }
 

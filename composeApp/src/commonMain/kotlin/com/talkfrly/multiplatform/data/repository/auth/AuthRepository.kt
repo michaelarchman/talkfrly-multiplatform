@@ -1,7 +1,10 @@
 package com.talkfrly.multiplatform.data.repository.auth
 
 import com.talkfrly.multiplatform.data.api.AuthApi
+import com.talkfrly.multiplatform.data.dto.LoginRequestDto
+import com.talkfrly.multiplatform.data.dto.RegisterRequestDto
 import com.talkfrly.multiplatform.data.mapper.toDomain
+import com.talkfrly.multiplatform.data.mapper.toDto
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.map
 import com.talkfrly.multiplatform.domain.models.DataError
@@ -26,13 +29,13 @@ class AuthRepositoryImpl(
 ): AuthRepository {
     override suspend fun login(loginRequest: LoginRequest): DataResult<LoginResponse, DataError.Remote> {
         return api
-            .login(loginRequest)
+            .login(loginRequest.toDto())
             .map { it.toDomain() }
     }
 
     override suspend fun register(registerRequest: RegisterRequest): DataResult<RegisterResponse, DataError.Remote> {
         return api
-            .register(registerRequest)
+            .register(registerRequest.toDto())
             .map { it.toDomain() }
     }
 

@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.talkfrly.multiplatform.ui.Route
+import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
@@ -43,6 +44,12 @@ fun AppNavHost(
                 viewModel = koinViewModel<VerifyEmailViewModel>(),
                 navController = navController,
                 onVerifySuccess = { sessionViewModel.checkSession() } as (() -> Unit)?,
+            )
+        }
+        composable(Route.Home.id) {
+            HomeScreenRoot(
+                viewModel = koinViewModel(),
+                navController = navController,
             )
         }
     }

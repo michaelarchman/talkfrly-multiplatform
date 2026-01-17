@@ -21,4 +21,9 @@ sealed interface Route {
         override val id = "VERIFY_EMAIL"
         override val title = "Verify your account"
     }
+
+    @Serializable data object Home: Route {
+        override val id = "HOME"
+        override val title = "Home"
+    }
 }

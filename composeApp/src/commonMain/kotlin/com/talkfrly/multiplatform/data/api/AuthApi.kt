@@ -2,7 +2,9 @@ package com.talkfrly.multiplatform.data.api
 
 import com.talkfrly.multiplatform.data.core.makeFormRequest
 import com.talkfrly.multiplatform.data.core.makeRequest
+import com.talkfrly.multiplatform.data.dto.LoginRequestDto
 import com.talkfrly.multiplatform.data.dto.LoginResponseDto
+import com.talkfrly.multiplatform.data.dto.RegisterRequestDto
 import com.talkfrly.multiplatform.data.dto.RegisterResponseDto
 import com.talkfrly.multiplatform.data.dto.ResendVerificationResponseDto
 import com.talkfrly.multiplatform.data.dto.UserDto
@@ -16,8 +18,8 @@ import io.ktor.client.HttpClient
 import io.ktor.http.HttpMethod
 
 interface AuthApi {
-    suspend fun login(loginRequest: LoginRequest): DataResult<LoginResponseDto, DataError.Remote>
-    suspend fun register(registerRequest: RegisterRequest): DataResult<RegisterResponseDto, DataError.Remote>
+    suspend fun login(loginRequestDto: LoginRequestDto): DataResult<LoginResponseDto, DataError.Remote>
+    suspend fun register(registerRequestDto: RegisterRequestDto): DataResult<RegisterResponseDto, DataError.Remote>
     suspend fun getCurrentUser(): DataResult<UserDto, DataError.Remote>
     suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponseDto, DataError.Remote>
     suspend fun resendVerification(email: String): DataResult<ResendVerificationResponseDto, DataError.Remote>
@@ -27,25 +29,23 @@ class AuthApiImpl(
     private val httpClient: HttpClient,
     private val preferencesRepository: PreferencesRepository,
 ): AuthApi {
-    override suspend fun login(loginRequest: LoginRequest): DataResult<LoginResponseDto, DataError.Remote> {
-        return makeFormRequest(
+    override suspend fun login(loginRequestDto: LoginRequestDto): DataResult<LoginResponseDto, DataError.Remote> {
+        return makeRequest(
             httpClient = httpClient,
             urlString = "/auth/login",
+            httpMethod = HttpMethod.Post,
             preferencesRepository = preferencesRepository,
-            formParameters = mapOf(
-                "email" to loginRequest.email,
-                "password" to loginRequest.password,
-            )
+            body = loginRequestDto
         )
     }
 
-    override suspend fun register(registerRequest: RegisterRequest): DataResult<RegisterResponseDto, DataError.Remote> {
+    override suspend fun register(registerRequestDto: RegisterRequestDto): DataResult<RegisterResponseDto, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
             urlString = "/auth/register",
             httpMethod = HttpMethod.Post,
             preferencesRepository = preferencesRepository,
-            body = registerRequest
+            body = registerRequestDto
         )
     }
 

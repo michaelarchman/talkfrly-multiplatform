@@ -50,7 +50,7 @@ suspend inline fun <reified T> makeRequest(
             method = httpMethod
 
             url {
-                takeFrom("$BASE_API/$urlString")
+                takeFrom("$BASE_API$urlString")
                 queryParams.forEach { (key, value) ->
                     parameters.append(key, value.toString())
                 }

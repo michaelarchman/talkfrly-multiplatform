@@ -10,6 +10,11 @@ fun LoginRequestDto.toDomain(): LoginRequest = LoginRequest(
     password = password
 )
 
+fun LoginRequest.toDto(): LoginRequestDto = LoginRequestDto(
+    email = email,
+    password = password
+)
+
 fun LoginResponseDto.toDomain(): LoginResponse = LoginResponse(
     user = user.toDomain(),
     accessToken = accessToken,

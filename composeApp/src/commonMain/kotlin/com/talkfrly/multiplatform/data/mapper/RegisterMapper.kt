@@ -11,6 +11,12 @@ fun RegisterRequestDto.toDomain(): RegisterRequest = RegisterRequest(
     displayName = displayName,
 )
 
+fun RegisterRequest.toDto(): RegisterRequestDto = RegisterRequestDto(
+    email = email,
+    password = password,
+    displayName = displayName ?: ""
+)
+
 fun RegisterResponseDto.toDomain(): RegisterResponse = RegisterResponse(
     user = user.toDomain(),
     message = message,
