@@ -25,13 +25,6 @@ fun WebViewScreen(url: String) {
     val webViewState = rememberWebViewState(url = url)
     val isDarkTheme = isSystemInDarkTheme()
     val navigator = rememberWebViewNavigator()
-    val fileChooserLauncher = LocalFileChooserLauncher.current
-
-    val platformParams = if (fileChooserLauncher != null) {
-        createPlatformParams(fileChooserLauncher)
-    } else {
-        null
-    }
 
     LaunchedEffect(webViewState.isLoading, isDarkTheme) {
         if (!webViewState.isLoading) {
@@ -65,7 +58,6 @@ fun WebViewScreen(url: String) {
             state = webViewState,
             navigator = navigator,
             modifier = Modifier.fillMaxSize(),
-            platformWebViewParams = platformParams as? com.multiplatform.webview.web.PlatformWebViewParams
         )
 
         if (webViewState.isLoading) {

@@ -64,11 +64,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             App(
-                fileChooserLauncher = { intent, callback ->
-                    launchFileChooser(intent as Intent) { result ->
-                        callback(result as Any?)
-                    }
-                }
+//                fileChooserLauncher = { intent, callback ->
+//                    launchFileChooser(intent as Intent) { result ->
+//                        callback(result as Any?)
+//                    }
+//                }
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.talkfrly.multiplatform.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -10,10 +11,9 @@ val LocalTalkfrlyDarkColors = staticCompositionLocalOf<TalkfrlyColors> {
 
 @Composable
 fun TalkfrlyTheme(
-    darkTheme: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) talkfrlyDarkThemeColors() else talkfrlyLightThemeColors()
+    val colors = if (isSystemInDarkTheme()) talkfrlyDarkThemeColors() else talkfrlyLightThemeColors()
 
     CompositionLocalProvider(
         LocalTalkfrlyDarkColors provides colors,
