@@ -55,7 +55,7 @@ fun InputText(
             focusedBorderColor = LocalTalkfrlyColors.current.primary,
             unfocusedBorderColor = LocalTalkfrlyColors.current.primary20,
             focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = LocalTalkfrlyColors.current.surface30,
+            unfocusedContainerColor = LocalTalkfrlyColors.current.body5,
             cursorColor = LocalTalkfrlyColors.current.body80,
             focusedTextColor = LocalTalkfrlyColors.current.body,
             unfocusedTextColor = LocalTalkfrlyColors.current.body80,

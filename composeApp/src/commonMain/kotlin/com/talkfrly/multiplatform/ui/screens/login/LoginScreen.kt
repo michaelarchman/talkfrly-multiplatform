@@ -80,6 +80,7 @@ private fun LoginScreen(
         )
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
+            color = LocalTalkfrlyColors.current.surface
         )
         InputText(
             value = username ?: "",
@@ -112,6 +113,7 @@ private fun LoginScreen(
         )
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
+            color = LocalTalkfrlyColors.current.body60
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
