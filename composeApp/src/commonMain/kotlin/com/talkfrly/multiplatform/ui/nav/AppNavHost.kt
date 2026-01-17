@@ -11,6 +11,8 @@ import androidx.navigation.compose.rememberNavController
 import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
+import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
+import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 
 @Composable
 fun AppNavHost(
@@ -34,6 +36,13 @@ fun AppNavHost(
             RegisterScreenRoot(
                 viewModel = koinViewModel(),
                 navController = navController,
+            )
+        }
+        composable(Route.VerifyEmail.id) {
+            VerifyEmailScreenRoot(
+                viewModel = koinViewModel<VerifyEmailViewModel>(),
+                navController = navController,
+                onVerifySuccess = { sessionViewModel.checkSession() } as (() -> Unit)?,
             )
         }
     }

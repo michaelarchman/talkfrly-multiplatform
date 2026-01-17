@@ -10,6 +10,7 @@ data class RegisterRequestDto(
     @SerialName("displayName") val displayName: String,
 )
 
+@Serializable
 data class RegisterResponseDto(
     @SerialName("user") val user: UserDto,
     @SerialName("message") val message: String,

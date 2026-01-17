@@ -10,11 +10,15 @@ import com.talkfrly.multiplatform.domain.models.LoginResponse
 import com.talkfrly.multiplatform.domain.models.RegisterRequest
 import com.talkfrly.multiplatform.domain.models.RegisterResponse
 import com.talkfrly.multiplatform.domain.models.User
+import com.talkfrly.multiplatform.domain.models.VerifyEmailResponse
+import com.talkfrly.multiplatform.domain.models.ResendVerificationResponse
 
 interface AuthRepository  {
     suspend fun login(loginRequest: LoginRequest): DataResult<LoginResponse, DataError.Remote>
     suspend fun register(registerRequest: RegisterRequest): DataResult<RegisterResponse, DataError.Remote>
     suspend fun getCurrentUser(): DataResult<User, DataError.Remote>
+    suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponse, DataError.Remote>
+    suspend fun resendVerification(email: String): DataResult<ResendVerificationResponse, DataError.Remote>
 }
 
 class AuthRepositoryImpl(
@@ -35,6 +39,18 @@ class AuthRepositoryImpl(
     override suspend fun getCurrentUser(): DataResult<User, DataError.Remote> {
         return api
             .getCurrentUser()
+            .map { it.toDomain() }
+    }
+
+    override suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponse, DataError.Remote> {
+        return api
+            .verifyEmail(email, code)
+            .map { it.toDomain() }
+    }
+
+    override suspend fun resendVerification(email: String): DataResult<ResendVerificationResponse, DataError.Remote> {
+        return api
+            .resendVerification(email)
             .map { it.toDomain() }
     }
 }

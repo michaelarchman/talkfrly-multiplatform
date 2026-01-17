@@ -9,6 +9,7 @@ data class LoginRequestDto(
     @SerialName("password") val password: String,
 )
 
+@Serializable
 data class LoginResponseDto(
     @SerialName("access_token") val accessToken: String,
     @SerialName("refresh_token") val refreshToken: String,

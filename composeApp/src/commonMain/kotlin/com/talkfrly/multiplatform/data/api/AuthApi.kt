@@ -4,7 +4,9 @@ import com.talkfrly.multiplatform.data.core.makeFormRequest
 import com.talkfrly.multiplatform.data.core.makeRequest
 import com.talkfrly.multiplatform.data.dto.LoginResponseDto
 import com.talkfrly.multiplatform.data.dto.RegisterResponseDto
+import com.talkfrly.multiplatform.data.dto.ResendVerificationResponseDto
 import com.talkfrly.multiplatform.data.dto.UserDto
+import com.talkfrly.multiplatform.data.dto.VerifyEmailResponseDto
 import com.talkfrly.multiplatform.data.repository.preferences.PreferencesRepository
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.models.DataError
@@ -17,6 +19,8 @@ interface AuthApi {
     suspend fun login(loginRequest: LoginRequest): DataResult<LoginResponseDto, DataError.Remote>
     suspend fun register(registerRequest: RegisterRequest): DataResult<RegisterResponseDto, DataError.Remote>
     suspend fun getCurrentUser(): DataResult<UserDto, DataError.Remote>
+    suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponseDto, DataError.Remote>
+    suspend fun resendVerification(email: String): DataResult<ResendVerificationResponseDto, DataError.Remote>
 }
 
 class AuthApiImpl(
@@ -36,16 +40,12 @@ class AuthApiImpl(
     }
 
     override suspend fun register(registerRequest: RegisterRequest): DataResult<RegisterResponseDto, DataError.Remote> {
-        val formParams = buildMap {
-            put("email", registerRequest.email)
-            put("password", registerRequest.password)
-            registerRequest.displayName?.let { put("displayName", registerRequest.email) }
-        }
-        return makeFormRequest(
+        return makeRequest(
             httpClient = httpClient,
             urlString = "/auth/register",
+            httpMethod = HttpMethod.Post,
             preferencesRepository = preferencesRepository,
-            formParameters = formParams
+            body = registerRequest
         )
     }
 
@@ -56,6 +56,31 @@ class AuthApiImpl(
             httpClient = httpClient,
             urlString = "/auth/me",
             preferencesRepository = preferencesRepository,
+        )
+    }
+
+    override suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponseDto, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "/auth/verify-email",
+            httpMethod = HttpMethod.Post,
+            preferencesRepository = preferencesRepository,
+            body = mapOf(
+                "email" to email,
+                "code" to code,
+            )
+        )
+    }
+
+    override suspend fun resendVerification(email: String): DataResult<ResendVerificationResponseDto, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "/auth/resend-verification",
+            httpMethod = HttpMethod.Post,
+            preferencesRepository = preferencesRepository,
+            body = mapOf(
+                "email" to email,
+            )
         )
     }
 }
