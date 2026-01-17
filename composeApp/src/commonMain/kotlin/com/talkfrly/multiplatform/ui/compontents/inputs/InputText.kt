@@ -48,7 +48,7 @@ fun InputText(
         placeholder = {
             placeholder?.let { Text(it, color = LocalTalkfrlyColors.current.body60) }
         },
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(8.dp),
         modifier = modifier,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = LocalTalkfrlyColors.current.primary,

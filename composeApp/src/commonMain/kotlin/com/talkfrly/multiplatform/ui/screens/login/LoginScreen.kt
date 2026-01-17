@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonPrimary
+import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonSizeType
 import com.talkfrly.multiplatform.ui.compontents.inputs.InputText
 import org.jetbrains.compose.resources.imageResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -59,7 +61,7 @@ private fun LoginScreen(
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(
             alignment = Alignment.CenterVertically,
-            space = 16.dp
+            space = 8.dp
         )
     ) {
         Image(
@@ -90,12 +92,12 @@ private fun LoginScreen(
             isPassword = true,
             modifier = Modifier.fillMaxWidth()
         )
-        Button(
+        ButtonPrimary(
+            text = "Login",
             enabled = true,
-            modifier = Modifier.fillMaxWidth(),
+            size = ButtonSizeType.LARGE,
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
             onClick = { }
-        ) {
-            Text( text = "Login")
-        }
+        )
     }
 }
