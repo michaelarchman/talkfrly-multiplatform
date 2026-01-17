@@ -4,17 +4,21 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonPrimary
 import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonSizeType
@@ -94,9 +98,10 @@ private fun LoginScreen(
         )
         Text(
             text = "Forgot password",
-            color = LocalTalkfrlyColors.current.primary60,
+            color = LocalTalkfrlyColors.current.body60,
             textAlign = TextAlign.Right,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            textDecoration = TextDecoration.Underline
         )
         ButtonPrimary(
             text = "Login",
@@ -105,5 +110,23 @@ private fun LoginScreen(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             onClick = { }
         )
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 8.dp),
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "Don't have an account?",
+                textAlign = TextAlign.Center,
+                color = LocalTalkfrlyColors.current.body80
+            )
+            Text(
+                text = "Sign up",
+                textAlign = TextAlign.Center,
+                textDecoration = TextDecoration.Underline,
+                color = LocalTalkfrlyColors.current.body
+            )
+        }
     }
 }

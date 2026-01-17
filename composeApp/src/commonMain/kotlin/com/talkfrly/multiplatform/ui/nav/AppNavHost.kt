@@ -2,7 +2,6 @@ package com.talkfrly.multiplatform.ui.nav
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.compose.NavHost

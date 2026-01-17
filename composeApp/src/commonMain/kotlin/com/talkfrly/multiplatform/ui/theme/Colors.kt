@@ -20,6 +20,9 @@ data class TalkfrlyColors(
     val error20: Color,
 
     val background: Color,
+
+    val black: Color,
+    val white: Color,
 )
 
 fun talkfrlyLightThemeColors(): TalkfrlyColors = TalkfrlyColors(
@@ -27,19 +30,22 @@ fun talkfrlyLightThemeColors(): TalkfrlyColors = TalkfrlyColors(
     primary60 = Color(0x99d3ec39),
     primary20 = Color(0x33d3ec39),
 
-    body = Color(0xFF181818),
-    body80 = Color(0xCC181818),
-    body60 = Color(0x99181818),
-
     surface = Color(0xFFe2e8f0),
     surface80 = Color(0xCCe2e8f0),
     surface30 = Color(0x4De2e8f0),
+
+    body = Color(0xFF181818),
+    body80 = Color(0xCC181818),
+    body60 = Color(0x99181818),
 
     error = Color(0xFFdb5375),
     error60 = Color(0x99db5375),
     error20 = Color(0x4Ddb5375),
 
-    background = Color(0xFFffffff)
+    background = Color(0xFFffffff),
+
+    black = Color(0xFF181818),
+    white = Color(0xFFe2e8f0)
 )
 
 fun talkfrlyDarkThemeColors(): TalkfrlyColors = TalkfrlyColors(
@@ -53,11 +59,14 @@ fun talkfrlyDarkThemeColors(): TalkfrlyColors = TalkfrlyColors(
 
     body = Color(0xFFe2e8f0),
     body80 = Color(0xCCe2e8f0),
-    body60 = Color(0x4De2e8f0),
+    body60 = Color(0x99e2e8f0),
 
     error = Color(0xFFdb5375),
     error60 = Color(0x99db5375),
     error20 = Color(0x4Ddb5375),
 
-    background = Color(0xFF000000)
+    background = Color(0xFF000000),
+
+    black = Color(0xFF181818),
+    white = Color(0xFFe2e8f0)
 )

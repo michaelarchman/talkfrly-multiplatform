@@ -37,7 +37,7 @@ fun ButtonPrimary(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             containerColor = LocalTalkfrlyColors.current.primary,
-            contentColor = LocalTalkfrlyColors.current.background,
+            contentColor = LocalTalkfrlyColors.current.black,
         ),
         shape = RoundedCornerShape(8.dp),
         elevation =
