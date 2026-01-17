@@ -47,22 +47,22 @@ fun InputText(
         onValueChange = onValueChange,
         label = { Text(label) },
         placeholder = {
-            placeholder?.let { Text(it, color = LocalTalkfrlyColors.current.body60) }
+            placeholder?.let { Text(it, color = LocalTalkfrlyColors.current.bodyMuted) }
         },
         shape = RoundedCornerShape(8.dp),
         modifier = modifier,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = LocalTalkfrlyColors.current.primary,
             unfocusedBorderColor = LocalTalkfrlyColors.current.primary20,
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = LocalTalkfrlyColors.current.body5,
-            cursorColor = LocalTalkfrlyColors.current.body80,
+            focusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+            unfocusedContainerColor = LocalTalkfrlyColors.current.backgroundDarker,
+            cursorColor = LocalTalkfrlyColors.current.body,
             focusedTextColor = LocalTalkfrlyColors.current.body,
-            unfocusedTextColor = LocalTalkfrlyColors.current.body80,
+            unfocusedTextColor = LocalTalkfrlyColors.current.body,
             errorBorderColor = LocalTalkfrlyColors.current.error,
             errorContainerColor = LocalTalkfrlyColors.current.error20,
             focusedLabelColor = LocalTalkfrlyColors.current.primary,
-            unfocusedLabelColor = LocalTalkfrlyColors.current.body80
+            unfocusedLabelColor = LocalTalkfrlyColors.current.body
         ),
         isError = isError,
         visualTransformation = visualTransformation,
@@ -81,7 +81,7 @@ fun InputText(
                         Res.drawable.icon_visibility_off
                     Icon(
                         painterResource(icon),
-                        tint = LocalTalkfrlyColors.current.body60,
+                        tint = LocalTalkfrlyColors.current.bodyMuted,
                         contentDescription = null
                     )
                 }

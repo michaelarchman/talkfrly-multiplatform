@@ -10,13 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -99,10 +98,10 @@ private fun LoginScreen(
         )
         Text(
             text = "Forgot password",
-            color = LocalTalkfrlyColors.current.body60,
+            color = LocalTalkfrlyColors.current.bodyMuted,
             textAlign = TextAlign.Right,
             modifier = Modifier.fillMaxWidth(),
-            textDecoration = TextDecoration.Underline
+            fontWeight = FontWeight(800),
         )
         ButtonPrimary(
             text = "Login",
@@ -113,7 +112,7 @@ private fun LoginScreen(
         )
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
-            color = LocalTalkfrlyColors.current.body60
+            color = LocalTalkfrlyColors.current.surface
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -121,12 +120,12 @@ private fun LoginScreen(
             Text(
                 text = "Don't have an account?",
                 textAlign = TextAlign.Center,
-                color = LocalTalkfrlyColors.current.body80
+                color = LocalTalkfrlyColors.current.bodyMuted
             )
             Text(
                 text = "Sign up",
                 textAlign = TextAlign.Center,
-                textDecoration = TextDecoration.Underline,
+                fontWeight = FontWeight(800),
                 color = LocalTalkfrlyColors.current.body
             )
         }

@@ -8,9 +8,11 @@ data class TalkfrlyColors(
     val primary20: Color,
 
     val body: Color,
-    val body80: Color,
-    val body60: Color,
-    val body5: Color,
+    val bodyMuted: Color,
+
+    val background: Color,
+    val backgroundDarker: Color,
+    val backgroundLighter: Color,
 
     val surface: Color,
 
@@ -18,52 +20,50 @@ data class TalkfrlyColors(
     val error60: Color,
     val error20: Color,
 
-    val background: Color,
-
     val black: Color,
     val white: Color,
 )
 
 fun talkfrlyLightThemeColors(): TalkfrlyColors = TalkfrlyColors(
-    primary = Color(0xFFd3ec39),
-    primary60 = Color(0x99d3ec39),
-    primary20 = Color(0x33d3ec39),
+    primary = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f),
+    primary60 = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f, alpha = 0.6f),
+    primary20 = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f, alpha = 0.2f),
 
-    surface = Color(0xFFe2e8f0),
+    body = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.05f),
+    bodyMuted = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.3f),
 
-    body = Color(0xFF181818),
-    body80 = Color(0xCC181818),
-    body60 = Color(0x99181818),
-    body5 = Color(0x0D181818),
+    background = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.95f),
+    backgroundDarker = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.9f),
+    backgroundLighter = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 1f),
 
-    error = Color(0xFFdb5375),
-    error60 = Color(0x99db5375),
-    error20 = Color(0x4Ddb5375),
+    surface = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.7f),
 
-    background = Color(0xFFffffff),
+    black = Color.hsl(hue = 0f, saturation = 0.1f, lightness = 0.09f),
+    white = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.87f),
 
-    black = Color(0xFF181818),
-    white = Color(0xFFe2e8f0)
+    error = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f),
+    error60 = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f, alpha = 0.6f),
+    error20 = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f, alpha = 0.2f),
 )
 
 fun talkfrlyDarkThemeColors(): TalkfrlyColors = TalkfrlyColors(
-    primary = Color(0xFFd3ec39),
-    primary60 = Color(0x99d3ec39),
-    primary20 = Color(0x33d3ec39),
+    primary = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f),
+    primary60 = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f, alpha = 0.6f),
+    primary20 = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f, alpha = 0.2f),
 
-    surface = Color(0xFF181818),
+    body = Color.hsl(hue = 0f, saturation = 0.1f, lightness = 0.95f),
+    bodyMuted = Color.hsl(hue = 0f, saturation = 0.1f, lightness = 0.7f),
 
-    body = Color(0xFFe2e8f0),
-    body80 = Color(0xCCe2e8f0),
-    body60 = Color(0x99e2e8f0),
-    body5 = Color(0x0De2e8f0),
+    background = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.05f),
+    backgroundDarker = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0f),
+    backgroundLighter = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.1f),
 
-    error = Color(0xFFdb5375),
-    error60 = Color(0x99db5375),
-    error20 = Color(0x4Ddb5375),
+    surface = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.3f),
 
-    background = Color(0xFF000000),
+    black = Color.hsl(hue = 0f, saturation = 0.1f, lightness = 0.09f),
+    white = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.87f),
 
-    black = Color(0xFF181818),
-    white = Color(0xFFe2e8f0)
+    error = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f),
+    error60 = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f, alpha = 0.6f),
+    error20 = Color.hsl(hue = 349f, saturation = 0.68f, lightness = 0.59f, alpha = 0.2f),
 )
