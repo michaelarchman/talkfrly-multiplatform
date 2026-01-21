@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.repository.auth.AuthRepository
 import com.talkfrly.multiplatform.data.repository.preferences.PreferencesRepository
-import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onSuccess
 import com.talkfrly.multiplatform.domain.models.LoginRequest
@@ -47,13 +46,8 @@ class LoginViewModel(
 
             authRepository.login(loginRequest)
                 .onSuccess { response ->
-                    // Tokens are in httpOnly cookies (managed by Ktor HttpClient)
-                    // Only save them if they're in the response body
-                    if (!response.accessToken.isNullOrEmpty() && !response.refreshToken.isNullOrEmpty()) {
-                        preferencesRepository.saveAccessToken(response.accessToken)
-                        preferencesRepository.saveRefreshToken(response.refreshToken)
-                    }
                     onLoginSuccess?.invoke()
+                    println("authRepository.login -> $response")
                 }
                 .onError { error ->
                     _state.update { it.copy(message = error.message) }

@@ -37,9 +37,18 @@ class SessionViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            preferencesRepository.clearPreferences()
-            println("SESSION - logout: LoggedOut")
-            _state.value = SessionState.LoggedOut
+            authRepository.logout()
+                .onSuccess {
+                    println("SESSION - logout: LoggedOut")
+                    checkSession()
+                    
+                }
+                .onError { error ->
+                    println("SESSION - logout error: ${error.message}")
+                    // Even if logout fails, log them out locally
+                    _state.value = SessionState.LoggedOut
+                    checkSession()
+                }
         }
     }
 }

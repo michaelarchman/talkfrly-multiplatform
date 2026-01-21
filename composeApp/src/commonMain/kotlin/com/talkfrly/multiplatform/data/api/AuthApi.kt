@@ -23,6 +23,7 @@ interface AuthApi {
     suspend fun getCurrentUser(): DataResult<UserDto, DataError.Remote>
     suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponseDto, DataError.Remote>
     suspend fun resendVerification(email: String): DataResult<ResendVerificationResponseDto, DataError.Remote>
+    suspend fun logout(): DataResult<Unit, DataError.Remote>
 }
 
 class AuthApiImpl(
@@ -81,6 +82,15 @@ class AuthApiImpl(
             body = mapOf(
                 "email" to email,
             )
+        )
+    }
+
+    override suspend fun logout(): DataResult<Unit, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "/auth/logout",
+            httpMethod = HttpMethod.Post,
+            preferencesRepository = preferencesRepository,
         )
     }
 }

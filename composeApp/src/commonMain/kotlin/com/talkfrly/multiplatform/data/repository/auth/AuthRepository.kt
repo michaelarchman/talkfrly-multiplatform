@@ -22,6 +22,7 @@ interface AuthRepository  {
     suspend fun getCurrentUser(): DataResult<User, DataError.Remote>
     suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponse, DataError.Remote>
     suspend fun resendVerification(email: String): DataResult<ResendVerificationResponse, DataError.Remote>
+    suspend fun logout(): DataResult<Unit, DataError.Remote>
 }
 
 class AuthRepositoryImpl(
@@ -55,5 +56,9 @@ class AuthRepositoryImpl(
         return api
             .resendVerification(email)
             .map { it.toDomain() }
+    }
+
+    override suspend fun logout(): DataResult<Unit, DataError.Remote> {
+        return api.logout()
     }
 }

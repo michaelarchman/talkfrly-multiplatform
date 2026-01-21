@@ -38,10 +38,6 @@ suspend inline fun <reified T> makeRequest(
     queryParams: Map<String, Any> = emptyMap(),
     requireAuth: Boolean = false,
 ): DataResult<T, DataError.Remote> {
-    // Get token from preferences if available
-    // For httpOnly cookies: if token is null, cookies will be sent automatically by HttpClient
-    val token = preferencesRepository.getAccessToken().firstOrNull()
-
     return try {
         val response = httpClient.request {
             method = httpMethod
@@ -55,11 +51,6 @@ suspend inline fun <reified T> makeRequest(
 
             headers.forEach { (key, value) ->
                 this.headers.append(key, value)
-            }
-
-            // Add Authorization header if token is available
-            token?.let {
-                this.headers.append("Authorization", "Bearer $it")
             }
 
             body?.let {
@@ -184,12 +175,10 @@ suspend inline fun <reified T> handleResponse(
             }
 
             401 -> {
-                // Unauthorized → clear saved tokens
-                preferencesRepository.clearPreferences()
                 DataResult.ResultError(
                     DataError.Remote(
                         code = DataError.HttpErrorCode.UNAUTHORIZED,
-                        message = "No permission, try again."
+                        message = "Unauthorized"
                     )
                 )
             }
