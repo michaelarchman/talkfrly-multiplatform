@@ -1,11 +1,8 @@
 package com.talkfrly.multiplatform.ui.nav
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,7 +12,6 @@ import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
-import com.talkfrly.multiplatform.ui.session.SessionState
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -28,11 +24,7 @@ fun AppNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = when (state) {
-            SessionState.Loading -> Route.Login.id
-            SessionState.LoggedOut -> Route.Login.id
-            SessionState.LoggedIn -> Route.Home.id
-        }
+        startDestination = Route.Home.id
     ) {
         composable(Route.Login.id) {
             LoginScreenRoot(

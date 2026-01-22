@@ -3,8 +3,8 @@ package com.talkfrly.multiplatform.ui.session
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.repository.auth.AuthRepository
-import com.talkfrly.multiplatform.data.repository.preferences.PreferencesRepository
 import com.talkfrly.multiplatform.domain.core.onError
+import com.talkfrly.multiplatform.domain.core.onFinally
 import com.talkfrly.multiplatform.domain.core.onSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 
 class SessionViewModel(
     private val authRepository: AuthRepository,
-    private val preferencesRepository: PreferencesRepository
 ) : BaseViewModel() {
     private val _state = MutableStateFlow<SessionState>(SessionState.Loading)
     val state: StateFlow<SessionState> = _state
@@ -40,14 +39,13 @@ class SessionViewModel(
             authRepository.logout()
                 .onSuccess {
                     println("SESSION - logout: LoggedOut")
-                    checkSession()
-                    
                 }
                 .onError { error ->
                     println("SESSION - logout error: ${error.message}")
-                    // Even if logout fails, log them out locally
+                }
+                .onFinally {
                     _state.value = SessionState.LoggedOut
-                    checkSession()
+                    println("SESSION - value: LoggedOut")
                 }
         }
     }

@@ -17,7 +17,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
     navController: NavController,
-    onLogout: (() -> Unit)? = null,
+    onLogout: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -36,7 +36,7 @@ private fun HomeScreen(
     state: HomeState,
     navController: NavController,
     onAction: (HomeIntent) -> Unit,
-    onLogout: (() -> Unit)? = null,
+    onLogout: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -44,7 +44,10 @@ private fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = state.message)
-        Button(onClick = { onAction(HomeIntent.Logout) }) {
+        Button(
+            onClick = { onLogout() }
+
+        ) {
             Text("Logout")
         }
     }

@@ -4,13 +4,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import org.koin.compose.viewmodel.koinViewModel
+import androidx.navigation.NavHostController
+import com.talkfrly.multiplatform.ui.Route
 
 @Composable
 fun Session(
-    viewModel: SessionViewModel = koinViewModel<SessionViewModel>()
+    sessionViewModel: SessionViewModel,
+    navController: NavHostController,
+    content: @Composable () -> Unit,
 ) {
-    val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(state) { }
+    val sessionState by sessionViewModel.state.collectAsState()
+
+    LaunchedEffect(sessionState) {
+        when (sessionState) {
+            SessionState.LoggedIn ->
+                navController.navigate(Route.Home.id) { popUpTo(0) }
+            SessionState.LoggedOut ->
+                navController.navigate(Route.Login.id) { popUpTo(0) }
+            SessionState.Loading ->
+                navController.navigate(Route.Login.id) { popUpTo(0) }
+        }
+    }
+
+    content()
 }

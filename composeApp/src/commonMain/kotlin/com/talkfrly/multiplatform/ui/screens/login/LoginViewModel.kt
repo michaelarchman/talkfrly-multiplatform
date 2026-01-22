@@ -3,7 +3,6 @@ package com.talkfrly.multiplatform.ui.screens.login
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.repository.auth.AuthRepository
-import com.talkfrly.multiplatform.data.repository.preferences.PreferencesRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onSuccess
 import com.talkfrly.multiplatform.domain.models.LoginRequest
@@ -14,7 +13,6 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val authRepository: AuthRepository,
-    private val preferencesRepository: PreferencesRepository
 ): BaseViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> get() = _state
