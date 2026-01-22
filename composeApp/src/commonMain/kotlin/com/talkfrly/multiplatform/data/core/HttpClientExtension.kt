@@ -20,6 +20,7 @@ import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.SerializationException
@@ -39,6 +40,7 @@ suspend inline fun <reified T> makeRequest(
     requireAuth: Boolean = false,
 ): DataResult<T, DataError.Remote> {
     return try {
+        delay(600L)
         val response = httpClient.request {
             method = httpMethod
 
@@ -111,6 +113,7 @@ suspend inline fun <reified T> makeFormRequest(
     preferencesRepository: PreferencesRepository
 ): DataResult<T, DataError.Remote> {
     return try {
+        delay(600L)
         val response = httpClient.request {
             this.url("${BASE_API}$urlString")
             this.method = method

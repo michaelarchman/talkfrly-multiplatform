@@ -22,6 +22,11 @@ sealed interface Route {
         override val title = "Verify your account"
     }
 
+    @Serializable data object Splash: Route {
+        override val id = "SPLASH"
+        override val title = "Loading"
+    }
+
     @Serializable data object Home: Route {
         override val id = "HOME"
         override val title = "Home"

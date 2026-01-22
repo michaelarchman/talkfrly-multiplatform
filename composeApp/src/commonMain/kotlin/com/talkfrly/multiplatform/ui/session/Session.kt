@@ -23,7 +23,7 @@ fun Session(
             SessionState.LoggedOut ->
                 navController.navigate(Route.Login.id) { popUpTo(0) }
             SessionState.Loading ->
-                navController.navigate(Route.Login.id) { popUpTo(0) }
+                navController.navigate(Route.Splash.id) { popUpTo(0) }
         }
     }
 

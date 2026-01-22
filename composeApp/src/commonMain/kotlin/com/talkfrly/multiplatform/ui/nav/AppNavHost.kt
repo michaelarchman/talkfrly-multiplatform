@@ -10,6 +10,7 @@ import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
+import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
@@ -45,6 +46,9 @@ fun AppNavHost(
                 navController = navController,
                 onVerifySuccess = { sessionViewModel.checkSession() } as (() -> Unit)?,
             )
+        }
+        composable(Route.Splash.id) {
+            SplashScreen()
         }
         composable(Route.Home.id) {
             HomeScreenRoot(

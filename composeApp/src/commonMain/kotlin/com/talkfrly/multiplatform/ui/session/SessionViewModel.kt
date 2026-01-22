@@ -36,6 +36,7 @@ class SessionViewModel(
 
     fun logout() {
         viewModelScope.launch {
+            startLoading()
             authRepository.logout()
                 .onSuccess {
                     println("SESSION - logout: LoggedOut")
@@ -46,6 +47,7 @@ class SessionViewModel(
                 .onFinally {
                     _state.value = SessionState.LoggedOut
                     println("SESSION - value: LoggedOut")
+                    stopLoading()
                 }
         }
     }
