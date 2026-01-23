@@ -2,7 +2,7 @@ package com.talkfrly.multiplatform.data.core
 
 import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.domain.core.DataResult
-import com.talkfrly.multiplatform.domain.models.DataError
+import com.talkfrly.multiplatform.domain.core.DataError
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.network.sockets.SocketTimeoutException

@@ -5,14 +5,14 @@ import com.talkfrly.multiplatform.data.auth.mapper.toDomain
 import com.talkfrly.multiplatform.data.auth.mapper.toDto
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.map
-import com.talkfrly.multiplatform.domain.models.DataError
-import com.talkfrly.multiplatform.domain.models.LoginRequest
-import com.talkfrly.multiplatform.domain.models.LoginResponse
-import com.talkfrly.multiplatform.domain.models.RegisterRequest
-import com.talkfrly.multiplatform.domain.models.RegisterResponse
-import com.talkfrly.multiplatform.domain.models.User
-import com.talkfrly.multiplatform.domain.models.VerifyEmailResponse
-import com.talkfrly.multiplatform.domain.models.ResendVerificationResponse
+import com.talkfrly.multiplatform.domain.core.DataError
+import com.talkfrly.multiplatform.domain.auth.LoginRequest
+import com.talkfrly.multiplatform.domain.auth.LoginResponse
+import com.talkfrly.multiplatform.domain.auth.RegisterRequest
+import com.talkfrly.multiplatform.domain.auth.RegisterResponse
+import com.talkfrly.multiplatform.domain.auth.User
+import com.talkfrly.multiplatform.domain.auth.VerifyEmailResponse
+import com.talkfrly.multiplatform.domain.auth.ResendVerificationResponse
 
 interface AuthRepository  {
     suspend fun login(loginRequest: LoginRequest): DataResult<LoginResponse, DataError.Remote>

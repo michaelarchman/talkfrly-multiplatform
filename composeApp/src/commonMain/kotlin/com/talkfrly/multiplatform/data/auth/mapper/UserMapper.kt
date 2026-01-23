@@ -1,7 +1,7 @@
 package com.talkfrly.multiplatform.data.auth.mapper
 
 import com.talkfrly.multiplatform.data.auth.dto.UserDto
-import com.talkfrly.multiplatform.domain.models.User
+import com.talkfrly.multiplatform.domain.auth.User
 
 fun UserDto.toDomain(): User = User(
     id = id,

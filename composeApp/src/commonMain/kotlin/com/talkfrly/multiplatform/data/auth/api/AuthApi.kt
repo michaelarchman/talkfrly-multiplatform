@@ -10,7 +10,7 @@ import com.talkfrly.multiplatform.data.auth.dto.UserDto
 import com.talkfrly.multiplatform.data.auth.dto.VerifyEmailResponseDto
 import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.domain.core.DataResult
-import com.talkfrly.multiplatform.domain.models.DataError
+import com.talkfrly.multiplatform.domain.core.DataError
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpMethod
 

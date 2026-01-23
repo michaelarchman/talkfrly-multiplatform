@@ -2,8 +2,8 @@ package com.talkfrly.multiplatform.data.auth.mapper
 
 import com.talkfrly.multiplatform.data.auth.dto.RegisterRequestDto
 import com.talkfrly.multiplatform.data.auth.dto.RegisterResponseDto
-import com.talkfrly.multiplatform.domain.models.RegisterRequest
-import com.talkfrly.multiplatform.domain.models.RegisterResponse
+import com.talkfrly.multiplatform.domain.auth.RegisterRequest
+import com.talkfrly.multiplatform.domain.auth.RegisterResponse
 
 fun RegisterRequestDto.toDomain(): RegisterRequest = RegisterRequest(
     email = email,

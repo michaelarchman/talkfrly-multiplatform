@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.domain.models
+package com.talkfrly.multiplatform.domain.auth
 
 data class User(
     val id: String,

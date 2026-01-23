@@ -1,6 +1,4 @@
-package com.talkfrly.multiplatform.domain.models
-
-import com.talkfrly.multiplatform.domain.core.Error
+package com.talkfrly.multiplatform.domain.core
 
 /**
  * Unified error model used across the entire app.
