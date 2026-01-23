@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.data.dto
+package com.talkfrly.multiplatform.data.core
 
 import kotlinx.serialization.Serializable
 

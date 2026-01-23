@@ -2,7 +2,7 @@ package com.talkfrly.multiplatform.ui.screens.verifyemail
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
-import com.talkfrly.multiplatform.data.repository.auth.AuthRepository
+import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onSuccess
 import kotlinx.coroutines.delay

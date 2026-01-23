@@ -1,19 +1,16 @@
-package com.talkfrly.multiplatform.data.api
+package com.talkfrly.multiplatform.data.auth.api
 
-import com.talkfrly.multiplatform.data.core.makeFormRequest
 import com.talkfrly.multiplatform.data.core.makeRequest
-import com.talkfrly.multiplatform.data.dto.LoginRequestDto
-import com.talkfrly.multiplatform.data.dto.LoginResponseDto
-import com.talkfrly.multiplatform.data.dto.RegisterRequestDto
-import com.talkfrly.multiplatform.data.dto.RegisterResponseDto
-import com.talkfrly.multiplatform.data.dto.ResendVerificationResponseDto
-import com.talkfrly.multiplatform.data.dto.UserDto
-import com.talkfrly.multiplatform.data.dto.VerifyEmailResponseDto
-import com.talkfrly.multiplatform.data.repository.preferences.PreferencesRepository
+import com.talkfrly.multiplatform.data.auth.dto.LoginRequestDto
+import com.talkfrly.multiplatform.data.auth.dto.LoginResponseDto
+import com.talkfrly.multiplatform.data.auth.dto.RegisterRequestDto
+import com.talkfrly.multiplatform.data.auth.dto.RegisterResponseDto
+import com.talkfrly.multiplatform.data.auth.dto.ResendVerificationResponseDto
+import com.talkfrly.multiplatform.data.auth.dto.UserDto
+import com.talkfrly.multiplatform.data.auth.dto.VerifyEmailResponseDto
+import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.models.DataError
-import com.talkfrly.multiplatform.domain.models.LoginRequest
-import com.talkfrly.multiplatform.domain.models.RegisterRequest
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpMethod
 

@@ -1,11 +1,11 @@
 package com.talkfrly.multiplatform.di
 
 import com.talkfrly.multiplatform.AppViewModel
-import com.talkfrly.multiplatform.data.api.AuthApi
-import com.talkfrly.multiplatform.data.api.AuthApiImpl
+import com.talkfrly.multiplatform.data.auth.api.AuthApi
+import com.talkfrly.multiplatform.data.auth.api.AuthApiImpl
 import com.talkfrly.multiplatform.data.core.HttpClientFactory
-import com.talkfrly.multiplatform.data.repository.auth.AuthRepository
-import com.talkfrly.multiplatform.data.repository.auth.AuthRepositoryImpl
+import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
+import com.talkfrly.multiplatform.data.auth.repository.AuthRepositoryImpl
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel

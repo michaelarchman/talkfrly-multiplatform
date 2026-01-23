@@ -1,10 +1,8 @@
-package com.talkfrly.multiplatform.data.repository.auth
+package com.talkfrly.multiplatform.data.auth.repository
 
-import com.talkfrly.multiplatform.data.api.AuthApi
-import com.talkfrly.multiplatform.data.dto.LoginRequestDto
-import com.talkfrly.multiplatform.data.dto.RegisterRequestDto
-import com.talkfrly.multiplatform.data.mapper.toDomain
-import com.talkfrly.multiplatform.data.mapper.toDto
+import com.talkfrly.multiplatform.data.auth.api.AuthApi
+import com.talkfrly.multiplatform.data.auth.mapper.toDomain
+import com.talkfrly.multiplatform.data.auth.mapper.toDto
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.map
 import com.talkfrly.multiplatform.domain.models.DataError

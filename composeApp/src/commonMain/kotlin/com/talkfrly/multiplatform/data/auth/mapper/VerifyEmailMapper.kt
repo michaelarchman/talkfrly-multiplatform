@@ -1,7 +1,7 @@
-package com.talkfrly.multiplatform.data.mapper
+package com.talkfrly.multiplatform.data.auth.mapper
 
-import com.talkfrly.multiplatform.data.dto.VerifyEmailResponseDto
-import com.talkfrly.multiplatform.data.dto.ResendVerificationResponseDto
+import com.talkfrly.multiplatform.data.auth.dto.VerifyEmailResponseDto
+import com.talkfrly.multiplatform.data.auth.dto.ResendVerificationResponseDto
 import com.talkfrly.multiplatform.domain.models.VerifyEmailResponse
 import com.talkfrly.multiplatform.domain.models.ResendVerificationResponse
 

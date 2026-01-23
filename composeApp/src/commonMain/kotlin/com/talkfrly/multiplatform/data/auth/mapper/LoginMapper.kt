@@ -1,7 +1,7 @@
-package com.talkfrly.multiplatform.data.mapper
+package com.talkfrly.multiplatform.data.auth.mapper
 
-import com.talkfrly.multiplatform.data.dto.LoginRequestDto
-import com.talkfrly.multiplatform.data.dto.LoginResponseDto
+import com.talkfrly.multiplatform.data.auth.dto.LoginRequestDto
+import com.talkfrly.multiplatform.data.auth.dto.LoginResponseDto
 import com.talkfrly.multiplatform.domain.models.LoginRequest
 import com.talkfrly.multiplatform.domain.models.LoginResponse
 

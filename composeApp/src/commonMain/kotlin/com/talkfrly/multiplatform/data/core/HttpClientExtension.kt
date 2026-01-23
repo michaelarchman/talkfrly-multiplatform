@@ -1,7 +1,6 @@
 package com.talkfrly.multiplatform.data.core
 
-import com.talkfrly.multiplatform.data.dto.ErrorDto
-import com.talkfrly.multiplatform.data.repository.preferences.PreferencesRepository
+import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.models.DataError
 import io.ktor.client.HttpClient
@@ -22,7 +21,6 @@ import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
