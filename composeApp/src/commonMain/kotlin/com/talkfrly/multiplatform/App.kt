@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -21,8 +23,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.talkfrly.multiplatform.ui.compontents.bars.Topbar
 import com.talkfrly.multiplatform.ui.nav.AppNavHost
 import com.talkfrly.multiplatform.ui.session.Session
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
@@ -30,7 +34,9 @@ import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.imageResource
+import org.jetbrains.compose.resources.vectorResource
 import talkfrly_multiplatform.composeapp.generated.resources.Res
+import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
 
@@ -52,7 +58,19 @@ fun App(
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = LocalTalkfrlyColors.current.background,
                         titleContentColor = LocalTalkfrlyColors.current.body,
-                    )
+                        navigationIconContentColor = LocalTalkfrlyColors.current.body,
+                    ),
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {},
+                            enabled = true,
+                            ) {
+                                Icon(
+                                    imageVector = vectorResource(Res.drawable.chevron_left),
+                                    contentDescription = null,
+                                )
+                        }
+                    }
                 )
             },
             containerColor = LocalTalkfrlyColors.current.background,

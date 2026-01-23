@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.data.dataStore
+package com.talkfrly.multiplatform.data.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
