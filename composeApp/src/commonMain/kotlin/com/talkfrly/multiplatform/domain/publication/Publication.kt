@@ -52,3 +52,17 @@ enum class ModuleType {
     THREAD,
     UNKNOWN,
 }
+
+data class PublicationFilter(
+    val channelId: String? = null,
+    val topicId: String? = null,
+    val threadId: String? = null,
+    val moduleType: ModuleType? = null,
+)
+
+data class PublicationListResponse(
+    val publications: List<Publication>,
+    val totalCount: Int,
+    val page: Int,
+    val limit: Int,
+)
