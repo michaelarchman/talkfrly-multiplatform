@@ -36,7 +36,7 @@ class PublicationApiImpl(
                 "module_type" to (filter?.moduleType ?: ""),
             ).filterValues { it.isNotEmpty() },
             preferencesRepository = preferencesRepository,
-            urlString = "$BASE_API/publications",
+            urlString = "/publications",
         )
     }
 }

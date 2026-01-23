@@ -10,7 +10,7 @@ import com.talkfrly.multiplatform.domain.publication.UserSummary
 import com.talkfrly.multiplatform.domain.publication.CriterionSummary
 import com.talkfrly.multiplatform.domain.publication.ModuleType
 import com.talkfrly.multiplatform.domain.publication.PublicationFilter
-import com.talkfrly.multiplatform.domain.publication.PublicationListResponse
+import com.talkfrly.multiplatform.domain.publication.PublicationList
 
 fun PublicationDto.toDomain(): Publication = Publication(
     id = id,
@@ -65,7 +65,7 @@ fun String.toDomainModuleType(): ModuleType = when (this) {
     else -> ModuleType.UNKNOWN
 }
 
-fun PublicationListResponseDto.toDomain(): PublicationListResponse = PublicationListResponse(
+fun PublicationListResponseDto.toDomain(): PublicationList = PublicationList(
     publications = publications.map { it.toDomain() },
     totalCount = totalCount,
     page = page,

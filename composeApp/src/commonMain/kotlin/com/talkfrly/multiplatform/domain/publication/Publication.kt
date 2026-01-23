@@ -60,7 +60,7 @@ data class PublicationFilter(
     val moduleType: ModuleType? = null,
 )
 
-data class PublicationListResponse(
+data class PublicationList(
     val publications: List<Publication>,
     val totalCount: Int,
     val page: Int,

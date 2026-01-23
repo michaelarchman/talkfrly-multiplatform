@@ -31,6 +31,9 @@ class SessionViewModel(
                     println("SESSION - checkSession: LoggedOut, error: ${error.message}, code: ${error.code}")
                     _state.value = SessionState.LoggedOut
                 }
+                .onFinally {
+                    stopLoading()
+                }
         }
     }
 
