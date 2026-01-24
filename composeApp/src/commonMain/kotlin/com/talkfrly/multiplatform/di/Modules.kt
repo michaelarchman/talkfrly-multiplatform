@@ -6,6 +6,7 @@ import com.talkfrly.multiplatform.data.auth.api.AuthApiImpl
 import com.talkfrly.multiplatform.data.core.HttpClientFactory
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepositoryImpl
+import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.data.publications.api.PublicationApi
 import com.talkfrly.multiplatform.data.publications.api.PublicationApiImpl
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
@@ -22,8 +23,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val sharedModule: Module = module {
-    //httpClient
-    single { HttpClientFactory.create(get()) }
+    //httpClient and cookies storage
+    single { HttpClientFactory.create(get(), get<PreferencesRepository>()) }
 
     // Data sources / Api
     singleOf(::AuthApiImpl).bind<AuthApi>()

@@ -1,8 +1,6 @@
 package com.talkfrly.multiplatform.data.publications.api
 
-import com.talkfrly.multiplatform.data.core.BASE_API
 import com.talkfrly.multiplatform.data.core.makeRequest
-import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.data.publications.dto.PublicationFilterDto
 import com.talkfrly.multiplatform.data.publications.dto.PublicationListResponseDto
 import com.talkfrly.multiplatform.domain.core.DataError
@@ -16,7 +14,6 @@ interface PublicationApi {
 
 class PublicationApiImpl(
     private val httpClient: HttpClient,
-    private val preferencesRepository: PreferencesRepository,
 ): PublicationApi {
     override suspend fun getPublications(
         page: Int,
@@ -24,7 +21,6 @@ class PublicationApiImpl(
         filter: PublicationFilterDto?
     ): DataResult<PublicationListResponseDto, DataError.Remote> {
         return makeRequest(
-            requireAuth = true,
             httpMethod = HttpMethod.Get,
             httpClient = httpClient,
             queryParams = mapOf(
@@ -35,7 +31,6 @@ class PublicationApiImpl(
                 "thread_id" to (filter?.threadId ?: ""),
                 "module_type" to (filter?.moduleType ?: ""),
             ).filterValues { it.isNotEmpty() },
-            preferencesRepository = preferencesRepository,
             urlString = "/publications",
         )
     }

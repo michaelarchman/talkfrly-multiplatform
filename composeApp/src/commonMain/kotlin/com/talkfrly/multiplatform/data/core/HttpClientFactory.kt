@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -15,9 +16,11 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 object HttpClientFactory {
-    fun create(engine: HttpClientEngine): HttpClient {
+    fun create(engine: HttpClientEngine, preferencesRepository: PreferencesRepository): HttpClient {
         return HttpClient(engine) {
-            install(HttpCookies)
+            install(HttpCookies) {
+                storage = preferencesRepository
+            }
             install(ContentNegotiation) {
                 json(
                     json = Json {

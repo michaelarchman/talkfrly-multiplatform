@@ -25,7 +25,7 @@ fun AppNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = Route.Home.id
+        startDestination = Route.Splash.id
     ) {
         composable(Route.Login.id) {
             LoginScreenRoot(
@@ -57,6 +57,5 @@ fun AppNavHost(
                 onLogout = { sessionViewModel.logout() }
             )
         }
-
     }
 }

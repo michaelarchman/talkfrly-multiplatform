@@ -1,6 +1,5 @@
 package com.talkfrly.multiplatform.data.core
 
-import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.DataError
 import io.ktor.client.HttpClient
@@ -29,13 +28,11 @@ import kotlinx.serialization.json.Json
  */
 suspend inline fun <reified T> makeRequest(
     httpClient: HttpClient,
-    preferencesRepository: PreferencesRepository,
     urlString: String,
     httpMethod: HttpMethod = HttpMethod.Get,
     body: Any? = null,
     headers: Map<String, String> = emptyMap(),
     queryParams: Map<String, Any> = emptyMap(),
-    requireAuth: Boolean = false,
 ): DataResult<T, DataError.Remote> {
     return try {
         delay(600L)
@@ -67,7 +64,7 @@ suspend inline fun <reified T> makeRequest(
         println("HTTP RESPONSE BODY: ${response.bodyAsText()}")
         println("HTTP RESPONSE HEADERS: $")
 
-        handleResponse(response, preferencesRepository)
+        handleResponse(response)
 
     } catch (e: SocketTimeoutException) {
         DataResult.ResultError(
@@ -107,8 +104,7 @@ suspend inline fun <reified T> makeFormRequest(
     httpClient: HttpClient,
     urlString: String,
     method: HttpMethod = HttpMethod.Post,
-    formParameters: Map<String, String>,
-    preferencesRepository: PreferencesRepository
+    formParameters: Map<String, String>
 ): DataResult<T, DataError.Remote> {
     return try {
         delay(600L)
@@ -125,7 +121,7 @@ suspend inline fun <reified T> makeFormRequest(
             )
         }
 
-        handleResponse(response, preferencesRepository)
+        handleResponse(response)
     } catch (e: SocketTimeoutException) {
         DataResult.ResultError(
             DataError.Remote(
@@ -163,7 +159,6 @@ suspend inline fun <reified T> makeFormRequest(
  */
 suspend inline fun <reified T> handleResponse(
     response: HttpResponse,
-    preferencesRepository: PreferencesRepository,
 ): DataResult<T, DataError.Remote> {
     val statusCode = response.status.value
     val bodyText = response.bodyAsText().trim()

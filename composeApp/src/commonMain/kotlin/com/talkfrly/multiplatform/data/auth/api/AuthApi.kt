@@ -8,7 +8,6 @@ import com.talkfrly.multiplatform.data.auth.dto.RegisterResponseDto
 import com.talkfrly.multiplatform.data.auth.dto.ResendVerificationResponseDto
 import com.talkfrly.multiplatform.data.auth.dto.UserDto
 import com.talkfrly.multiplatform.data.auth.dto.VerifyEmailResponseDto
-import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.DataError
 import io.ktor.client.HttpClient
@@ -25,14 +24,12 @@ interface AuthApi {
 
 class AuthApiImpl(
     private val httpClient: HttpClient,
-    private val preferencesRepository: PreferencesRepository,
 ): AuthApi {
     override suspend fun login(loginRequestDto: LoginRequestDto): DataResult<LoginResponseDto, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
             urlString = "/auth/login",
             httpMethod = HttpMethod.Post,
-            preferencesRepository = preferencesRepository,
             body = loginRequestDto
         )
     }
@@ -42,18 +39,15 @@ class AuthApiImpl(
             httpClient = httpClient,
             urlString = "/auth/register",
             httpMethod = HttpMethod.Post,
-            preferencesRepository = preferencesRepository,
             body = registerRequestDto
         )
     }
 
     override suspend fun getCurrentUser(): DataResult<UserDto, DataError.Remote> {
         return makeRequest(
-            requireAuth = true,
             httpMethod = HttpMethod.Get,
             httpClient = httpClient,
             urlString = "/auth/me",
-            preferencesRepository = preferencesRepository,
         )
     }
 
@@ -62,7 +56,6 @@ class AuthApiImpl(
             httpClient = httpClient,
             urlString = "/auth/verify-email",
             httpMethod = HttpMethod.Post,
-            preferencesRepository = preferencesRepository,
             body = mapOf(
                 "email" to email,
                 "code" to code,
@@ -75,7 +68,6 @@ class AuthApiImpl(
             httpClient = httpClient,
             urlString = "/auth/resend-verification",
             httpMethod = HttpMethod.Post,
-            preferencesRepository = preferencesRepository,
             body = mapOf(
                 "email" to email,
             )
@@ -87,7 +79,6 @@ class AuthApiImpl(
             httpClient = httpClient,
             urlString = "/auth/logout",
             httpMethod = HttpMethod.Post,
-            preferencesRepository = preferencesRepository,
         )
     }
 }
