@@ -1,5 +1,6 @@
 package com.talkfrly.multiplatform.ui.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -22,7 +23,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.talkfrly.multiplatform.ui.Route
@@ -71,18 +76,19 @@ private fun HomeScreen(
                     containerColor = LocalTalkfrlyColors.current.background,
                     titleContentColor = LocalTalkfrlyColors.current.body,
                     navigationIconContentColor = LocalTalkfrlyColors.current.body,
+                    actionIconContentColor = LocalTalkfrlyColors.current.body,
                 ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {},
-                        enabled = true,
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.chevron_left),
-                            contentDescription = null,
-                        )
-                    }
-                },
+//                navigationIcon = {
+//                    IconButton(
+//                        onClick = {},
+//                        enabled = true,
+//                    ) {
+//                        Icon(
+//                            imageVector = vectorResource(Res.drawable.chevron_left),
+//                            contentDescription = null,
+//                        )
+//                    }
+//                },
                 actions = {
                     if (navController.currentBackStackEntry?.destination?.route == Route.Home.id) {
                         IconButton(
@@ -126,7 +132,26 @@ private fun HomeScreen(
                             Column(
                                 modifier = Modifier.padding(16.dp),
                             ) {
+//                                var imageLoadResult by remember {
+//                                    mutableStateOf<Result<Painter>?>(null)
+//                                }
+//                                val painter = rememberAsyncImagePainter(
+//                                    model = employee?.imageBytesArray,
+//                                    onSuccess = {
+//                                        imageLoadResult = if (it.painter.intrinsicSize.width > 1) {
+//                                            Result.success(it.painter)
+//                                        } else {
+//                                            Result.failure(Exception("Invalid image size"))
+//                                        }
+//                                    },
+//                                    onError = {
+//                                        it.result.throwable.printStackTrace()
+//                                        imageLoadResult = Result.failure(it.result.throwable)
+//                                    }
+//                                )
+
                                 Text(text = "By: ${publication.user?.displayName ?: "Anonymous"}")
+//                                Image()
                                 Text(text = publication.content)
                                 Text(text = "Views: ${publication.views ?: 0} | Likes: ${publication.voteScore}")
                             }

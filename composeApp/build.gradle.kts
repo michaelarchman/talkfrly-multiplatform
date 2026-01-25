@@ -51,6 +51,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.bundles.coil)
             api(libs.datastore)
             api(libs.datastore.preferences)
             api(libs.koin.core)

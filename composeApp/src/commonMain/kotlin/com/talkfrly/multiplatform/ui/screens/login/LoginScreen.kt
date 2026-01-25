@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -58,79 +59,85 @@ private fun LoginScreen(
 ) {
     val username = state.email
     val password = state.password
-    val message = state.message
+     val message = state.message
 
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 32.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(
-            alignment = Alignment.CenterVertically,
-            space = 8.dp
-        )
+    Scaffold(
+        containerColor = LocalTalkfrlyColors.current.background,
+        contentColor = LocalTalkfrlyColors.current.body,
     ) {
-        Image(
-            bitmap = if (isSystemInDarkTheme())
-                imageResource(Res.drawable.talkfrly_logo_dark)
-                        else imageResource(Res.drawable.talkfrly_logo_light),
-            contentDescription = null
-        )
-        Text(
-            text = "Log in to your account",
-            textAlign = TextAlign.Center,
-        )
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 8.dp),
-            color = LocalTalkfrlyColors.current.surface
-        )
-        InputText(
-            value = username ?: "",
-            placeholder = "Your e-mail",
-            onValueChange = { onAction(LoginIntent.UpdateFieldUsername(it)) },
-            label = "E-mail",
-            modifier = Modifier.fillMaxWidth()
-        )
-        InputText(
-            value = password ?: "",
-            placeholder = "Password",
-            onValueChange = { onAction(LoginIntent.UpdateFieldPassword(it)) },
-            label = "Password",
-            isPassword = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Text(
-            text = "Forgot password",
-            color = LocalTalkfrlyColors.current.bodyMuted,
-            textAlign = TextAlign.Right,
-            modifier = Modifier.fillMaxWidth(),
-            fontWeight = FontWeight(800),
-        )
-        ButtonPrimary(
-            text = "Login",
-            enabled = true,
-            size = ButtonSizeType.LARGE,
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            onClick = { onAction(LoginIntent.GetAccessToken) }
-        )
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 8.dp),
-            color = LocalTalkfrlyColors.current.surface
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(
+                alignment = Alignment.CenterVertically,
+                space = 8.dp
+            )
         ) {
-            Text(
-                text = "Don't have an account?",
-                textAlign = TextAlign.Center,
-                color = LocalTalkfrlyColors.current.bodyMuted
+            Image(
+                bitmap = if (isSystemInDarkTheme())
+                    imageResource(Res.drawable.talkfrly_logo_dark)
+                else imageResource(Res.drawable.talkfrly_logo_light),
+                contentDescription = null
             )
             Text(
-                text = "Sign up",
+                text = "Log in to your account",
                 textAlign = TextAlign.Center,
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = LocalTalkfrlyColors.current.surface
+            )
+            InputText(
+                value = username ?: "",
+                placeholder = "Your e-mail",
+                onValueChange = { onAction(LoginIntent.UpdateFieldUsername(it)) },
+                label = "E-mail",
+                modifier = Modifier.fillMaxWidth()
+            )
+            InputText(
+                value = password ?: "",
+                placeholder = "Password",
+                onValueChange = { onAction(LoginIntent.UpdateFieldPassword(it)) },
+                label = "Password",
+                isPassword = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = "Forgot password",
+                color = LocalTalkfrlyColors.current.bodyMuted,
+                textAlign = TextAlign.Right,
+                modifier = Modifier.fillMaxWidth(),
                 fontWeight = FontWeight(800),
-                color = LocalTalkfrlyColors.current.body,
-                modifier = Modifier.clickable { navController.navigate(Route.Register.id) }
             )
+            ButtonPrimary(
+                text = "Login",
+                enabled = true,
+                size = ButtonSizeType.LARGE,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                onClick = { onAction(LoginIntent.GetAccessToken) }
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = LocalTalkfrlyColors.current.surface
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "Don't have an account?",
+                    textAlign = TextAlign.Center,
+                    color = LocalTalkfrlyColors.current.bodyMuted
+                )
+                Text(
+                    text = "Sign up",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight(800),
+                    color = LocalTalkfrlyColors.current.body,
+                    modifier = Modifier.clickable { navController.navigate(Route.Register.id) }
+                )
+            }
         }
     }
+
 }
