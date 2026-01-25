@@ -31,4 +31,9 @@ sealed interface Route {
         override val id = "HOME"
         override val title = "Home"
     }
+
+    @Serializable data object Account: Route {
+        override val id = "ACCOUNT"
+        override val title = "Account"
+    }
 }

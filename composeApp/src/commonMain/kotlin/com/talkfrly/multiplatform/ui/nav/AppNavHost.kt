@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.talkfrly.multiplatform.ui.Route
+import com.talkfrly.multiplatform.ui.screens.account.AccountScreenRoot
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
@@ -52,6 +53,13 @@ fun AppNavHost(
         }
         composable(Route.Home.id) {
             HomeScreenRoot(
+                viewModel = koinViewModel(),
+                navController = navController,
+                onLogout = { sessionViewModel.logout() }
+            )
+        }
+        composable(Route.Account.id) {
+            AccountScreenRoot(
                 viewModel = koinViewModel(),
                 navController = navController,
                 onLogout = { sessionViewModel.logout() }
