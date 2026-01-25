@@ -4,5 +4,6 @@ import com.talkfrly.multiplatform.domain.publication.PublicationList
 
 data class HomeState(
     val message: String = "Welcome to Home!",
-    val publications: PublicationList? = null
+    val publications: PublicationList? = null,
+    val selectedTabIndex: Int = 0
 )

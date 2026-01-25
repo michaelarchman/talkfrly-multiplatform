@@ -22,7 +22,12 @@ class HomeViewModel(
         when (intent) {
             is HomeIntent.Logout -> { }
             is HomeIntent.GetPublications -> getPublications()
+            is HomeIntent.SetSelectedTab -> setSelectedTab(intent.index)
         }
+    }
+
+    private fun setSelectedTab(selectedTab: Int) = viewModelScope.launch {
+        _state.update { it.copy(selectedTabIndex = selectedTab) }
     }
 
     private fun getPublications() = viewModelScope.launch {
