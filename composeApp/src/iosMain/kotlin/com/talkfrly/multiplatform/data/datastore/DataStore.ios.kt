@@ -1,7 +1,7 @@
 package com.talkfrly.multiplatform.data.datastore
 
-import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSUserDomainMask
 
 fun iosDataStorePath(): String {
