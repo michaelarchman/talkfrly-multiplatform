@@ -30,7 +30,7 @@ fun talkfrlyLightThemeColors(): TalkfrlyColors = TalkfrlyColors(
     primary20 = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f, alpha = 0.2f),
 
     body = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.05f),
-    bodyMuted = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.3f),
+    bodyMuted = Color.hsl(hue = 210f, saturation = 0f, lightness = 0.4f),
 
     background = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.95f),
     backgroundDarker = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.9f),
@@ -52,7 +52,7 @@ fun talkfrlyDarkThemeColors(): TalkfrlyColors = TalkfrlyColors(
     primary20 = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f, alpha = 0.2f),
 
     body = Color.hsl(hue = 0f, saturation = 0.1f, lightness = 0.95f),
-    bodyMuted = Color.hsl(hue = 0f, saturation = 0.1f, lightness = 0.7f),
+    bodyMuted = Color.hsl(hue = 0f, saturation = 0f, lightness = 0.6f),
 
     background = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.05f),
     backgroundDarker = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0f),

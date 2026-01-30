@@ -1,6 +1,7 @@
 package com.talkfrly.multiplatform.data.publications.api
 
 import com.talkfrly.multiplatform.data.core.makeRequest
+import com.talkfrly.multiplatform.data.publications.dto.PublicationDto
 import com.talkfrly.multiplatform.data.publications.dto.PublicationFilterDto
 import com.talkfrly.multiplatform.data.publications.dto.PublicationListResponseDto
 import com.talkfrly.multiplatform.domain.core.DataError
@@ -10,6 +11,7 @@ import io.ktor.http.HttpMethod
 
 interface PublicationApi {
     suspend fun getPublications(page: Int, limit: Int, filter: PublicationFilterDto?): DataResult<PublicationListResponseDto, DataError.Remote>
+    suspend fun getPublicationById(id: String): DataResult<PublicationDto, DataError.Remote>
 }
 
 class PublicationApiImpl(
@@ -32,6 +34,14 @@ class PublicationApiImpl(
                 "module_type" to (filter?.moduleType ?: ""),
             ).filterValues { it.isNotEmpty() },
             urlString = "/publications",
+        )
+    }
+
+    override suspend fun getPublicationById(id: String): DataResult<PublicationDto, DataError.Remote> {
+        return makeRequest(
+            httpMethod = HttpMethod.Get,
+            httpClient = httpClient,
+            urlString = "/publications/$id",
         )
     }
 }

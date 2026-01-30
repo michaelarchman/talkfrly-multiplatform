@@ -6,16 +6,19 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.screens.account.AccountScreenRoot
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
+import com.talkfrly.multiplatform.ui.screens.publication.PublicationDetailsScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun AppNavHost(
@@ -45,7 +48,7 @@ fun AppNavHost(
             VerifyEmailScreenRoot(
                 viewModel = koinViewModel<VerifyEmailViewModel>(),
                 navController = navController,
-                onVerifySuccess = { sessionViewModel.checkSession() } as (() -> Unit)?,
+                onVerifySuccess = { sessionViewModel.checkSession() },
             )
         }
         composable(Route.Splash.id) {
@@ -55,7 +58,6 @@ fun AppNavHost(
             HomeScreenRoot(
                 viewModel = koinViewModel(),
                 navController = navController,
-                onLogout = { sessionViewModel.logout() }
             )
         }
         composable(Route.Account.id) {
@@ -63,6 +65,13 @@ fun AppNavHost(
                 viewModel = koinViewModel(),
                 navController = navController,
                 onLogout = { sessionViewModel.logout() }
+            )
+        }
+        composable<Route.PublicationDetails> { backStackEntry ->
+            val route = backStackEntry.toRoute<Route.PublicationDetails>()
+            PublicationDetailsScreenRoot(
+                viewModel = koinViewModel { parametersOf(route.publicationId) },
+                navController = navController,
             )
         }
     }

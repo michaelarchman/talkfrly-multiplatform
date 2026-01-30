@@ -14,6 +14,7 @@ import com.talkfrly.multiplatform.data.publications.repository.PublicationReposi
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
+import com.talkfrly.multiplatform.ui.screens.publication.PublicationDetailsViewModel
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
@@ -43,6 +44,7 @@ val sharedModule: Module = module {
     viewModelOf(::VerifyEmailViewModel)
     viewModelOf(::HomeViewModel)
     viewModelOf(::AccountViewModel)
+    viewModelOf(::PublicationDetailsViewModel)
 
 }
 
