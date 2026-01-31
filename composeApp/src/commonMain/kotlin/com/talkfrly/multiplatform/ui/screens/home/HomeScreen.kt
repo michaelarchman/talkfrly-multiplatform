@@ -2,6 +2,7 @@ package com.talkfrly.multiplatform.ui.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,7 +49,9 @@ import talkfrly_multiplatform.composeapp.generated.resources.gesture
 import talkfrly_multiplatform.composeapp.generated.resources.person
 import talkfrly_multiplatform.composeapp.generated.resources.speed_camera
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
+import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
 import talkfrly_multiplatform.composeapp.generated.resources.texture_add
+import talkfrly_multiplatform.composeapp.generated.resources.travel_explore
 
 @Composable
 fun HomeScreenRoot(
@@ -77,12 +80,17 @@ private fun HomeScreen(
     navController: NavController,
     onAction: (HomeIntent) -> Unit,
 ) {
+
     Scaffold (
         topBar = {
             TopAppBar(
                 title = {
                     Image(
-                        painter = painterResource(Res.drawable.talkfrly_logo_dark),
+                        painter = painterResource(
+                            if (isSystemInDarkTheme())
+                                Res.drawable.talkfrly_logo_dark
+                                else Res.drawable.talkfrly_logo_light
+                        ),
                         contentDescription = "Talkfrly logo",
                         modifier = Modifier.width(108.dp)
                     )
@@ -147,7 +155,7 @@ private fun HomeScreen(
                         modifier = Modifier.height(40.dp),
                     ) {
                         Tab(
-                            selectedContentColor = LocalTalkfrlyColors.current.primary,
+                            selectedContentColor = LocalTalkfrlyColors.current.body,
                             unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
                             selected = state.selectedTabIndex == 0,
                             onClick = { onAction(HomeIntent.SetSelectedTab(0)) },
@@ -167,7 +175,7 @@ private fun HomeScreen(
 
                         }
                         Tab(
-                            selectedContentColor = LocalTalkfrlyColors.current.primary,
+                            selectedContentColor = LocalTalkfrlyColors.current.body,
                             unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
                             selected = state.selectedTabIndex == 1,
                             onClick = { onAction(HomeIntent.SetSelectedTab(1)) },
@@ -189,7 +197,7 @@ private fun HomeScreen(
                             }
                         }
                         Tab(
-                            selectedContentColor = LocalTalkfrlyColors.current.primary,
+                            selectedContentColor = LocalTalkfrlyColors.current.body,
                             unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
                             selected = state.selectedTabIndex == 2,
                             onClick = { onAction(HomeIntent.SetSelectedTab(2)) },
@@ -218,7 +226,7 @@ private fun HomeScreen(
                     ),
                 ) {
                     Icon(
-                        imageVector = vectorResource(Res.drawable.texture_add),
+                        imageVector = vectorResource(Res.drawable.travel_explore),
                         tint = LocalTalkfrlyColors.current.body,
                         contentDescription = null,
                     )

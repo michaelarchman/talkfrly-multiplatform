@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -123,6 +124,30 @@ fun CommentItem(
                 fontSize = 12.sp,
                 color = colors.bodyMuted,
             )
+
+            // Reply button (only for top-level comments)
+            if (!isReply) {
+                TextButton(
+                    onClick = { onReply(comment) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                    ),
+                    contentPadding = PaddingValues(horizontal = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = vectorResource(Res.drawable.icon_chat),
+                        contentDescription = null,
+                        modifier = Modifier.size(12.dp),
+                        tint = colors.primary,
+                    )
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Text(
+                        text = "Reply",
+                        fontSize = 9.sp,
+                        color = colors.primary,
+                    )
+                }
+            }
         }
 
         // Content (markdown rendered)
@@ -164,31 +189,6 @@ fun CommentItem(
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop,
             )
-        }
-
-        // Reply button (only for top-level comments)
-        if (!isReply) {
-            TextButton(
-                onClick = { onReply(comment) },
-                modifier = Modifier.align(Alignment.End),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colors.primary20
-                ),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                Icon(
-                    imageVector = vectorResource(Res.drawable.icon_chat),
-                    contentDescription = null,
-                    modifier = Modifier.size(12.dp),
-                    tint = colors.body,
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = "Reply",
-                    fontSize = 9.sp,
-                    color = colors.bodyMuted,
-                )
-            }
         }
 
         // Replies

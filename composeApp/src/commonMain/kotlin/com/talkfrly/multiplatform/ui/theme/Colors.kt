@@ -47,7 +47,7 @@ fun talkfrlyLightThemeColors(): TalkfrlyColors = TalkfrlyColors(
 )
 
 fun talkfrlyDarkThemeColors(): TalkfrlyColors = TalkfrlyColors(
-    primary = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f),
+    primary = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.43f),
     primary60 = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f, alpha = 0.6f),
     primary20 = Color.hsl(hue = 65f, saturation = 0.83f, lightness = 0.57f, alpha = 0.2f),
 
