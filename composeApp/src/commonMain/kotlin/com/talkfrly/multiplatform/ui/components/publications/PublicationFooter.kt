@@ -49,13 +49,13 @@ fun PublicationFooter(
                         label = {
                             Text(
                                 text = tag,
-                                fontSize = 12.sp,
+                                fontSize = 9.sp,
                             )
                         },
-                        modifier = Modifier.height(28.dp),
+                        modifier = Modifier.height(24.dp),
                         colors = AssistChipDefaults.assistChipColors(
                             containerColor = colors.background,
-                            labelColor = colors.primary60,
+                            labelColor = colors.bodyMuted,
                         ),
                         border = BorderStroke(0.dp, Color.Transparent),
                     )

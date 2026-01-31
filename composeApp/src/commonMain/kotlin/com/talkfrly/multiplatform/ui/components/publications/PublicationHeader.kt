@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +32,7 @@ fun PublicationHeader(
     val displayName = when {
         publication.isAnonymous -> "Anonymous"
         !publication.pseudonym.isNullOrBlank() -> publication.pseudonym
-        !publication.user?.displayName.isNullOrBlank() -> publication.user?.displayName ?: "Unknown"
+        !publication.user?.displayName.isNullOrBlank() -> publication.user.displayName
         else -> "Unknown"
     }
 
@@ -93,7 +94,7 @@ fun PublicationHeader(
                     PublicationBadge(label = "Anonymous")
                 }
                 if (!publication.threadName.isNullOrBlank()) {
-                    PublicationBadge(label = publication.threadName!!)
+                    PublicationBadge(label = publication.threadName)
                 }
             }
 
@@ -112,12 +113,13 @@ private fun PublicationBadge(
     modifier: Modifier = Modifier,
 ) {
     val colors = LocalTalkfrlyColors.current
+
     Surface(
         modifier = modifier
             .height(20.dp)
             .padding(horizontal = 6.dp),
-        color = colors.primary20,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+        color = colors.primary60,
+        shape = RoundedCornerShape(4.dp),
     ) {
         Box(
             modifier = Modifier
@@ -128,7 +130,7 @@ private fun PublicationBadge(
                 text = label,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = colors.primary,
+                color = colors.black,
             )
         }
     }
