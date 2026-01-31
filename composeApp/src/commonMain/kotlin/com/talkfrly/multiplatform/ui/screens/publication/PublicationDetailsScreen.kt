@@ -105,6 +105,7 @@ private fun PublicationDetailsScreen(
                         .fillMaxSize()
                         .padding(paddingValues),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     item {
                         PublicationCard(
@@ -115,19 +116,11 @@ private fun PublicationDetailsScreen(
                     }
 
                     item {
-                        HorizontalDivider(
-                            thickness = 2.dp,
-                            color = LocalTalkfrlyColors.current.backgroundDarker,
-                            modifier = Modifier.padding(vertical = 16.dp),
-                        )
-                    }
-
-                    item {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             val canComment = (state.publication.threadMembersOnly != true)
                                 || state.publication.isThreadMember

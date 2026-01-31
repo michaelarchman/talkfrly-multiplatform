@@ -10,6 +10,7 @@ data class Comment(
     val parentCommentId: String? = null,
     val content: String,
     val isAnonymous: Boolean,
+    val avatarUrl: String? = null,
     val imageUrls: List<String> = emptyList(),
     val videoId: String? = null,
     val videoEmbedUrl: String? = null,

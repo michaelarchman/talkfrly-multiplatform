@@ -1,5 +1,7 @@
 package com.talkfrly.multiplatform.ui.components.comments
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.domain.comment.Comment
 import com.talkfrly.multiplatform.domain.util.getYouTubeThumbnail
 import com.talkfrly.multiplatform.domain.util.parseMarkdownSimple
@@ -49,15 +52,13 @@ fun CommentItem(
             .fillMaxWidth()
             .padding(
                 start = if (isReply) 40.dp else 0.dp,
-                top = 8.dp,
-                bottom = 8.dp,
             ),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         // Header (avatar + name + timestamp)
         Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             // Avatar (32dp circular)
             Surface(
@@ -65,57 +66,60 @@ fun CommentItem(
                 shape = CircleShape,
                 color = colors.backgroundLighter,
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = displayName.firstOrNull()?.uppercase() ?: "?",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.body,
+                if (!comment.avatarUrl.isNullOrBlank()) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = comment.avatarUrl),
+                        contentDescription = "Avatar for $displayName",
+                        modifier = Modifier.size(32.dp),
                     )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(colors.primary20),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = displayName.firstOrNull()?.uppercase() ?: "?",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.body,
+                        )
+                    }
                 }
             }
 
-            Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+            Text(
+                text = displayName,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colors.body,
+            )
+
+            if (comment.isAnonymous) {
+                Surface(
+                    modifier = Modifier.size(height = 16.dp, width = 60.dp),
+                    color = colors.primary20,
+                    shape = RoundedCornerShape(4.dp),
                 ) {
-                    Text(
-                        text = displayName,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colors.body,
-                    )
-                    if (comment.isAnonymous) {
-                        Surface(
-                            modifier = Modifier.size(height = 16.dp, width = 60.dp),
-                            color = colors.primary20,
-                            shape = RoundedCornerShape(4.dp),
-                        ) {
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text(
-                                    text = "Anonymous",
-                                    fontSize = 10.sp,
-                                    color = colors.primary,
-                                )
-                            }
-                        }
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "Anonymous",
+                            fontSize = 10.sp,
+                            color = colors.primary,
+                        )
                     }
                 }
-                Text(
-                    text = formatTimestamp(comment.createdAt),
-                    fontSize = 12.sp,
-                    color = colors.bodyMuted,
-                )
             }
+
+            Text(
+                text = formatTimestamp(comment.createdAt),
+                fontSize = 12.sp,
+                color = colors.bodyMuted,
+            )
         }
 
         // Content (markdown rendered)
@@ -192,6 +196,7 @@ fun CommentItem(
                 }
             }
         }
+        HorizontalDivider(color = LocalTalkfrlyColors.current.backgroundLighter)
     }
 }
 
@@ -199,7 +204,7 @@ private fun formatTimestamp(timestamp: String): String {
     return try {
         val parts = timestamp.split("T")
         if (parts.isNotEmpty()) parts[0] else timestamp
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         timestamp
     }
 }

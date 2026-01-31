@@ -16,6 +16,7 @@ fun CommentDto.toDomain(): Comment = Comment(
     parentCommentId = parentCommentId,
     content = content,
     isAnonymous = isAnonymous,
+    avatarUrl = avatarUrl,
     imageUrls = imageUrls,
     videoId = videoId,
     videoEmbedUrl = videoEmbedUrl,

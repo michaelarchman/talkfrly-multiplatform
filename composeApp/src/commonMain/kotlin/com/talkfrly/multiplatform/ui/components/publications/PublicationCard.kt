@@ -35,7 +35,8 @@ fun PublicationCard(
                 }
             ),
         colors = CardDefaults.cardColors(
-            containerColor = colors.backgroundLighter,
+            containerColor = if (viewMode == PublicationViewMode.FEED)
+                colors.backgroundLighter else colors.backgroundDarker,
             contentColor = colors.body,
         ),
         elevation = CardDefaults.cardElevation(

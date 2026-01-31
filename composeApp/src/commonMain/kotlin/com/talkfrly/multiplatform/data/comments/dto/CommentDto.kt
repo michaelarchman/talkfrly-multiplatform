@@ -12,7 +12,7 @@ data class CommentDto(
     val user: UserSummaryDto? = null,
     @SerialName("parent_comment_id") val parentCommentId: String? = null,
     val content: String,
-    @SerialName("is_anonymous") val isAnonymous: Boolean,
+    @SerialName("is_anonymous") val isAnonymous: Boolean, @SerialName("avatar_url") val avatarUrl: String? = null,
     @SerialName("image_urls") val imageUrls: List<String> = emptyList(),
     @SerialName("video_id") val videoId: String? = null,
     @SerialName("video_embed_url") val videoEmbedUrl: String? = null,
