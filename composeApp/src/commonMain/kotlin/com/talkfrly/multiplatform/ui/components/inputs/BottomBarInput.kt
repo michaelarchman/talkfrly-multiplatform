@@ -1,22 +1,26 @@
 package com.talkfrly.multiplatform.ui.components.inputs
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.vectorResource
@@ -38,29 +42,47 @@ fun BottomBarInput(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(colors.background)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .background(colors.backgroundLighter)
+            .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        OutlinedTextField(
+        val interactionSource = remember { MutableInteractionSource() }
+
+        BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(placeholder) },
             modifier = Modifier.weight(1f),
             singleLine = true,
-            minLines = 1,
-            maxLines = 1,
-            shape = RoundedCornerShape(100),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = colors.primary,
-                unfocusedBorderColor = colors.bodyMuted,
-                focusedTextColor = colors.body,
-                unfocusedTextColor = colors.body,
-                cursorColor = colors.primary,
-                focusedContainerColor = colors.backgroundLighter,
-                unfocusedContainerColor = colors.backgroundLighter,
-            ),
+            textStyle = LocalTextStyle.current.copy(color = colors.body),
+            cursorBrush = SolidColor(colors.primary),
+            interactionSource = interactionSource,
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = colors.backgroundLighter,
+                            shape = RoundedCornerShape(100)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = colors.bodyMuted,
+                            shape = RoundedCornerShape(100)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    if (value.isEmpty()) {
+                        Text(
+                            text = placeholder,
+                            style = LocalTextStyle.current,
+                            color = colors.bodyMuted
+                        )
+                    }
+                    innerTextField()
+                }
+            }
         )
 
         IconButton(
@@ -70,7 +92,7 @@ fun BottomBarInput(
                     color = if (isEnabled) colors.primary else colors.bodyMuted,
                     shape = CircleShape,
                 )
-                .height(48.dp),
+                .height(40.dp),
             enabled = isEnabled,
         ) {
             Icon(
