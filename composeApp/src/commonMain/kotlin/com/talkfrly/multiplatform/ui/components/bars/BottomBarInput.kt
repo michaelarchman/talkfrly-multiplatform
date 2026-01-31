@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.components.inputs
+package com.talkfrly.multiplatform.ui.components.bars
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -98,7 +98,7 @@ fun BottomBarInput(
             Icon(
                 imageVector = if (isEnabled) vectorResource(Res.drawable.chat_paste_go) else vectorResource(Res.drawable.add),
                 contentDescription = "Send",
-                tint = if (isEnabled) colors.surface else colors.background,
+                tint = if (isEnabled) colors.body else colors.background,
             )
         }
     }

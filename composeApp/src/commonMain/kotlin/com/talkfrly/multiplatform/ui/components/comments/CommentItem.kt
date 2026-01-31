@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -167,19 +170,23 @@ fun CommentItem(
         if (!isReply) {
             TextButton(
                 onClick = { onReply(comment) },
-                modifier = Modifier.padding(start = 44.dp),
+                modifier = Modifier.align(Alignment.End),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colors.primary20
+                ),
+                contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
                 Icon(
                     imageVector = vectorResource(Res.drawable.icon_chat),
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = colors.primary,
+                    modifier = Modifier.size(12.dp),
+                    tint = colors.body,
                 )
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(4.dp))
+                Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = "Reply",
-                    fontSize = 12.sp,
-                    color = colors.primary,
+                    fontSize = 9.sp,
+                    color = colors.bodyMuted,
                 )
             }
         }
@@ -196,7 +203,6 @@ fun CommentItem(
                 }
             }
         }
-        HorizontalDivider(color = LocalTalkfrlyColors.current.backgroundLighter)
     }
 }
 

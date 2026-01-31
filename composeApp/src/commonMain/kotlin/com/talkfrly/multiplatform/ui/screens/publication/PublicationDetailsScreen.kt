@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -27,7 +26,7 @@ import com.talkfrly.multiplatform.ui.components.comments.CommentForm
 import com.talkfrly.multiplatform.ui.components.comments.CommentFormState
 import com.talkfrly.multiplatform.ui.components.comments.CommentList
 import com.talkfrly.multiplatform.ui.components.comments.ThreadJoinPrompt
-import com.talkfrly.multiplatform.ui.components.inputs.BottomBarInput
+import com.talkfrly.multiplatform.ui.components.bars.BottomBarInput
 import com.talkfrly.multiplatform.ui.components.publications.PublicationCard
 import com.talkfrly.multiplatform.ui.components.publications.PublicationViewMode
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
