@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.compontents.inputs
+package com.talkfrly.multiplatform.ui.components.inputs
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape

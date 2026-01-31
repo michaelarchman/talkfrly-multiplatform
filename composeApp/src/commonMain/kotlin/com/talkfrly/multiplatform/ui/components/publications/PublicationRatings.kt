@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.talkfrly.multiplatform.domain.publication.CriterionSummary
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
+import kotlin.math.round
 import org.jetbrains.compose.resources.vectorResource
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.star
@@ -63,7 +64,7 @@ fun PublicationRatings(
                 }
 
                 Text(
-                    text = "%.1f".format(criterion.average),
+                    text = (round(criterion.average * 10) / 10).toString(),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = colors.body,

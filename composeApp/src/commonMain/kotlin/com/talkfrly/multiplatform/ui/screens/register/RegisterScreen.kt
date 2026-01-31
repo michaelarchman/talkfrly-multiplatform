@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,9 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.talkfrly.multiplatform.ui.Route
-import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonPrimary
-import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonSizeType
-import com.talkfrly.multiplatform.ui.compontents.inputs.InputText
+import com.talkfrly.multiplatform.ui.components.buttons.ButtonPrimary
+import com.talkfrly.multiplatform.ui.components.buttons.ButtonSizeType
+import com.talkfrly.multiplatform.ui.components.inputs.InputText
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.imageResource
 import org.koin.compose.viewmodel.koinViewModel

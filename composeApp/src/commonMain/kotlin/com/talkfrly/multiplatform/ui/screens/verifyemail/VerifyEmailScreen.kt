@@ -29,8 +29,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonPrimary
-import com.talkfrly.multiplatform.ui.compontents.buttons.ButtonSizeType
+import com.talkfrly.multiplatform.ui.components.buttons.ButtonPrimary
+import com.talkfrly.multiplatform.ui.components.buttons.ButtonSizeType
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.imageResource
 import org.koin.compose.viewmodel.koinViewModel

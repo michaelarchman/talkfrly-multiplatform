@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.compontents.buttons
+package com.talkfrly.multiplatform.ui.components.buttons
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape

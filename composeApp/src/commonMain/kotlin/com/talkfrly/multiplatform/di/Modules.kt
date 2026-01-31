@@ -3,6 +3,10 @@ package com.talkfrly.multiplatform.di
 import com.talkfrly.multiplatform.AppViewModel
 import com.talkfrly.multiplatform.data.auth.api.AuthApi
 import com.talkfrly.multiplatform.data.auth.api.AuthApiImpl
+import com.talkfrly.multiplatform.data.comments.api.CommentApi
+import com.talkfrly.multiplatform.data.comments.api.CommentApiImpl
+import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
+import com.talkfrly.multiplatform.data.comments.repository.CommentRepositoryImpl
 import com.talkfrly.multiplatform.data.core.HttpClientFactory
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepositoryImpl
@@ -11,6 +15,10 @@ import com.talkfrly.multiplatform.data.publications.api.PublicationApi
 import com.talkfrly.multiplatform.data.publications.api.PublicationApiImpl
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepositoryImpl
+import com.talkfrly.multiplatform.data.threads.api.ThreadApi
+import com.talkfrly.multiplatform.data.threads.api.ThreadApiImpl
+import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
+import com.talkfrly.multiplatform.data.threads.repository.ThreadRepositoryImpl
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
@@ -31,10 +39,14 @@ val sharedModule: Module = module {
     // Data sources / Api
     singleOf(::AuthApiImpl).bind<AuthApi>()
     singleOf(::PublicationApiImpl).bind<PublicationApi>()
+    singleOf(::CommentApiImpl).bind<CommentApi>()
+    singleOf(::ThreadApiImpl).bind<ThreadApi>()
 
     // Repositories
     singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
     singleOf(::PublicationRepositoryImpl).bind<PublicationRepository>()
+    singleOf(::CommentRepositoryImpl).bind<CommentRepository>()
+    singleOf(::ThreadRepositoryImpl).bind<ThreadRepository>()
 
     // ViewModels
     viewModelOf(::AppViewModel)

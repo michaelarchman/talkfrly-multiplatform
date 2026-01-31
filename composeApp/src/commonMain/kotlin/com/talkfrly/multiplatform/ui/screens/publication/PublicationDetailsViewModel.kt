@@ -2,7 +2,10 @@ package com.talkfrly.multiplatform.ui.screens.publication
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
+import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
+import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
+import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
 import com.talkfrly.multiplatform.domain.core.onSuccess
@@ -13,7 +16,9 @@ import kotlinx.coroutines.launch
 
 class PublicationDetailsViewModel(
     private val publicationId: String,
-    private val publicationRepository: PublicationRepository
+    private val publicationRepository: PublicationRepository,
+    private val commentRepository: CommentRepository,
+    private val threadRepository: ThreadRepository,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(PublicationDetailsState())
     val state: StateFlow<PublicationDetailsState> get() = _state
@@ -22,6 +27,26 @@ class PublicationDetailsViewModel(
         when (intent) {
             is PublicationDetailsIntent.GetPublicationDetails -> getPublicationDetails()
             is PublicationDetailsIntent.NavigateBack -> { }
+            is PublicationDetailsIntent.GetComments -> getComments()
+            is PublicationDetailsIntent.UpdateCommentFormContent ->
+                _state.update { it.copy(commentFormContent = intent.content) }
+            is PublicationDetailsIntent.UpdateCommentFormIsAnonymous ->
+                _state.update { it.copy(commentFormIsAnonymous = intent.isAnonymous) }
+            is PublicationDetailsIntent.SubmitComment -> submitComment()
+            is PublicationDetailsIntent.StartReply ->
+                _state.update { it.copy(replyingTo = intent.comment) }
+            is PublicationDetailsIntent.CancelReply ->
+                _state.update { it.copy(
+                    replyingTo = null,
+                    replyFormContent = "",
+                    replyFormIsAnonymous = false,
+                ) }
+            is PublicationDetailsIntent.UpdateReplyFormContent ->
+                _state.update { it.copy(replyFormContent = intent.content) }
+            is PublicationDetailsIntent.UpdateReplyFormIsAnonymous ->
+                _state.update { it.copy(replyFormIsAnonymous = intent.isAnonymous) }
+            is PublicationDetailsIntent.SubmitReply -> submitReply()
+            is PublicationDetailsIntent.JoinThread -> joinThread()
         }
     }
 
@@ -30,12 +55,124 @@ class PublicationDetailsViewModel(
         publicationRepository.getPublicationById(publicationId)
             .onSuccess { publication ->
                 _state.update { it.copy(publication = publication, errorMessage = null) }
+                getComments()
             }
             .onError { error ->
                 _state.update { it.copy(errorMessage = "Failed to load publication") }
             }
             .onFinally {
                 stopLoading()
+            }
+    }
+
+    private fun getComments() = viewModelScope.launch {
+        _state.update { it.copy(isLoadingComments = true) }
+        commentRepository.getComments(publicationId)
+            .onSuccess { commentList ->
+                _state.update { it.copy(
+                    comments = commentList.comments,
+                    isLoadingComments = false,
+                    commentsError = null,
+                ) }
+            }
+            .onError { error ->
+                _state.update { it.copy(
+                    isLoadingComments = false,
+                    commentsError = "Failed to load comments",
+                ) }
+            }
+    }
+
+    private fun submitComment() = viewModelScope.launch {
+        val content = _state.value.commentFormContent.trim()
+        if (content.isEmpty()) return@launch
+
+        _state.update { it.copy(isSubmittingComment = true) }
+
+        val request = CreateCommentRequest(
+            publicationId = publicationId,
+            content = content,
+            isAnonymous = _state.value.commentFormIsAnonymous,
+        )
+
+        commentRepository.createComment(request)
+            .onSuccess { newComment ->
+                _state.update { it.copy(
+                    comments = listOf(newComment) + it.comments,
+                    commentFormContent = "",
+                    commentFormIsAnonymous = false,
+                    isSubmittingComment = false,
+                ) }
+            }
+            .onError { error ->
+                _state.update { it.copy(
+                    isSubmittingComment = false,
+                    commentsError = "Failed to post comment",
+                ) }
+            }
+    }
+
+    private fun submitReply() = viewModelScope.launch {
+        val content = _state.value.replyFormContent.trim()
+        val parentComment = _state.value.replyingTo
+        if (content.isEmpty() || parentComment == null) return@launch
+
+        _state.update { it.copy(isSubmittingReply = true) }
+
+        val request = CreateCommentRequest(
+            publicationId = publicationId,
+            content = content,
+            isAnonymous = _state.value.replyFormIsAnonymous,
+            parentCommentId = parentComment.id,
+        )
+
+        commentRepository.createComment(request)
+            .onSuccess { newReply ->
+                _state.update { state ->
+                    val updatedComments = state.comments.map { comment ->
+                        if (comment.id == parentComment.id) {
+                            comment.copy(replies = comment.replies + newReply)
+                        } else comment
+                    }
+                    state.copy(
+                        comments = updatedComments,
+                        replyingTo = null,
+                        replyFormContent = "",
+                        replyFormIsAnonymous = false,
+                        isSubmittingReply = false,
+                    )
+                }
+            }
+            .onError { error ->
+                _state.update { it.copy(
+                    isSubmittingReply = false,
+                    commentsError = "Failed to post reply",
+                ) }
+            }
+    }
+
+    private fun joinThread() = viewModelScope.launch {
+        val publication = _state.value.publication ?: return@launch
+        val threadId = publication.threadId ?: return@launch
+
+        _state.update { it.copy(isJoiningThread = true) }
+
+        threadRepository.joinThread(threadId)
+            .onSuccess {
+                publicationRepository.getPublicationById(publicationId)
+                    .onSuccess { updatedPublication ->
+                        _state.update { it.copy(
+                            publication = updatedPublication,
+                            isJoiningThread = false,
+                        ) }
+                        getComments()
+                    }
+            }
+            .onError { error ->
+                _state.update { it.copy(
+                    isJoiningThread = false,
+                    commentsError = "Failed to join thread",
+                ) }
             }
     }
 }

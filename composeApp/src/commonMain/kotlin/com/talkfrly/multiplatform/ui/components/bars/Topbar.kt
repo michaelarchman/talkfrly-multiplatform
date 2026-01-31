@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.compontents.bars
+package com.talkfrly.multiplatform.ui.components.bars
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
