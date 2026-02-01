@@ -64,6 +64,7 @@ class PublicationDetailsViewModel(
             }
             .onError { error ->
                 _state.update { it.copy(errorMessage = "Failed to load publication") }
+                println(error)
             }
             .onFinally {
                 stopLoading()
@@ -85,6 +86,7 @@ class PublicationDetailsViewModel(
                     isLoadingComments = false,
                     commentsError = "Failed to load comments",
                 ) }
+                println(error)
             }
     }
 
@@ -114,6 +116,7 @@ class PublicationDetailsViewModel(
                     isSubmittingComment = false,
                     commentsError = "Failed to post comment",
                 ) }
+                println(error)
             }
     }
 
@@ -153,6 +156,7 @@ class PublicationDetailsViewModel(
                     isSubmittingReply = false,
                     commentsError = "Failed to post reply",
                 ) }
+                println(error)
             }
     }
 
@@ -178,6 +182,7 @@ class PublicationDetailsViewModel(
                     isJoiningThread = false,
                     commentsError = "Failed to join thread",
                 ) }
+                println(error)
             }
     }
 }

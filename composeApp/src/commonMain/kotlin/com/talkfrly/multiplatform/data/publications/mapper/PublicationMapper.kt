@@ -1,19 +1,18 @@
 package com.talkfrly.multiplatform.data.publications.mapper
 
 import com.talkfrly.multiplatform.data.publications.dto.CreatePublicationRequestDto
-import com.talkfrly.multiplatform.data.publications.dto.PublicationDto
-import com.talkfrly.multiplatform.data.publications.dto.UserSummaryDto
 import com.talkfrly.multiplatform.data.publications.dto.CriterionSummaryDto
-import com.talkfrly.multiplatform.data.publications.dto.PublicationListResponseDto
+import com.talkfrly.multiplatform.data.publications.dto.PublicationDto
 import com.talkfrly.multiplatform.data.publications.dto.PublicationFilterDto
+import com.talkfrly.multiplatform.data.publications.dto.PublicationListResponseDto
+import com.talkfrly.multiplatform.data.publications.dto.UserSummaryDto
 import com.talkfrly.multiplatform.domain.publication.CreatePublicationRequest
-import com.talkfrly.multiplatform.domain.publication.Publication
-import com.talkfrly.multiplatform.domain.publication.PublicationType
-import com.talkfrly.multiplatform.domain.publication.UserSummary
 import com.talkfrly.multiplatform.domain.publication.CriterionSummary
 import com.talkfrly.multiplatform.domain.publication.ModuleType
+import com.talkfrly.multiplatform.domain.publication.Publication
 import com.talkfrly.multiplatform.domain.publication.PublicationFilter
 import com.talkfrly.multiplatform.domain.publication.PublicationList
+import com.talkfrly.multiplatform.domain.publication.UserSummary
 
 fun PublicationDto.toDomain(): Publication = Publication(
     id = id,

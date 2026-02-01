@@ -25,7 +25,7 @@ fun AppNavHost(
     navController: NavHostController,
     sessionViewModel: SessionViewModel,
 ) {
-    val state by sessionViewModel.state.collectAsState()
+//    val state by sessionViewModel.state.collectAsState()
 
     NavHost(
         navController = navController,

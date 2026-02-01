@@ -96,17 +96,17 @@ data class PublicationListResponseDto(
     @SerialName("limit") val limit: Int,
 )
 
-@Serializable
-data class UpdatePublicationRequestDto(
-    @SerialName("content") val content: String,
-    @SerialName("tags") val tags: List<String>? = null,
-    @SerialName("image_urls") val imageUrls: List<String>? = null,
-)
-
-@Serializable
-data class CreateRatingRequestDto(
-    @SerialName("ratings") val ratings: List<CriterionRatingInputDto>,
-)
+//@Serializable
+//data class UpdatePublicationRequestDto(
+//    @SerialName("content") val content: String,
+//    @SerialName("tags") val tags: List<String>? = null,
+//    @SerialName("image_urls") val imageUrls: List<String>? = null,
+//)
+//
+//@Serializable
+//data class CreateRatingRequestDto(
+//    @SerialName("ratings") val ratings: List<CriterionRatingInputDto>,
+//)
 
 @Serializable
 data class CriterionRatingInputDto(

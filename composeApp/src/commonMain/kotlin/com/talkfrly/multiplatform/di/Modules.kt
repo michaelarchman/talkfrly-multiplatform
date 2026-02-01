@@ -3,13 +3,13 @@ package com.talkfrly.multiplatform.di
 import com.talkfrly.multiplatform.AppViewModel
 import com.talkfrly.multiplatform.data.auth.api.AuthApi
 import com.talkfrly.multiplatform.data.auth.api.AuthApiImpl
+import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
+import com.talkfrly.multiplatform.data.auth.repository.AuthRepositoryImpl
 import com.talkfrly.multiplatform.data.comments.api.CommentApi
 import com.talkfrly.multiplatform.data.comments.api.CommentApiImpl
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepositoryImpl
 import com.talkfrly.multiplatform.data.core.HttpClientFactory
-import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
-import com.talkfrly.multiplatform.data.auth.repository.AuthRepositoryImpl
 import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.data.publications.api.PublicationApi
 import com.talkfrly.multiplatform.data.publications.api.PublicationApiImpl
@@ -29,7 +29,6 @@ import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module

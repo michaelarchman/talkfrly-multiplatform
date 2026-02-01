@@ -22,11 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.talkfrly.multiplatform.ui.components.bars.BottomBarInput
 import com.talkfrly.multiplatform.ui.components.comments.CommentForm
 import com.talkfrly.multiplatform.ui.components.comments.CommentFormState
 import com.talkfrly.multiplatform.ui.components.comments.CommentList
 import com.talkfrly.multiplatform.ui.components.comments.ThreadJoinPrompt
-import com.talkfrly.multiplatform.ui.components.bars.BottomBarInput
 import com.talkfrly.multiplatform.ui.components.publications.PublicationCard
 import com.talkfrly.multiplatform.ui.components.publications.PublicationViewMode
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
