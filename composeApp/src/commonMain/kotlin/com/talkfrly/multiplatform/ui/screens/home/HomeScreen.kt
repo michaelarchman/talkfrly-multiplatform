@@ -108,7 +108,7 @@ private fun HomeScreen(
                         ) {
                             Icon(
                                 imageVector = vectorResource(Res.drawable.add),
-                                contentDescription = "Dodaj publikację",
+                                contentDescription = "Create publication",
                             )
                         }
                         IconButton(

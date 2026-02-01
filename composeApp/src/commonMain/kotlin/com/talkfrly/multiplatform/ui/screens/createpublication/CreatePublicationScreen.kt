@@ -352,7 +352,7 @@ private fun GeneralPublicationForm(
         TextField(
             value = state.title,
             onValueChange = { onIntent(CreatePublicationIntent.SetTitle(it)) },
-            label = { Text("Tytuł (optional)") },
+            label = { Text("Title (optional)") },
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = LocalTalkfrlyColors.current.surface,
@@ -373,7 +373,7 @@ private fun GeneralPublicationForm(
             TextField(
                 value = state.content,
                 onValueChange = { onIntent(CreatePublicationIntent.SetContent(it)) },
-                label = { Text("Treść") },
+                label = { Text("Content") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
