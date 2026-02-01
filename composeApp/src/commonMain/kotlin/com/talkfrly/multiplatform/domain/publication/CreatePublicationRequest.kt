@@ -6,4 +6,5 @@ data class CreatePublicationRequest(
     val publicationType: PublicationType,
     val threadId: String? = null,
     val isAnonymous: Boolean = false,
+    val imageUrls: List<String> = emptyList(),
 )

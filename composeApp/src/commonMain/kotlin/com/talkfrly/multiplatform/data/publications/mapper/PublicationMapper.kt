@@ -94,4 +94,5 @@ fun CreatePublicationRequest.toDto(): CreatePublicationRequestDto = CreatePublic
     publicationType = publicationType.name.uppercase(),
     threadId = threadId,
     isAnonymous = isAnonymous,
+    imageUrls = imageUrls,
 )

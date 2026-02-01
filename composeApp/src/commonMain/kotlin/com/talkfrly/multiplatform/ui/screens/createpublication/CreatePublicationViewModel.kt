@@ -3,6 +3,7 @@ package com.talkfrly.multiplatform.ui.screens.createpublication
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
+import com.talkfrly.multiplatform.data.uploads.repository.UploadRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onSuccess
 import com.talkfrly.multiplatform.domain.publication.CreatePublicationRequest
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class CreatePublicationViewModel(
     private val publicationRepository: PublicationRepository,
+    private val uploadRepository: UploadRepository,
 ) : BaseViewModel() {
 
     private val _state = MutableStateFlow(CreatePublicationState())
@@ -39,6 +41,7 @@ class CreatePublicationViewModel(
             is CreatePublicationIntent.OpenGallery -> {}
             is CreatePublicationIntent.AddImages -> addImages(intent.uris)
             is CreatePublicationIntent.RemoveImage -> removeImage(intent.uri)
+            is CreatePublicationIntent.RetryImage -> retryImage(intent.uri)
             is CreatePublicationIntent.SetTagInput -> setTagInput(intent.input)
             is CreatePublicationIntent.AddTag -> addTag(intent.tag)
             is CreatePublicationIntent.RemoveTag -> removeTag(intent.tag)
@@ -49,7 +52,28 @@ class CreatePublicationViewModel(
 
     private fun addImages(uris: List<String>) {
         if (uris.isEmpty()) return
-        _state.update { it.copy(imageUris = it.imageUris + uris) }
+        _state.update { state ->
+            val remainingSlots = 4 - state.imageUris.size
+            if (remainingSlots <= 0) {
+                return@update state.copy(error = "You can upload up to 4 photos")
+            }
+            val newUris = uris.filterNot { state.imageUris.contains(it) }
+                .take(remainingSlots)
+            val statusUpdates = newUris.associateWith { ImageUploadStatus.PENDING }
+            state.copy(
+                imageUris = state.imageUris + newUris,
+                imageUploadStatus = state.imageUploadStatus + statusUpdates,
+                imageUploadErrors = state.imageUploadErrors - newUris.toSet(),
+                uploadedImageUrls = state.uploadedImageUrls - newUris.toSet(),
+                error = null,
+            )
+        }
+        val urisToUpload = _state.value.imageUploadStatus
+            .filter { it.value == ImageUploadStatus.PENDING }
+            .keys
+        urisToUpload.forEach { uri ->
+            uploadImage(uri)
+        }
     }
 
     private fun setType(type: com.talkfrly.multiplatform.domain.publication.PublicationType) {
@@ -99,7 +123,46 @@ class CreatePublicationViewModel(
     }
 
     private fun removeImage(uri: String) {
-        _state.update { it.copy(imageUris = it.imageUris.filterNot { value -> value == uri }) }
+        _state.update {
+            it.copy(
+                imageUris = it.imageUris.filterNot { value -> value == uri },
+                imageUploadStatus = it.imageUploadStatus - uri,
+                imageUploadErrors = it.imageUploadErrors - uri,
+                uploadedImageUrls = it.uploadedImageUrls - uri,
+            )
+        }
+    }
+
+    private fun retryImage(uri: String) {
+        if (_state.value.imageUris.contains(uri)) {
+            uploadImage(uri)
+        }
+    }
+
+    private fun uploadImage(uri: String) = viewModelScope.launch {
+        _state.update {
+            it.copy(
+                imageUploadStatus = it.imageUploadStatus + (uri to ImageUploadStatus.UPLOADING),
+                imageUploadErrors = it.imageUploadErrors - uri,
+            )
+        }
+        uploadRepository.uploadImage(uri)
+            .onSuccess { uploadedUrl ->
+                _state.update {
+                    it.copy(
+                        imageUploadStatus = it.imageUploadStatus + (uri to ImageUploadStatus.SUCCESS),
+                        uploadedImageUrls = it.uploadedImageUrls + (uri to uploadedUrl),
+                    )
+                }
+            }
+            .onError { error ->
+                _state.update {
+                    it.copy(
+                        imageUploadStatus = it.imageUploadStatus + (uri to ImageUploadStatus.ERROR),
+                        imageUploadErrors = it.imageUploadErrors + (uri to (error.message ?: "Upload failed")),
+                    )
+                }
+            }
     }
 
     private fun submit() = viewModelScope.launch {
@@ -118,18 +181,21 @@ class CreatePublicationViewModel(
 
         _state.update { it.copy(isSubmitting = true, error = null) }
 
+        val imageUrls = currentState.imageUris.mapNotNull { currentState.uploadedImageUrls[it] }
+
         val request = CreatePublicationRequest(
             title = currentState.title.ifBlank { content.take(50) },
             content = content,
             publicationType = currentState.selectedType,
             threadId = currentState.threadId,
             isAnonymous = currentState.isAnonymous,
+            imageUrls = imageUrls,
         )
 
         publicationRepository.createPublication(request)
             .onSuccess {
                 // Success handled in UI navigation
-                _state.update { it.copy(isSubmitting = false) }
+                _state.update { it.copy(isSubmitting = false, isSubmitted = true) }
             }
             .onError { error ->
                 _state.update {

@@ -19,6 +19,10 @@ import com.talkfrly.multiplatform.data.threads.api.ThreadApi
 import com.talkfrly.multiplatform.data.threads.api.ThreadApiImpl
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepositoryImpl
+import com.talkfrly.multiplatform.data.uploads.api.UploadApi
+import com.talkfrly.multiplatform.data.uploads.api.UploadApiImpl
+import com.talkfrly.multiplatform.data.uploads.repository.UploadRepository
+import com.talkfrly.multiplatform.data.uploads.repository.UploadRepositoryImpl
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationViewModel
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
@@ -42,12 +46,14 @@ val sharedModule: Module = module {
     singleOf(::PublicationApiImpl).bind<PublicationApi>()
     singleOf(::CommentApiImpl).bind<CommentApi>()
     singleOf(::ThreadApiImpl).bind<ThreadApi>()
+    singleOf(::UploadApiImpl).bind<UploadApi>()
 
     // Repositories
     singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
     singleOf(::PublicationRepositoryImpl).bind<PublicationRepository>()
     singleOf(::CommentRepositoryImpl).bind<CommentRepository>()
     singleOf(::ThreadRepositoryImpl).bind<ThreadRepository>()
+    singleOf(::UploadRepositoryImpl).bind<UploadRepository>()
 
     // ViewModels
     viewModelOf(::AppViewModel)

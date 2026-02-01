@@ -1,6 +1,7 @@
 package com.talkfrly.multiplatform.data.uploads
 
 import android.net.Uri
+import android.provider.OpenableColumns
 import com.talkfrly.multiplatform.platform.internal.AndroidAppContext
 
 actual suspend fun readBytesFromUri(uri: String): ByteArray {

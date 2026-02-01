@@ -12,6 +12,7 @@ sealed class CreatePublicationIntent {
     data object OpenGallery : CreatePublicationIntent()
     data class AddImages(val uris: List<String>) : CreatePublicationIntent()
     data class RemoveImage(val uri: String) : CreatePublicationIntent()
+    data class RetryImage(val uri: String) : CreatePublicationIntent()
     data class SetTagInput(val input: String) : CreatePublicationIntent()
     data class AddTag(val tag: String) : CreatePublicationIntent()
     data class RemoveTag(val tag: String) : CreatePublicationIntent()

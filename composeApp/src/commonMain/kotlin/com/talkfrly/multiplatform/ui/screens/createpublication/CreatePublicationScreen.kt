@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.talkfrly.multiplatform.domain.publication.PublicationType
 import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
@@ -84,8 +85,7 @@ fun CreatePublicationScreenRoot(
             if (intent is CreatePublicationIntent.NavigateBack) {
                 navController.popBackStack()
             }
-            if (intent is CreatePublicationIntent.Submit && !state.isSubmitting && state.error == null) {
-                // Wait a bit to ensure the API call succeeds before navigating
+            if (state.isSubmitted) {
                 navController.popBackStack()
             }
         },
@@ -249,28 +249,45 @@ private fun CreatePublicationScreen(
                     )
                 }
 
-                // Submit button
-                Button(
-                    onClick = { onIntent(CreatePublicationIntent.Submit) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !state.isSubmitting && state.content.isNotBlank(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = LocalTalkfrlyColors.current.primary
-                    )
-                ) {
-                    if (state.isSubmitting) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            color = Color.White
+                val hasUploadsInProgress = state.imageUris.any {
+                    state.imageUploadStatus[it] == ImageUploadStatus.UPLOADING ||
+                        state.imageUploadStatus[it] == ImageUploadStatus.PENDING
+                }
+                val hasUploadErrors = state.imageUris.any {
+                    state.imageUploadStatus[it] == ImageUploadStatus.ERROR
+                }
+
+                if (!hasUploadsInProgress) {
+                    // Submit button
+                    Button(
+                        onClick = { onIntent(CreatePublicationIntent.Submit) },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !state.isSubmitting && state.content.isNotBlank() && !hasUploadErrors,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = LocalTalkfrlyColors.current.primary
                         )
-                    } else {
-                        Text(
-                            text = when (state.visibility) {
-                                VisibilityOption.PRIVATE -> "Publish Private"
-                                else -> "Publish Public"
-                            }
-                        )
+                    ) {
+                        if (state.isSubmitting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White
+                            )
+                        } else {
+                            Text(
+                                text = when (state.visibility) {
+                                    VisibilityOption.PRIVATE -> "Publish Private"
+                                    else -> "Publish Public"
+                                }
+                            )
+                        }
                     }
+                } else {
+                    Text(
+                        text = "Uploading photos…",
+                        fontSize = 12.sp,
+                        color = LocalTalkfrlyColors.current.bodyMuted,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
 
                 // Footer
@@ -384,16 +401,17 @@ private fun GeneralPublicationForm(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val canAddMorePhotos = state.imageUris.size < 4
                 PhotoActionButton(
                     label = "Camera",
                     icon = Res.drawable.add_a_photo,
-                    enabled = !state.isSubmitting,
+                    enabled = !state.isSubmitting && canAddMorePhotos,
                     onClick = onOpenCamera
                 )
                 PhotoActionButton(
                     label = "Gallery",
                     icon = Res.drawable.add_picture,
-                    enabled = !state.isSubmitting,
+                    enabled = !state.isSubmitting && canAddMorePhotos,
                     onClick = onOpenGallery
                 )
             }
@@ -405,10 +423,17 @@ private fun GeneralPublicationForm(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     state.imageUris.forEachIndexed { index, uri ->
+                        val status = state.imageUploadStatus[uri] ?: ImageUploadStatus.PENDING
+                        val thumbnail = state.uploadedImageUrls[uri] ?: uri
+                        val errorText = state.imageUploadErrors[uri]
                         ImageChip(
                             label = "Photo ${index + 1}",
+                            thumbnail = thumbnail,
+                            status = status,
+                            errorText = errorText,
                             enabled = !state.isSubmitting,
-                            onRemove = { onIntent(CreatePublicationIntent.RemoveImage(uri)) }
+                            onRemove = { onIntent(CreatePublicationIntent.RemoveImage(uri)) },
+                            onRetry = { onIntent(CreatePublicationIntent.RetryImage(uri)) }
                         )
                     }
                 }
@@ -658,34 +683,74 @@ private fun PhotoActionButton(
 @Composable
 private fun ImageChip(
     label: String,
+    thumbnail: String,
+    status: ImageUploadStatus,
+    errorText: String?,
     enabled: Boolean,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
+    onRetry: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(LocalTalkfrlyColors.current.primary.copy(alpha = 0.1f))
-            .padding(horizontal = 10.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            color = LocalTalkfrlyColors.current.body
-        )
-        Box(
+    Column {
+        Row(
             modifier = Modifier
-                .size(16.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .clickable(enabled = enabled) { onRemove() },
-            contentAlignment = Alignment.Center
+                .clip(RoundedCornerShape(16.dp))
+                .background(LocalTalkfrlyColors.current.primary.copy(alpha = 0.1f))
+                .padding(horizontal = 10.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
+            AsyncImage(
+                model = thumbnail,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+            )
             Text(
-                text = "×",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = LocalTalkfrlyColors.current.bodyMuted
+                text = label,
+                fontSize = 12.sp,
+                color = LocalTalkfrlyColors.current.body
+            )
+            when (status) {
+                ImageUploadStatus.UPLOADING -> Text(
+                    text = "Uploading",
+                    fontSize = 11.sp,
+                    color = LocalTalkfrlyColors.current.bodyMuted
+                )
+                ImageUploadStatus.SUCCESS -> Text(
+                    text = "Ready",
+                    fontSize = 11.sp,
+                    color = LocalTalkfrlyColors.current.primary
+                )
+                ImageUploadStatus.ERROR -> Text(
+                    text = "Failed",
+                    fontSize = 11.sp,
+                    color = Color.Red,
+                    modifier = Modifier.clickable(enabled = enabled) { onRetry() }
+                )
+                ImageUploadStatus.PENDING -> {}
+            }
+            Box(
+                modifier = Modifier
+                    .size(16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(enabled = enabled) { onRemove() },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "×",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = LocalTalkfrlyColors.current.bodyMuted
+                )
+            }
+        }
+        if (status == ImageUploadStatus.ERROR && !errorText.isNullOrBlank()) {
+            Text(
+                text = errorText,
+                fontSize = 11.sp,
+                color = Color.Red,
+                modifier = Modifier.padding(start = 8.dp, top = 2.dp)
             )
         }
     }
