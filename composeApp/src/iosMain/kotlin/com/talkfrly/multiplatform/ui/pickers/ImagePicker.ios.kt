@@ -2,18 +2,14 @@ package com.talkfrly.multiplatform.ui.pickers
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import platform.PhotosUI.PHPickerViewControllerDelegateProtocol
-import platform.UIKit.UIImagePickerControllerDelegateProtocol
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import platform.Foundation.NSUUID
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.writeToFile
-import platform.UIKit.PHPickerConfiguration
-import platform.UIKit.PHPickerFilter
-import platform.UIKit.PHPickerResult
-import platform.UIKit.PHPickerViewController
-import platform.UIKit.PHPickerViewControllerDelegateProtocol
+import platform.PhotosUI.PHPickerConfiguration
+import platform.PhotosUI.PHPickerFilter
+import platform.PhotosUI.PHPickerResult
+import platform.PhotosUI.PHPickerViewController
+import platform.PhotosUI.PHPickerViewControllerDelegateProtocol
 import platform.UIKit.UIApplication
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageJPEGRepresentation
@@ -54,13 +50,13 @@ private class IosImagePickerController : ImagePickerController {
                 val result = didFinishPicking.firstOrNull() as? PHPickerResult ?: return
                 val provider = result.itemProvider
 
-                if (provider.canLoadObjectOfClass(UIImage)) {
-                    provider.loadObjectOfClass(UIImage) { obj, _ ->
-                        val image = obj as? UIImage ?: return@loadObjectOfClass
-                        val uri = saveImageToTemp(image)
-                        if (uri != null) {
-                            onResultCallback(ImagePickerResult(listOf(uri)))
-                        }
+                provider.loadDataRepresentationForTypeIdentifier("public.image") { data, _ ->
+                    if (data == null) return@loadDataRepresentationForTypeIdentifier
+                    val fileName = "talkfrly_${NSUUID().UUIDString}.jpg"
+                    val path = NSTemporaryDirectory() + fileName
+                    val success = data.writeToFile(path, true)
+                    if (success) {
+                        onResultCallback(ImagePickerResult(listOf("file://$path")))
                     }
                 }
             }
@@ -113,8 +109,8 @@ private class IosImagePickerController : ImagePickerController {
     }
 
     private fun topViewController(): UIViewController? {
-        val window: UIWindow? = UIApplication.sharedApplication.windows
-            .firstOrNull { it.isKeyWindow } as? UIWindow
+        val window: UIWindow? = UIApplication.sharedApplication.keyWindow
+            ?: UIApplication.sharedApplication.windows.firstOrNull() as? UIWindow
         var top = window?.rootViewController
         while (top?.presentedViewController != null) {
             top = top.presentedViewController

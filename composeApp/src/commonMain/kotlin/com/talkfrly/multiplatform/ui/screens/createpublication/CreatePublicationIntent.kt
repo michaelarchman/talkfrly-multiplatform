@@ -10,6 +10,7 @@ sealed class CreatePublicationIntent {
     data class SetVisibility(val visibility: VisibilityOption) : CreatePublicationIntent()
     data object OpenCamera : CreatePublicationIntent()
     data object OpenGallery : CreatePublicationIntent()
+    data class AddImages(val uris: List<String>) : CreatePublicationIntent()
     data class RemoveImage(val uri: String) : CreatePublicationIntent()
     data class SetTagInput(val input: String) : CreatePublicationIntent()
     data class AddTag(val tag: String) : CreatePublicationIntent()

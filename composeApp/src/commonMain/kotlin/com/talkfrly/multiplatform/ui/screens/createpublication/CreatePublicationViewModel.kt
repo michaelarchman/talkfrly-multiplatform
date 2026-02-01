@@ -37,6 +37,7 @@ class CreatePublicationViewModel(
             is CreatePublicationIntent.SetVisibility -> setVisibility(intent.visibility)
             is CreatePublicationIntent.OpenCamera -> {}
             is CreatePublicationIntent.OpenGallery -> {}
+            is CreatePublicationIntent.AddImages -> addImages(intent.uris)
             is CreatePublicationIntent.RemoveImage -> removeImage(intent.uri)
             is CreatePublicationIntent.SetTagInput -> setTagInput(intent.input)
             is CreatePublicationIntent.AddTag -> addTag(intent.tag)
@@ -44,6 +45,11 @@ class CreatePublicationViewModel(
             is CreatePublicationIntent.Submit -> submit()
             is CreatePublicationIntent.NavigateBack -> {} // Handled in UI
         }
+    }
+
+    private fun addImages(uris: List<String>) {
+        if (uris.isEmpty()) return
+        _state.update { it.copy(imageUris = it.imageUris + uris) }
     }
 
     private fun setType(type: com.talkfrly.multiplatform.domain.publication.PublicationType) {
