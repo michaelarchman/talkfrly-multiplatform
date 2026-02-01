@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.navigation.NavOptionsBuilder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.talkfrly.multiplatform.domain.publication.PublicationType
+import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.vectorResource
@@ -78,14 +80,20 @@ fun CreatePublicationScreenRoot(
         viewModel.initialize(threadId, threadName)
     }
 
+    LaunchedEffect(state.isSubmitted) {
+        if (state.isSubmitted) {
+            navController.navigate(Route.Home.id) {
+                popUpTo(Route.Home.id) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
+
     CreatePublicationScreen(
         state = state,
         onIntent = { intent ->
             viewModel.onIntent(intent)
             if (intent is CreatePublicationIntent.NavigateBack) {
-                navController.popBackStack()
-            }
-            if (state.isSubmitted) {
                 navController.popBackStack()
             }
         },
@@ -272,6 +280,8 @@ private fun CreatePublicationScreen(
                                 modifier = Modifier.size(20.dp),
                                 color = Color.White
                             )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Publishing…")
                         } else {
                             Text(
                                 text = when (state.visibility) {
@@ -282,12 +292,21 @@ private fun CreatePublicationScreen(
                         }
                     }
                 } else {
-                    Text(
-                        text = "Uploading photos…",
-                        fontSize = 12.sp,
-                        color = LocalTalkfrlyColors.current.bodyMuted,
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
-                    )
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            color = LocalTalkfrlyColors.current.bodyMuted
+                        )
+                        Text(
+                            text = "Uploading photos…",
+                            fontSize = 12.sp,
+                            color = LocalTalkfrlyColors.current.bodyMuted
+                        )
+                    }
                 }
 
                 // Footer
@@ -454,12 +473,16 @@ private fun GeneralPublicationForm(
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
                     unfocusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                    disabledContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
                     focusedTextColor = LocalTalkfrlyColors.current.body,
                     unfocusedTextColor = LocalTalkfrlyColors.current.body,
+                    disabledTextColor = LocalTalkfrlyColors.current.body,
                     focusedLabelColor = LocalTalkfrlyColors.current.body,
                     unfocusedLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                    disabledLabelColor = LocalTalkfrlyColors.current.bodyMuted,
                     unfocusedIndicatorColor = LocalTalkfrlyColors.current.primary20,
                     focusedIndicatorColor = LocalTalkfrlyColors.current.primary,
+                    disabledIndicatorColor = LocalTalkfrlyColors.current.primary20,
                     cursorColor = LocalTalkfrlyColors.current.surface,
                 ),
                 maxLines = 10,
