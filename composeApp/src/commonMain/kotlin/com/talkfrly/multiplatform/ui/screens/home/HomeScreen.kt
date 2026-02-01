@@ -44,13 +44,13 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
+import talkfrly_multiplatform.composeapp.generated.resources.add
 import talkfrly_multiplatform.composeapp.generated.resources.follow_the_signs
 import talkfrly_multiplatform.composeapp.generated.resources.gesture
 import talkfrly_multiplatform.composeapp.generated.resources.person
 import talkfrly_multiplatform.composeapp.generated.resources.speed_camera
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
-import talkfrly_multiplatform.composeapp.generated.resources.texture_add
 import talkfrly_multiplatform.composeapp.generated.resources.travel_explore
 
 @Composable
@@ -80,7 +80,6 @@ private fun HomeScreen(
     navController: NavController,
     onAction: (HomeIntent) -> Unit,
 ) {
-
     Scaffold (
         topBar = {
             TopAppBar(
@@ -103,6 +102,15 @@ private fun HomeScreen(
                 ),
                 actions = {
                     if (navController.currentBackStackEntry?.destination?.route == Route.Home.id) {
+                        IconButton(
+                            onClick = { navController.navigate(Route.CreatePublication()) },
+                            enabled = true,
+                        ) {
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.add),
+                                contentDescription = "Dodaj publikację",
+                            )
+                        }
                         IconButton(
                             onClick = { navController.navigate(Route.Account.id) },
                             enabled = true,

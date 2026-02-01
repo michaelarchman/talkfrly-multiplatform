@@ -25,8 +25,8 @@ data class PublicationDto(
     @SerialName("video_url") val videoUrl: String? = null,
     @SerialName("video_thumbnail") val videoThumbnail: String? = null,
     @SerialName("video_embed_url") val videoEmbedUrl: String? = null,
-    @SerialName("tags") val tags: List<String> = emptyList(),
-    @SerialName("languages") val languages: List<String> = emptyList(),
+    @SerialName("tags") val tags: List<String>? = null,
+    @SerialName("languages") val languages: List<String>? = null,
     @SerialName("criteria") val criteria: List<CriterionSummaryDto>? = null,
     @SerialName("pseudonym") val pseudonym: String? = null,
     @SerialName("avatar_url") val avatarUrl: String? = null,
@@ -62,7 +62,9 @@ data class CriterionInputDto(
 
 @Serializable
 data class CreatePublicationRequestDto(
+    @SerialName("title") val title: String,
     @SerialName("content") val content: String,
+    @SerialName("publication_type") val publicationType: String? = null,
     @SerialName("is_anonymous") val isAnonymous: Boolean? = null,
     @SerialName("is_private") val isPrivate: Boolean? = null,
     @SerialName("channel_id") val channelId: String? = null,

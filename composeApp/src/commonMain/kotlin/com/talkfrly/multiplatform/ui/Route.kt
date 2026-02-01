@@ -41,4 +41,12 @@ sealed interface Route {
         override val id = "PUBLICATION_DETAILS"
         override val title = "Publication"
     }
+
+    @Serializable data class CreatePublication(
+        val threadId: String? = null,
+        val threadName: String? = null
+    ): Route {
+        override val id = "CREATE_PUBLICATION"
+        override val title = "Create Publication"
+    }
 }

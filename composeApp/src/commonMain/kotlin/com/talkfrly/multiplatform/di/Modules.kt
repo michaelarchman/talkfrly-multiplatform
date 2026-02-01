@@ -20,6 +20,7 @@ import com.talkfrly.multiplatform.data.threads.api.ThreadApiImpl
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepositoryImpl
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
+import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationViewModel
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationDetailsViewModel
@@ -28,6 +29,7 @@ import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -56,8 +58,8 @@ val sharedModule: Module = module {
     viewModelOf(::VerifyEmailViewModel)
     viewModelOf(::HomeViewModel)
     viewModelOf(::AccountViewModel)
+    viewModelOf(::CreatePublicationViewModel)
     viewModelOf(::PublicationDetailsViewModel)
-
 }
 
 expect val platformModule: Module

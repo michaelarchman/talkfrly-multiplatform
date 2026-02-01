@@ -37,12 +37,14 @@ import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
 
 @Composable
 fun PublicationDetailsScreenRoot(
+    publicationId: String,
     viewModel: PublicationDetailsViewModel = koinViewModel(),
     navController: NavController,
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(publicationId) {
+        viewModel.initialize(publicationId)
         viewModel.onIntent(PublicationDetailsIntent.GetPublicationDetails)
     }
 

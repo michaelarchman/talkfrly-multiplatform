@@ -15,13 +15,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PublicationDetailsViewModel(
-    private val publicationId: String,
     private val publicationRepository: PublicationRepository,
     private val commentRepository: CommentRepository,
     private val threadRepository: ThreadRepository,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(PublicationDetailsState())
     val state: StateFlow<PublicationDetailsState> get() = _state
+
+    private var publicationId: String = ""
+
+    fun initialize(publicationId: String) {
+        this.publicationId = publicationId
+    }
 
     fun onIntent(intent: PublicationDetailsIntent) {
         when (intent) {

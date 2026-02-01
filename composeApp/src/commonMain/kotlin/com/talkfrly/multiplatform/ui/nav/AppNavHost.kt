@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.screens.account.AccountScreenRoot
+import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationScreenRoot
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationDetailsScreenRoot
@@ -18,7 +19,6 @@ import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun AppNavHost(
@@ -70,8 +70,18 @@ fun AppNavHost(
         composable<Route.PublicationDetails> { backStackEntry ->
             val route = backStackEntry.toRoute<Route.PublicationDetails>()
             PublicationDetailsScreenRoot(
-                viewModel = koinViewModel { parametersOf(route.publicationId) },
+                publicationId = route.publicationId,
+                viewModel = koinViewModel(),
                 navController = navController,
+            )
+        }
+        composable<Route.CreatePublication> { backStackEntry ->
+            val route = backStackEntry.toRoute<Route.CreatePublication>()
+            CreatePublicationScreenRoot(
+                navController = navController,
+                threadId = route.threadId,
+                threadName = route.threadName,
+                viewModel = koinViewModel()
             )
         }
     }

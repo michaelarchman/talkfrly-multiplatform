@@ -47,6 +47,5 @@ class HomeViewModel(
         }.onFinally {
             stopLoading()
         }
-
     }
 }
