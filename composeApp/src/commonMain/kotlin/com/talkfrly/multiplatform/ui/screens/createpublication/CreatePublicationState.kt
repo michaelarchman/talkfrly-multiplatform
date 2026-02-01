@@ -14,6 +14,7 @@ data class CreatePublicationState(
     val content: String = "",
     val isAnonymous: Boolean = false,
     val visibility: VisibilityOption = VisibilityOption.PUBLIC,
+    val imageUris: List<String> = emptyList(),
     val tags: List<String> = emptyList(),
     val tagInput: String = "",
     val isSubmitting: Boolean = false,

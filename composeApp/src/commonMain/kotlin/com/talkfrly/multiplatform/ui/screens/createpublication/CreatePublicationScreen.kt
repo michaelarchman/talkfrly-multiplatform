@@ -53,6 +53,8 @@ import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
+import talkfrly_multiplatform.composeapp.generated.resources.add_a_photo
+import talkfrly_multiplatform.composeapp.generated.resources.add_picture
 import talkfrly_multiplatform.composeapp.generated.resources.campaign
 import talkfrly_multiplatform.composeapp.generated.resources.chat_paste_go
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
@@ -318,15 +320,29 @@ private fun GeneralPublicationForm(
 
             // Visibility options
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                VisibilityRadioOption(
-                    label = "Public",
-                    description = "Visible to everyone",
-                    isSelected = state.visibility == VisibilityOption.PUBLIC,
-                    enabled = !state.isSubmitting,
-                    onClick = { onIntent(CreatePublicationIntent.SetVisibility(VisibilityOption.PUBLIC)) }
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    VisibilityRadioOption(
+                        label = "Public",
+                        description = "Visible to everyone",
+                        isSelected = state.visibility == VisibilityOption.PUBLIC,
+                        enabled = !state.isSubmitting,
+                        onClick = { onIntent(CreatePublicationIntent.SetVisibility(VisibilityOption.PUBLIC)) },
+                        modifier = Modifier.weight(1f)
+                    )
+                    VisibilityRadioOption(
+                        label = "Private",
+                        description = "Only visible to you",
+                        isSelected = state.visibility == VisibilityOption.PRIVATE,
+                        enabled = !state.isSubmitting,
+                        onClick = { onIntent(CreatePublicationIntent.SetVisibility(VisibilityOption.PRIVATE)) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
                 if (state.inThreadContext) {
                     VisibilityRadioOption(
@@ -337,34 +353,53 @@ private fun GeneralPublicationForm(
                         onClick = { onIntent(CreatePublicationIntent.SetVisibility(VisibilityOption.THREAD_ONLY)) }
                     )
                 }
-
-                VisibilityRadioOption(
-                    label = "Private",
-                    description = "Only visible to you",
-                    isSelected = state.visibility == VisibilityOption.PRIVATE,
-                    enabled = !state.isSubmitting,
-                    onClick = { onIntent(CreatePublicationIntent.SetVisibility(VisibilityOption.PRIVATE)) }
-                )
             }
         }
 
-        // Title input
-        TextField(
-            value = state.title,
-            onValueChange = { onIntent(CreatePublicationIntent.SetTitle(it)) },
-            label = { Text("Title (optional)") },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = LocalTalkfrlyColors.current.surface,
-                unfocusedContainerColor = LocalTalkfrlyColors.current.surface,
-                focusedTextColor = LocalTalkfrlyColors.current.body,
-                unfocusedTextColor = LocalTalkfrlyColors.current.body,
-                focusedLabelColor = LocalTalkfrlyColors.current.primary,
-                unfocusedLabelColor = LocalTalkfrlyColors.current.bodyMuted,
-            ),
-            singleLine = true,
-            enabled = !state.isSubmitting
-        )
+        // Photos
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Photos",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = LocalTalkfrlyColors.current.body
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PhotoActionButton(
+                    label = "Camera",
+                    icon = Res.drawable.add_a_photo,
+                    enabled = !state.isSubmitting,
+                    onClick = { onIntent(CreatePublicationIntent.OpenCamera) }
+                )
+                PhotoActionButton(
+                    label = "Gallery",
+                    icon = Res.drawable.add_picture,
+                    enabled = !state.isSubmitting,
+                    onClick = { onIntent(CreatePublicationIntent.OpenGallery) }
+                )
+            }
+
+            if (state.imageUris.isNotEmpty()) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    state.imageUris.forEachIndexed { index, uri ->
+                        ImageChip(
+                            label = "Photo ${index + 1}",
+                            enabled = !state.isSubmitting,
+                            onRemove = { onIntent(CreatePublicationIntent.RemoveImage(uri)) }
+                        )
+                    }
+                }
+            }
+        }
 
         // Content input with character counter
         Column(
@@ -373,17 +408,20 @@ private fun GeneralPublicationForm(
             TextField(
                 value = state.content,
                 onValueChange = { onIntent(CreatePublicationIntent.SetContent(it)) },
-                label = { Text("Content") },
+                label = { Text("Write something") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = LocalTalkfrlyColors.current.surface,
-                    unfocusedContainerColor = LocalTalkfrlyColors.current.surface,
+                    focusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                    unfocusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
                     focusedTextColor = LocalTalkfrlyColors.current.body,
                     unfocusedTextColor = LocalTalkfrlyColors.current.body,
-                    focusedLabelColor = LocalTalkfrlyColors.current.primary,
+                    focusedLabelColor = LocalTalkfrlyColors.current.body,
                     unfocusedLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                    unfocusedIndicatorColor = LocalTalkfrlyColors.current.primary20,
+                    focusedIndicatorColor = LocalTalkfrlyColors.current.primary,
+                    cursorColor = LocalTalkfrlyColors.current.surface,
                 ),
                 maxLines = 10,
                 enabled = !state.isSubmitting
@@ -414,11 +452,12 @@ private fun VisibilityRadioOption(
     description: String,
     isSelected: Boolean,
     enabled: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .clickable(enabled = enabled) { onClick() }
@@ -567,6 +606,70 @@ private fun TagChip(
             Text(
                 text = "×",
                 fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = LocalTalkfrlyColors.current.bodyMuted
+            )
+        }
+    }
+}
+
+@Composable
+private fun PhotoActionButton(
+    label: String,
+    icon: org.jetbrains.compose.resources.DrawableResource,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(enabled = enabled) { onClick() }
+            .padding(horizontal = 8.dp, vertical = 6.dp)
+    ) {
+        Icon(
+            imageVector = vectorResource(icon),
+            contentDescription = label,
+            tint = LocalTalkfrlyColors.current.body
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = label,
+            fontSize = 13.sp,
+            color = LocalTalkfrlyColors.current.body
+        )
+    }
+}
+
+@Composable
+private fun ImageChip(
+    label: String,
+    enabled: Boolean,
+    onRemove: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(LocalTalkfrlyColors.current.primary.copy(alpha = 0.1f))
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            color = LocalTalkfrlyColors.current.body
+        )
+        Box(
+            modifier = Modifier
+                .size(16.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .clickable(enabled = enabled) { onRemove() },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "×",
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = LocalTalkfrlyColors.current.bodyMuted
             )

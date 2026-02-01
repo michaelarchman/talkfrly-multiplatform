@@ -35,6 +35,9 @@ class CreatePublicationViewModel(
             is CreatePublicationIntent.SetContent -> setContent(intent.content)
             is CreatePublicationIntent.SetAnonymous -> setAnonymous(intent.isAnonymous)
             is CreatePublicationIntent.SetVisibility -> setVisibility(intent.visibility)
+            is CreatePublicationIntent.OpenCamera -> {}
+            is CreatePublicationIntent.OpenGallery -> {}
+            is CreatePublicationIntent.RemoveImage -> removeImage(intent.uri)
             is CreatePublicationIntent.SetTagInput -> setTagInput(intent.input)
             is CreatePublicationIntent.AddTag -> addTag(intent.tag)
             is CreatePublicationIntent.RemoveTag -> removeTag(intent.tag)
@@ -87,6 +90,10 @@ class CreatePublicationViewModel(
         _state.update {
             it.copy(tags = it.tags.filter { t -> !t.equals(tag, ignoreCase = true) })
         }
+    }
+
+    private fun removeImage(uri: String) {
+        _state.update { it.copy(imageUris = it.imageUris.filterNot { value -> value == uri }) }
     }
 
     private fun submit() = viewModelScope.launch {
