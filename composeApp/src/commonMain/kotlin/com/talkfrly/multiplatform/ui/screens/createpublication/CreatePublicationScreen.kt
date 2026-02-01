@@ -38,6 +38,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.talkfrly.multiplatform.domain.publication.PublicationType
+import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -98,6 +100,14 @@ private fun CreatePublicationScreen(
     onIntent: (CreatePublicationIntent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
+    val picker = rememberImagePickerController()
+
+    LaunchedEffect(Unit) {
+        picker.onResult { result ->
+            onIntent(CreatePublicationIntent.AddImages(result.uriPaths))
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -215,7 +225,9 @@ private fun CreatePublicationScreen(
                     PublicationType.GENERAL -> {
                         GeneralPublicationForm(
                             state = state,
-                            onIntent = onIntent
+                            onIntent = onIntent,
+                            onOpenCamera = { picker.openCamera() },
+                            onOpenGallery = { picker.openGallery() }
                         )
                     }
                     else -> {
@@ -275,7 +287,9 @@ private fun CreatePublicationScreen(
 @Composable
 private fun GeneralPublicationForm(
     state: CreatePublicationState,
-    onIntent: (CreatePublicationIntent) -> Unit
+    onIntent: (CreatePublicationIntent) -> Unit,
+    onOpenCamera: () -> Unit,
+    onOpenGallery: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -374,13 +388,13 @@ private fun GeneralPublicationForm(
                     label = "Camera",
                     icon = Res.drawable.add_a_photo,
                     enabled = !state.isSubmitting,
-                    onClick = { onIntent(CreatePublicationIntent.OpenCamera) }
+                    onClick = onOpenCamera
                 )
                 PhotoActionButton(
                     label = "Gallery",
                     icon = Res.drawable.add_picture,
                     enabled = !state.isSubmitting,
-                    onClick = { onIntent(CreatePublicationIntent.OpenGallery) }
+                    onClick = onOpenGallery
                 )
             }
 

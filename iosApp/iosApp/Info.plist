@@ -4,5 +4,9 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>We use the camera to add photos to your publication.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We use your photo library to attach images to your publication.</string>
 </dict>
 </plist>
