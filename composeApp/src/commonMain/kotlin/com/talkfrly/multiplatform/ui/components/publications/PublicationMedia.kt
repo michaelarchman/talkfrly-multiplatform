@@ -42,7 +42,6 @@ fun PublicationMedia(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .height(200.dp)
                 .background(
                     color = colors.backgroundLighter,
                     shape = RoundedCornerShape(8.dp),
@@ -54,10 +53,8 @@ fun PublicationMedia(
                     model = getYouTubeThumbnail(youtubeVideoId)
                 ),
                 contentDescription = "YouTube video thumbnail",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.FillWidth,
             )
 
             // Play icon overlay
@@ -101,7 +98,6 @@ fun PublicationMedia(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .height(200.dp)
                 .background(
                     color = colors.backgroundLighter,
                     shape = RoundedCornerShape(8.dp),
@@ -110,10 +106,8 @@ fun PublicationMedia(
             Image(
                 painter = rememberAsyncImagePainter(model = publication.imageUrls.first()),
                 contentDescription = "Publication image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.FillWidth,
             )
 
             // Image count badge if multiple images
