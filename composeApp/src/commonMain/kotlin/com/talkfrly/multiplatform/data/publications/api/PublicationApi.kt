@@ -14,6 +14,7 @@ interface PublicationApi {
     suspend fun getPublications(page: Int, limit: Int, filter: PublicationFilterDto?): DataResult<PublicationListResponseDto, DataError.Remote>
     suspend fun getPublicationById(id: String): DataResult<PublicationDto, DataError.Remote>
     suspend fun createPublication(request: CreatePublicationRequestDto): DataResult<PublicationDto, DataError.Remote>
+    suspend fun deletePublication(id: String): DataResult<Unit, DataError.Remote>
 }
 
 class PublicationApiImpl(
@@ -53,6 +54,14 @@ class PublicationApiImpl(
             httpClient = httpClient,
             urlString = "/publications",
             body = request,
+        )
+    }
+
+    override suspend fun deletePublication(id: String): DataResult<Unit, DataError.Remote> {
+        return makeRequest(
+            httpMethod = HttpMethod.Delete,
+            httpClient = httpClient,
+            urlString = "/publications/$id",
         )
     }
 }

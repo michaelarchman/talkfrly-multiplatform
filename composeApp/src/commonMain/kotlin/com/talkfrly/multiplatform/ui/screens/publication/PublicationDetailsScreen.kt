@@ -1,14 +1,21 @@
 package com.talkfrly.multiplatform.ui.screens.publication
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -34,6 +41,10 @@ import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
+import talkfrly_multiplatform.composeapp.generated.resources.delete
+import talkfrly_multiplatform.composeapp.generated.resources.edit_note
+import talkfrly_multiplatform.composeapp.generated.resources.more_vert
+import talkfrly_multiplatform.composeapp.generated.resources.report
 
 @Composable
 fun PublicationDetailsScreenRoot(
@@ -81,6 +92,93 @@ private fun PublicationDetailsScreen(
                             contentDescription = "Back",
                             tint = LocalTalkfrlyColors.current.body,
                         )
+                    }
+                },
+                actions = {
+                    if (state.publication != null) {
+                        val isOwnPost = state.publication.userId == state.currentUserId
+                        val canModify = isOwnPost || state.isAdmin
+
+                        Box {
+                            IconButton(onClick = { onAction(PublicationDetailsIntent.ToggleMenu) }) {
+                                Icon(
+                                    imageVector = vectorResource(Res.drawable.more_vert),
+                                    contentDescription = "More options",
+                                    tint = LocalTalkfrlyColors.current.body,
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = state.isMenuExpanded,
+                                onDismissRequest = { onAction(PublicationDetailsIntent.ToggleMenu) },
+                                containerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                            ) {
+                                if (canModify) {
+                                    // Show Edit and Delete for own posts or admin
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = vectorResource(Res.drawable.edit_note),
+                                                    contentDescription = "Edit",
+                                                    tint = LocalTalkfrlyColors.current.body,
+                                                )
+                                                Spacer(modifier = Modifier.width(12.dp))
+                                                Text(
+                                                    text = "Edit post",
+                                                    color = LocalTalkfrlyColors.current.body
+                                                )
+                                            }
+                                        },
+                                        onClick = { onAction(PublicationDetailsIntent.EditPost) },
+                                        colors = MenuDefaults.itemColors(
+                                            textColor = LocalTalkfrlyColors.current.body
+                                        )
+                                    )
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = vectorResource(Res.drawable.delete),
+                                                    contentDescription = "Delete",
+                                                    tint = LocalTalkfrlyColors.current.error,
+                                                )
+                                                Spacer(modifier = Modifier.width(12.dp))
+                                                Text(
+                                                    text = "Delete post",
+                                                    color = LocalTalkfrlyColors.current.error
+                                                )
+                                            }
+                                        },
+                                        onClick = { onAction(PublicationDetailsIntent.DeletePost) },
+                                        colors = MenuDefaults.itemColors(
+                                            textColor = LocalTalkfrlyColors.current.error
+                                        )
+                                    )
+                                } else {
+                                    // Show Report for other users' posts
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = vectorResource(Res.drawable.report),
+                                                    contentDescription = "Report",
+                                                    tint = LocalTalkfrlyColors.current.error,
+                                                )
+                                                Spacer(modifier = Modifier.width(12.dp))
+                                                Text(
+                                                    text = "Hide for me",
+                                                    color = LocalTalkfrlyColors.current.error
+                                                )
+                                            }
+                                        },
+                                        onClick = { onAction(PublicationDetailsIntent.ReportPost) },
+                                        colors = MenuDefaults.itemColors(
+                                            textColor = LocalTalkfrlyColors.current.error
+                                        )
+                                    )
+                                }
+                            }
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

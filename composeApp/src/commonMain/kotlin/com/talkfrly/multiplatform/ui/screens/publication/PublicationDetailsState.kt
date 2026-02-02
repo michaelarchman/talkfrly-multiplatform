@@ -25,4 +25,9 @@ data class PublicationDetailsState(
 
     // Thread join
     val isJoiningThread: Boolean = false,
+
+    // Menu
+    val isMenuExpanded: Boolean = false,
+    val currentUserId: String? = null,
+    val isAdmin: Boolean = false,
 )

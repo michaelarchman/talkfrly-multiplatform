@@ -21,4 +21,10 @@ sealed class PublicationDetailsIntent {
 
     // Thread join
     data object JoinThread : PublicationDetailsIntent()
+
+    // Menu actions
+    data object ToggleMenu : PublicationDetailsIntent()
+    data object EditPost : PublicationDetailsIntent()
+    data object DeletePost : PublicationDetailsIntent()
+    data object ReportPost : PublicationDetailsIntent()
 }

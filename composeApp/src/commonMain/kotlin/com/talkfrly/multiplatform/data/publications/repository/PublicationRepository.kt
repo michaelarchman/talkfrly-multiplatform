@@ -15,6 +15,7 @@ interface PublicationRepository {
     suspend fun getPublications(page: Int, limit: Int, filter: PublicationFilter?): DataResult<PublicationList, DataError.Remote>
     suspend fun getPublicationById(id: String): DataResult<Publication, DataError.Remote>
     suspend fun createPublication(request: CreatePublicationRequest): DataResult<Publication, DataError.Remote>
+    suspend fun deletePublication(id: String): DataResult<Unit, DataError.Remote>
 }
 
 class PublicationRepositoryImpl(
@@ -36,5 +37,9 @@ class PublicationRepositoryImpl(
         return api
             .createPublication(request.toDto())
             .map { it.toDomain() }
+    }
+
+    override suspend fun deletePublication(id: String): DataResult<Unit, DataError.Remote> {
+        return api.deletePublication(id)
     }
 }

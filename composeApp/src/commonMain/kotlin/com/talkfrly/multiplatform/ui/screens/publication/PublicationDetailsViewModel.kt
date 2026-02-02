@@ -2,6 +2,7 @@ package com.talkfrly.multiplatform.ui.screens.publication
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
+import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
@@ -18,6 +19,7 @@ class PublicationDetailsViewModel(
     private val publicationRepository: PublicationRepository,
     private val commentRepository: CommentRepository,
     private val threadRepository: ThreadRepository,
+    private val authRepository: AuthRepository,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(PublicationDetailsState())
     val state: StateFlow<PublicationDetailsState> get() = _state
@@ -26,6 +28,20 @@ class PublicationDetailsViewModel(
 
     fun initialize(publicationId: String) {
         this.publicationId = publicationId
+        getCurrentUser()
+    }
+
+    private fun getCurrentUser() = viewModelScope.launch {
+        authRepository.getCurrentUser()
+            .onSuccess { user ->
+                _state.update { it.copy(
+                    currentUserId = user.id,
+                    isAdmin = user.isAdmin
+                ) }
+            }
+            .onError { error ->
+                println("Failed to get current user: $error")
+            }
     }
 
     fun onIntent(intent: PublicationDetailsIntent) {
@@ -52,6 +68,11 @@ class PublicationDetailsViewModel(
                 _state.update { it.copy(replyFormIsAnonymous = intent.isAnonymous) }
             is PublicationDetailsIntent.SubmitReply -> submitReply()
             is PublicationDetailsIntent.JoinThread -> joinThread()
+            is PublicationDetailsIntent.ToggleMenu ->
+                _state.update { it.copy(isMenuExpanded = !it.isMenuExpanded) }
+            is PublicationDetailsIntent.EditPost -> editPost()
+            is PublicationDetailsIntent.DeletePost -> deletePost()
+            is PublicationDetailsIntent.ReportPost -> reportPost()
         }
     }
 
@@ -184,5 +205,33 @@ class PublicationDetailsViewModel(
                 ) }
                 println(error)
             }
+    }
+
+    private fun editPost() {
+        _state.update { it.copy(isMenuExpanded = false) }
+        // TODO: Navigate to edit screen
+        println("Edit post: $publicationId")
+    }
+
+    private fun deletePost() = viewModelScope.launch {
+        _state.update { it.copy(isMenuExpanded = false) }
+        startLoading()
+        publicationRepository.deletePublication(publicationId)
+            .onSuccess {
+                _state.update { it.copy(errorMessage = "Publication deleted") }
+            }
+            .onError { error ->
+                _state.update { it.copy(errorMessage = "Failed to delete publication") }
+                println(error)
+            }
+            .onFinally {
+                stopLoading()
+            }
+    }
+
+    private fun reportPost() {
+        _state.update { it.copy(isMenuExpanded = false) }
+        // TODO: Implement report functionality
+        println("Report post: $publicationId")
     }
 }
