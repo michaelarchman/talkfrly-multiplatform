@@ -16,6 +16,7 @@ data class PublicationDto(
     @SerialName("thread_slug") val threadSlug: String? = null,
     @SerialName("thread_name") val threadName: String? = null,
     @SerialName("module_type") val moduleType: ModuleTypeDto? = null,
+    @SerialName("article_category") val articleCategory: String? = null,
     @SerialName("content") val content: String,
     @SerialName("is_anonymous") val isAnonymous: Boolean,
     @SerialName("is_private") val isPrivate: Boolean,

@@ -10,6 +10,7 @@ data class Publication(
     val threadSlug: String? = null,
     val threadName: String? = null,
     val moduleType: ModuleType? = null,
+    val articleCategory: String? = null,
     val content: String,
     val isAnonymous: Boolean,
     val isPrivate: Boolean,
@@ -47,9 +48,10 @@ data class CriterionSummary(
 )
 
 enum class ModuleType {
-    CHANNEL,
-    TOPIC,
-    THREAD,
+    GENERAL,
+    ARTICLES,
+    RANKINGS,
+    REVIEWS,
     UNKNOWN,
 }
 

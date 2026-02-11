@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,11 +88,8 @@ fun PublicationHeader(
                 )
 
                 // Badges
-                if (publication.isPrivate) {
-                    PublicationBadge(label = "Private")
-                }
-                if (publication.isAnonymous) {
-                    PublicationBadge(label = "Anonymous")
+                publication.articleCategory?.let {
+                    PublicationBadge(label = it, color = LocalTalkfrlyColors.current.bodyMuted)
                 }
                 if (!publication.threadName.isNullOrBlank()) {
                     PublicationBadge(label = publication.threadName)
@@ -110,31 +108,33 @@ fun PublicationHeader(
 @Composable
 private fun PublicationBadge(
     label: String,
+    color: Color? = LocalTalkfrlyColors.current.primary60,
     modifier: Modifier = Modifier,
 ) {
-    val colors = LocalTalkfrlyColors.current
-
-    Surface(
-        modifier = modifier
-            .height(20.dp)
-            .padding(horizontal = 6.dp),
-        color = colors.primary60,
-        shape = RoundedCornerShape(4.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 6.dp, vertical = 2.dp),
-            contentAlignment = Alignment.Center,
+    if (color != null) {
+        Surface(
+            modifier = modifier
+                .height(20.dp)
+                .padding(horizontal = 6.dp),
+            color = color,
+            shape = RoundedCornerShape(4.dp),
         ) {
-            Text(
-                text = label,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = colors.black,
-            )
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 6.dp, vertical = 2.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = label,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LocalTalkfrlyColors.current.black,
+                )
+            }
         }
     }
 }
+
 
 private fun formatTimestamp(createdAt: String): String {
     // Simple formatting - just show the date part for now

@@ -24,6 +24,7 @@ fun PublicationDto.toDomain(): Publication = Publication(
     threadSlug = threadSlug,
     threadName = threadName,
     moduleType = moduleType?.toDomainModuleType(),
+    articleCategory = articleCategory,
     content = content,
     isAnonymous = isAnonymous,
     isPrivate = isPrivate,
@@ -61,9 +62,10 @@ fun CriterionSummaryDto.toDomain(): CriterionSummary = CriterionSummary(
 )
 
 fun String.toDomainModuleType(): ModuleType = when (this) {
-    "CHANNEL" -> ModuleType.CHANNEL
-    "TOPIC" -> ModuleType.TOPIC
-    "THREAD" -> ModuleType.THREAD
+    "general" -> ModuleType.GENERAL
+    "articles" -> ModuleType.ARTICLES
+    "rankings" -> ModuleType.RANKINGS
+    "reviews" -> ModuleType.REVIEWS
     else -> ModuleType.UNKNOWN
 }
 
@@ -82,10 +84,11 @@ fun PublicationFilter.toDto(): PublicationFilterDto = PublicationFilterDto(
 )
 
 fun ModuleType.toDtoModuleType(): String = when (this) {
-    ModuleType.CHANNEL -> "CHANNEL"
-    ModuleType.TOPIC -> "TOPIC"
-    ModuleType.THREAD -> "THREAD"
-    ModuleType.UNKNOWN -> "UNKNOWN"
+    ModuleType.GENERAL -> "general"
+    ModuleType.ARTICLES -> "articles"
+    ModuleType.RANKINGS -> "rankings"
+    ModuleType.REVIEWS -> "reviews"
+    ModuleType.UNKNOWN -> "unknown"
 }
 
 fun CreatePublicationRequest.toDto(): CreatePublicationRequestDto = CreatePublicationRequestDto(
