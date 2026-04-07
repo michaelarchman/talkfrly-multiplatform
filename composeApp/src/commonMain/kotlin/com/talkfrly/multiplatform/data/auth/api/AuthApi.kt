@@ -6,7 +6,6 @@ import com.talkfrly.multiplatform.data.auth.dto.LoginResponseDto
 import com.talkfrly.multiplatform.data.auth.dto.RegisterRequestDto
 import com.talkfrly.multiplatform.data.auth.dto.RegisterResponseDto
 import com.talkfrly.multiplatform.data.auth.dto.ResendVerificationResponseDto
-import com.talkfrly.multiplatform.data.auth.dto.UserDto
 import com.talkfrly.multiplatform.data.auth.dto.VerifyEmailResponseDto
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.DataError
@@ -16,7 +15,6 @@ import io.ktor.http.HttpMethod
 interface AuthApi {
     suspend fun login(loginRequestDto: LoginRequestDto): DataResult<LoginResponseDto, DataError.Remote>
     suspend fun register(registerRequestDto: RegisterRequestDto): DataResult<RegisterResponseDto, DataError.Remote>
-    suspend fun getCurrentUser(): DataResult<UserDto, DataError.Remote>
     suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponseDto, DataError.Remote>
     suspend fun resendVerification(email: String): DataResult<ResendVerificationResponseDto, DataError.Remote>
     suspend fun logout(): DataResult<Unit, DataError.Remote>
@@ -40,14 +38,6 @@ class AuthApiImpl(
             urlString = "/auth/register",
             httpMethod = HttpMethod.Post,
             body = registerRequestDto
-        )
-    }
-
-    override suspend fun getCurrentUser(): DataResult<UserDto, DataError.Remote> {
-        return makeRequest(
-            httpMethod = HttpMethod.Get,
-            httpClient = httpClient,
-            urlString = "/auth/me",
         )
     }
 

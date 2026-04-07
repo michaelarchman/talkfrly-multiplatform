@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VerifyEmailResponseDto(
-    @SerialName("user") val user: UserDto,
     @SerialName("message") val message: String,
 )
 

@@ -2,7 +2,6 @@ package com.talkfrly.multiplatform.domain.auth
 
 data class RegisterResponse(
     val message: String,
-    val user: User,
 )
 
 data class RegisterRequest(

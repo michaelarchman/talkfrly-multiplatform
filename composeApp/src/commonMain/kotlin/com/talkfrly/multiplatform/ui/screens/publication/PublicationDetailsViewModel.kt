@@ -6,6 +6,7 @@ import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
+import com.talkfrly.multiplatform.data.user.UserRepository
 import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
@@ -19,7 +20,7 @@ class PublicationDetailsViewModel(
     private val publicationRepository: PublicationRepository,
     private val commentRepository: CommentRepository,
     private val threadRepository: ThreadRepository,
-    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository, // UserRepository2
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(PublicationDetailsState())
     val state: StateFlow<PublicationDetailsState> get() = _state
@@ -32,7 +33,7 @@ class PublicationDetailsViewModel(
     }
 
     private fun getCurrentUser() = viewModelScope.launch {
-        authRepository.getCurrentUser()
+        userRepository.getCurrentUser()
             .onSuccess { user ->
                 _state.update { it.copy(
                     currentUserId = user.id,

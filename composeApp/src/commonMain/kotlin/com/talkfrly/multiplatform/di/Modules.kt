@@ -23,10 +23,15 @@ import com.talkfrly.multiplatform.data.uploads.api.UploadApi
 import com.talkfrly.multiplatform.data.uploads.api.UploadApiImpl
 import com.talkfrly.multiplatform.data.uploads.repository.UploadRepository
 import com.talkfrly.multiplatform.data.uploads.repository.UploadRepositoryImpl
+import com.talkfrly.multiplatform.data.user.UserApi
+import com.talkfrly.multiplatform.data.user.UserApiImpl
+import com.talkfrly.multiplatform.data.user.UserRepository
+import com.talkfrly.multiplatform.data.user.UserRepositoryImpl
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationViewModel
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
+import com.talkfrly.multiplatform.ui.screens.profile.ProfileViewModel
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationDetailsViewModel
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
@@ -47,6 +52,7 @@ val sharedModule: Module = module {
     singleOf(::CommentApiImpl).bind<CommentApi>()
     singleOf(::ThreadApiImpl).bind<ThreadApi>()
     singleOf(::UploadApiImpl).bind<UploadApi>()
+    singleOf(::UserApiImpl).bind<UserApi>()
 
     // Repositories
     singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
@@ -54,6 +60,7 @@ val sharedModule: Module = module {
     singleOf(::CommentRepositoryImpl).bind<CommentRepository>()
     singleOf(::ThreadRepositoryImpl).bind<ThreadRepository>()
     singleOf(::UploadRepositoryImpl).bind<UploadRepository>()
+    singleOf(::UserRepositoryImpl).bind<UserRepository>()
 
     // ViewModels
     viewModelOf(::AppViewModel)
@@ -65,6 +72,7 @@ val sharedModule: Module = module {
     viewModelOf(::AccountViewModel)
     viewModelOf(::CreatePublicationViewModel)
     viewModelOf(::PublicationDetailsViewModel)
+    viewModelOf(::ProfileViewModel)
 }
 
 expect val platformModule: Module

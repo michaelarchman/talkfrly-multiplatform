@@ -37,6 +37,11 @@ sealed interface Route {
         override val title = "Account"
     }
 
+    @Serializable data object Profile: Route {
+        override val id = "Profile"
+        override val title = "Profile"
+    }
+
     @Serializable data class PublicationDetails(val publicationId: String): Route {
         override val id = "PUBLICATION_DETAILS"
         override val title = "Publication"
@@ -49,4 +54,5 @@ sealed interface Route {
         override val id = "CREATE_PUBLICATION"
         override val title = "Create Publication"
     }
+
 }

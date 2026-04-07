@@ -3,6 +3,7 @@ package com.talkfrly.multiplatform.ui.session
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
+import com.talkfrly.multiplatform.data.user.UserRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
 import com.talkfrly.multiplatform.domain.core.onSuccess
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 
 class SessionViewModel(
     private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : BaseViewModel() {
     private val _state = MutableStateFlow<SessionState>(SessionState.Loading)
     val state: StateFlow<SessionState> = _state
@@ -21,7 +23,7 @@ class SessionViewModel(
     fun checkSession() {
         viewModelScope.launch {
             // Try to get current user - if it succeeds (200), user is logged in
-            authRepository.getCurrentUser()
+            userRepository.getCurrentUser()
                 .onSuccess { user ->
                     println("SESSION - checkSession: LoggedIn, user: ${user.email}")
                     _state.value = SessionState.LoggedIn
