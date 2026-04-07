@@ -3,6 +3,7 @@ package com.talkfrly.multiplatform.ui.session
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
+import com.talkfrly.multiplatform.domain.core.DataError
 import com.talkfrly.multiplatform.data.user.UserRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
@@ -31,7 +32,11 @@ class SessionViewModel(
                 .onError { error ->
                     // If it fails (401 or other error), user is logged out
                     println("SESSION - checkSession: LoggedOut, error: ${error.message}, code: ${error.code}")
-                    _state.value = SessionState.LoggedOut
+                    if(error.code == DataError.HttpErrorCode.UNAUTHORIZED){
+                        _state.value = SessionState.LoggedOut
+                    }else{
+                        _state.value = SessionState.Error
+                    }
                 }
                 .onFinally {
                     stopLoading()

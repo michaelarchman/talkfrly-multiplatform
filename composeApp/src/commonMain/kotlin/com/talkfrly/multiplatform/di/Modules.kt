@@ -29,6 +29,7 @@ import com.talkfrly.multiplatform.data.user.UserRepository
 import com.talkfrly.multiplatform.data.user.UserRepositoryImpl
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationViewModel
+import com.talkfrly.multiplatform.ui.screens.error.ErrorViewModel
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
 import com.talkfrly.multiplatform.ui.screens.profile.ProfileViewModel
@@ -73,6 +74,7 @@ val sharedModule: Module = module {
     viewModelOf(::CreatePublicationViewModel)
     viewModelOf(::PublicationDetailsViewModel)
     viewModelOf(::ProfileViewModel)
+    viewModelOf(::ErrorViewModel)
 }
 
 expect val platformModule: Module

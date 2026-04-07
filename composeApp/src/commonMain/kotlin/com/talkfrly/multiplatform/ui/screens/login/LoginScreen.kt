@@ -1,9 +1,11 @@
 package com.talkfrly.multiplatform.ui.screens.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,14 +15,18 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+
 import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.components.buttons.ButtonPrimary
 import com.talkfrly.multiplatform.ui.components.buttons.ButtonSizeType
@@ -59,7 +65,7 @@ private fun LoginScreen(
 ) {
     val username = state.email
     val password = state.password
-//    val message = state.message
+    val message = state.message
 
     Scaffold(
         containerColor = LocalTalkfrlyColors.current.background,
@@ -137,6 +143,22 @@ private fun LoginScreen(
                     modifier = Modifier.clickable { navController.navigate(Route.Register.id) }
                 )
             }
+
+            message?.let{
+                Box(
+                    Modifier
+                        .background(LocalTalkfrlyColors.current.primary.copy(.4f))
+                        .padding(8.dp)
+                ){
+                    Text(
+                        text = message,
+                        textAlign = TextAlign.Center,
+                        color = Color.Red,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
         }
     }
 

@@ -1,5 +1,7 @@
 package com.talkfrly.multiplatform.ui
 
+import com.talkfrly.multiplatform.domain.core.DataError
+import com.talkfrly.multiplatform.domain.core.DataResult
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -53,6 +55,11 @@ sealed interface Route {
     ): Route {
         override val id = "CREATE_PUBLICATION"
         override val title = "Create Publication"
+    }
+    @Serializable
+    data object Error : Route {
+        override val id = "ERROR"
+        override val title = "Error"
     }
 
 }
