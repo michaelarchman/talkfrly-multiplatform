@@ -23,7 +23,7 @@ class LoginViewModel(
             is LoginIntent.UpdateFieldPassword -> _state.update { it.copy(password = intent.value) }
             is LoginIntent.UpdateFieldMessage -> _state.update { it.copy(message = intent.value) }
             is LoginIntent.GetAccessToken -> getToken(onLoginSuccess)
-       }
+        }
     }
 
     private fun getToken(onLoginSuccess: (() -> Unit)?) = viewModelScope.launch {
@@ -48,7 +48,9 @@ class LoginViewModel(
                     println("authRepository.login -> $response")
                 }
                 .onError { error ->
-                    _state.update { it.copy(message = error.message) }
+                    _state.update { it.copy(
+                        message = error.message,
+                    ) }
                 }
         } finally {
             stopLoading()

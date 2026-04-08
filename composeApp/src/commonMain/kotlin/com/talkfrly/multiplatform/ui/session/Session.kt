@@ -24,6 +24,8 @@ fun Session(
                 navController.navigate(Route.Login.id) { popUpTo(0) }
             SessionState.Loading ->
                 navController.navigate(Route.Splash.id) { popUpTo(0) }
+            SessionState.Error ->
+                navController.navigate(Route.Error.id) { popUpTo(0) }
         }
     }
 

@@ -120,15 +120,6 @@ private fun HomeScreen(
                                 contentDescription = null,
                             )
                         }
-                        IconButton(
-                            onClick = { navController.navigate(Route.Profile.id) },
-                            enabled = true,
-                        ) {
-                            Icon(
-                                imageVector = vectorResource(Res.drawable.person),
-                                contentDescription = null,
-                            )
-                        }
                     }
                 }
             )
