@@ -1,7 +1,5 @@
 package com.talkfrly.multiplatform.ui
 
-import com.talkfrly.multiplatform.domain.core.DataError
-import com.talkfrly.multiplatform.domain.core.DataResult
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -39,10 +37,6 @@ sealed interface Route {
         override val title = "Account"
     }
 
-    @Serializable data object Profile: Route {
-        override val id = "Profile"
-        override val title = "Profile"
-    }
 
     @Serializable data class PublicationDetails(val publicationId: String): Route {
         override val id = "PUBLICATION_DETAILS"

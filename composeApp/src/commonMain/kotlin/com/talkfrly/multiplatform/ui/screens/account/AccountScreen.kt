@@ -13,19 +13,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
-import talkfrly_multiplatform.composeapp.generated.resources.person
 
 @Composable
 fun AccountScreenRoot(
@@ -34,6 +33,10 @@ fun AccountScreenRoot(
     onLogout: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit){
+        viewModel.onIntent(AccountIntent.GetUser)
+    }
 
     AccountScreen(
         state = state,
@@ -98,6 +101,14 @@ private fun AccountScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = state.message)
+            state.user?.let {
+                Text(state.user.id)
+                Text(state.user.displayName)
+                Text(state.user.email)
+                if(state.user.isAdmin){
+                    Text("Administrator")
+                }
+            }
 
             Button(
                 onClick = { onAction(AccountIntent.Logout) },

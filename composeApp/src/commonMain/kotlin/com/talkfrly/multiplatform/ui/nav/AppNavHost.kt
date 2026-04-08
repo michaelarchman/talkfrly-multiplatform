@@ -1,9 +1,6 @@
 package com.talkfrly.multiplatform.ui.nav
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,14 +11,12 @@ import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublication
 import com.talkfrly.multiplatform.ui.screens.error.ErrorScreenRoot
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
-import com.talkfrly.multiplatform.ui.screens.profile.ProfileScreenRoot
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationDetailsScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
-import io.ktor.client.request.invoke
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -71,12 +66,6 @@ fun AppNavHost(
                 onLogout = { sessionViewModel.logout() }
             )
         }
-        composable(Route.Profile.id) {
-            ProfileScreenRoot(
-                viewModel = koinViewModel(),
-                navController = navController,
-            )
-        }
         composable<Route.PublicationDetails> { backStackEntry ->
             val route = backStackEntry.toRoute<Route.PublicationDetails>()
             PublicationDetailsScreenRoot(
@@ -100,5 +89,6 @@ fun AppNavHost(
                navController = navController
            )
         }
+
     }
 }
