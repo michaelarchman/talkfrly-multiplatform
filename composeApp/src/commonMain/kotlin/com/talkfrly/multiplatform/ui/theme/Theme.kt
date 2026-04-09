@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import kotlinx.serialization.json.JsonNull.content
 
 val LocalTalkfrlyColors = staticCompositionLocalOf<TalkfrlyColors> {
     error("No TalkfrlyColors provided")
@@ -15,9 +16,10 @@ val LocalTalkfrlyColors = staticCompositionLocalOf<TalkfrlyColors> {
 
 @Composable
 fun TalkfrlyTheme(
-    content: @Composable () -> Unit
+    isDarkTheme: Boolean = false,
+    content: @Composable () -> Unit,
 ) {
-    val colors = if (isSystemInDarkTheme()) talkfrlyDarkThemeColors() else talkfrlyLightThemeColors()
+    val colors = if (isSystemInDarkTheme() || isDarkTheme) talkfrlyDarkThemeColors() else talkfrlyLightThemeColors()
 
     CompositionLocalProvider(
         LocalTalkfrlyColors provides colors,
