@@ -5,7 +5,7 @@ data class User(
     val email: String,
     val displayName: String,
     val isAdmin: Boolean,
-//    val avatarUrl: String? = null,
+    val avatarUrl: String? = null,
     val isVerified: Boolean,
 //    val isApproved: Boolean,
 )

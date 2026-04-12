@@ -15,7 +15,7 @@ val LocalTalkfrlyColors = staticCompositionLocalOf<TalkfrlyColors> {
 
 @Composable
 fun TalkfrlyTheme(
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colors = if (isSystemInDarkTheme()) talkfrlyDarkThemeColors() else talkfrlyLightThemeColors()
 

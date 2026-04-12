@@ -1,13 +1,31 @@
 package com.talkfrly.multiplatform.ui.screens.account
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -16,15 +34,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil3.compose.rememberAsyncImagePainter
+import com.talkfrly.multiplatform.domain.user.User
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
+import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
 import org.jetbrains.compose.resources.vectorResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
+import talkfrly_multiplatform.composeapp.generated.resources.person
 
 @Composable
 fun AccountScreenRoot(
@@ -36,30 +65,65 @@ fun AccountScreenRoot(
 
     LaunchedEffect(Unit){
         viewModel.onIntent(AccountIntent.GetUser)
+        viewModel.onIntent(AccountIntent.GetUserPreferences)
     }
 
     AccountScreen(
         state = state,
-        navController = navController,
+//        navController = navController,
+        backClick = { navController.popBackStack() },
         onAction = { intent ->
             viewModel.onIntent(intent, onLogoutSuccess = { onLogout() })
         },
     )
 }
 
+@Composable
+@Preview()
+private fun AccountScreenPreview(){
+    TalkfrlyTheme{
+        AccountScreen(
+            state = AccountState(
+                message = "Preview",
+                user = User(
+                    id = "12fasdf",
+                    email = "adam.dafd.com",
+                    displayName = "Adam",
+                    isAdmin = false,
+                    isVerified = true,
+                    avatarUrl = "https://static.wikia.nocookie.net/bohaterowie/images/b/b8/TransparentBob.png/revision/latest?cb=20221108201843&path-prefix=pl"
+                )
+            ),
+            backClick = {},
+            onAction = {}
+        )
+    }
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AccountScreen(
     state: AccountState,
-    navController: NavController,
+//    navController: NavController,
+    backClick: () -> Unit,
     onAction: (AccountIntent) -> Unit,
 ) {
+
+    var selected by remember { mutableStateOf("B") }
+
+    var expanded by remember { mutableStateOf(false) }
+    val options = listOf("English", "Polski")
+    var DpMenuSelected by remember { mutableStateOf(options.first()) }
+
+    val scrollState = rememberScrollState()
+
     Scaffold(
         containerColor = LocalTalkfrlyColors.current.background,
         contentColor = LocalTalkfrlyColors.current.body,
         topBar = {
             TopAppBar(
-                title = { Text("Talkfrly") },
+                title = { Text("Account") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = LocalTalkfrlyColors.current.background,
                     titleContentColor = LocalTalkfrlyColors.current.body,
@@ -68,7 +132,8 @@ private fun AccountScreen(
                 ),
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() },
+//                        onClick = { navController.popBackStack() },
+                        onClick = { backClick() },
                         enabled = true,
                     ) {
                         Icon(
@@ -92,31 +157,232 @@ private fun AccountScreen(
 //                }
             )
         },
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = state.message)
-            state.user?.let {
-                Text(state.user.id)
-                Text(state.user.displayName)
-                Text(state.user.email)
-                if(state.user.isAdmin){
-                    Text("Administrator")
+    ) { innerPadding ->
+        Column( modifier = Modifier
+            .fillMaxWidth()
+            .padding(innerPadding)
+            .padding(16.dp)
+            .verticalScroll(scrollState),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ){
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    text = "Info",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Row {
+                    if(state.user?.avatarUrl != null){
+                        Image(
+                            modifier = Modifier
+                                .height(100.dp)
+                                .width(100.dp)
+                                .border(2.dp, LocalTalkfrlyColors.current.primary60,
+                                    RoundedCornerShape(8.dp)
+                                ),
+                            painter = rememberAsyncImagePainter(model = state.user.avatarUrl),
+                            contentDescription = null,
+                        )
+                    }else{
+                        Image(
+                            modifier = Modifier
+                                .height(100.dp)
+                                .width(100.dp)
+                                .border(2.dp, LocalTalkfrlyColors.current.primary60,
+                                    RoundedCornerShape(8.dp)
+                                ),
+                            imageVector = vectorResource(Res.drawable.person),
+                            contentDescription = null,
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        state.user?.let {
+                            Column {
+                                Text(
+                                    text = "EMAIL",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
+                                )
+                                Text(state.user.email)
+                            }
+
+                            Column {
+                                Text(
+                                    text = "DISPLAY NAME",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
+                                )
+                                Text(state.user.displayName)
+                            }
+
+                            Column {
+                                Text(
+                                    text = "USER ID",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
+                                )
+                                Text(state.user.id)
+                            }
+                        }
+                    }
+                }
+
+            }
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp,
+                color = Color.DarkGray,
+            )
+            Column {
+                Text(
+//                    modifier = Modifier.padding(vertical = 16.dp),
+                    text = "Preferences",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Choose how your name appears on posts and comments",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(
+                            selected = selected == "A",
+                            onClick = { selected = "A" },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = LocalTalkfrlyColors.current.primary60
+                            )
+                        )
+                        Text("Show display name (" + state.user?.displayName + ")")
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(
+                            selected = selected == "B",
+                            onClick = { selected = "B" },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = LocalTalkfrlyColors.current.primary60
+                            )
+                        )
+                        Text("Show user ID")
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(
+                            selected = selected == "C",
+                            onClick = { selected = "C" },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = LocalTalkfrlyColors.current.primary60
+                            )
+                        )
+                        Text("Always anonymous (hides everything)")
+                    }
+                }
+                Text(
+                    text = "DISPLAY NAME",
+                    fontSize = 16.sp,
+                    modifier  = Modifier.padding(vertical = 12.dp)
+                )
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth().padding(4.dp),
+                    value = state.userNameInput,
+                    onValueChange = { onAction(AccountIntent.SetUserName(it)) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = LocalTalkfrlyColors.current.backgroundDarker,
+                        focusedContainerColor = LocalTalkfrlyColors.current.backgroundDarker,
+                        unfocusedBorderColor = LocalTalkfrlyColors.current.primary60,
+                        focusedBorderColor = LocalTalkfrlyColors.current.primary,
+                        unfocusedTextColor = LocalTalkfrlyColors.current.body,
+                        focusedTextColor = LocalTalkfrlyColors.current.body,
+                    )
+                )
+                Text(
+                    text = "Your display name shown in posts and comments",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+
+                Text(
+                    text = "APP LANGUAGE",
+                    fontSize = 16.sp,
+                    modifier  = Modifier.padding(vertical = 12.dp)
+                )
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded },
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
+                    OutlinedTextField(
+                        value = DpMenuSelected,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        modifier = Modifier.menuAnchor(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedTextColor = LocalTalkfrlyColors.current.body,
+                            focusedTextColor = LocalTalkfrlyColors.current.body,
+                            unfocusedBorderColor = LocalTalkfrlyColors.current.primary60,
+                            focusedBorderColor = LocalTalkfrlyColors.current.primary60
+                        )
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(LocalTalkfrlyColors.current.background)
+                    ) {
+                        options.forEach { option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(option, color = LocalTalkfrlyColors.current.body) },
+                                onClick = {
+                                    DpMenuSelected = option
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+                Text(
+                    text = "Choose the language for the app interface. The page will reload.",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+                Button(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    onClick = {},
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = LocalTalkfrlyColors.current.primary,
+                        contentColor = LocalTalkfrlyColors.current.black
+                    )
+                ){
+                    Text("Save preferences")
                 }
             }
-
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp,
+                color = Color.DarkGray,
+            )
             Button(
+                modifier = Modifier.fillMaxWidth(),
                 onClick = { onAction(AccountIntent.Logout) },
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = LocalTalkfrlyColors.current.backgroundDarker,
+                    contentColor = LocalTalkfrlyColors.current.body
+                )
+            ){
                 Text("Logout")
             }
         }
     }
-
 }
