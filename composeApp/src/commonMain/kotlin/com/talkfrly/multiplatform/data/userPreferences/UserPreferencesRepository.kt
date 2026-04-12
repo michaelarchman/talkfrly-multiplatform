@@ -17,5 +17,4 @@ class UserPreferencesRepositoryImpl(
             .getUserPreferences()
             .map { it.toDomain() }
     }
-
 }

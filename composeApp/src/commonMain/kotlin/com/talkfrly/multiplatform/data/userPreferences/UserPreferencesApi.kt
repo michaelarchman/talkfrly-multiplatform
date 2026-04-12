@@ -25,5 +25,4 @@ class UserPreferencesApiImpl(
     override suspend fun setUserPreferences(): DataResult<Unit, DataError.Remote> {
         TODO("Not yet implemented")
     }
-
 }

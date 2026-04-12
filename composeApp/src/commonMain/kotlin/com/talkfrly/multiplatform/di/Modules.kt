@@ -27,6 +27,10 @@ import com.talkfrly.multiplatform.data.user.UserApi
 import com.talkfrly.multiplatform.data.user.UserApiImpl
 import com.talkfrly.multiplatform.data.user.UserRepository
 import com.talkfrly.multiplatform.data.user.UserRepositoryImpl
+import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesApi
+import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesApiImpl
+import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepository
+import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepositoryImpl
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationViewModel
 import com.talkfrly.multiplatform.ui.screens.error.ErrorViewModel
@@ -53,6 +57,7 @@ val sharedModule: Module = module {
     singleOf(::ThreadApiImpl).bind<ThreadApi>()
     singleOf(::UploadApiImpl).bind<UploadApi>()
     singleOf(::UserApiImpl).bind<UserApi>()
+    singleOf(::UserPreferencesApiImpl).bind<UserPreferencesApi>()
 
     // Repositories
     singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
@@ -61,6 +66,7 @@ val sharedModule: Module = module {
     singleOf(::ThreadRepositoryImpl).bind<ThreadRepository>()
     singleOf(::UploadRepositoryImpl).bind<UploadRepository>()
     singleOf(::UserRepositoryImpl).bind<UserRepository>()
+    singleOf(::UserPreferencesRepositoryImpl).bind<UserPreferencesRepository>()
 
     // ViewModels
     viewModelOf(::AppViewModel)

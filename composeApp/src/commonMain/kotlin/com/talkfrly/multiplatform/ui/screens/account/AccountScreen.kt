@@ -1,6 +1,7 @@
 package com.talkfrly.multiplatform.ui.screens.account
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -38,12 +40,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil3.compose.AsyncImagePainter.State.Empty.painter
 import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.domain.user.User
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
@@ -81,7 +81,7 @@ fun AccountScreenRoot(
 @Composable
 @Preview()
 private fun AccountScreenPreview(){
-    TalkfrlyTheme (isDarkTheme = true){
+    TalkfrlyTheme{
         AccountScreen(
             state = AccountState(
                 message = "Preview",
@@ -157,10 +157,10 @@ private fun AccountScreen(
 //                }
             )
         },
-    ) { innerpadding ->
+    ) { innerPadding ->
         Column( modifier = Modifier
             .fillMaxWidth()
-            .padding(innerpadding)
+            .padding(innerPadding)
             .padding(16.dp)
             .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -205,17 +205,29 @@ private fun AccountScreen(
                     ) {
                         state.user?.let {
                             Column {
-                                smallerTxt("EMAIL")
+                                Text(
+                                    text = "EMAIL",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
+                                )
                                 Text(state.user.email)
                             }
 
                             Column {
-                                smallerTxt("DISPLAY NAME")
+                                Text(
+                                    text = "DISPLAY NAME",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
+                                )
                                 Text(state.user.displayName)
                             }
 
                             Column {
-                                smallerTxt("USER ID")
+                                Text(
+                                    text = "USER ID",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
+                                )
                                 Text(state.user.id)
                             }
                         }
@@ -235,7 +247,11 @@ private fun AccountScreen(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
-                descriptionTxt("Choose how your name appears on posts and comments")
+                Text(
+                    text = "Choose how your name appears on posts and comments",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
@@ -270,7 +286,11 @@ private fun AccountScreen(
                         Text("Always anonymous (hides everything)")
                     }
                 }
-                smallHeader("DISPLAY NAME")
+                Text(
+                    text = "DISPLAY NAME",
+                    fontSize = 16.sp,
+                    modifier  = Modifier.padding(vertical = 12.dp)
+                )
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth().padding(4.dp),
                     value = state.userNameInput,
@@ -284,9 +304,17 @@ private fun AccountScreen(
                         focusedTextColor = LocalTalkfrlyColors.current.body,
                     )
                 )
-                descriptionTxt("Your display name shown in posts and comments")
+                Text(
+                    text = "Your display name shown in posts and comments",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
 
-                smallHeader("APP LANGUAGE")
+                Text(
+                    text = "APP LANGUAGE",
+                    fontSize = 16.sp,
+                    modifier  = Modifier.padding(vertical = 12.dp)
+                )
                 ExposedDropdownMenuBox(
                     expanded = expanded,
                     onExpandedChange = { expanded = !expanded },
@@ -302,11 +330,33 @@ private fun AccountScreen(
                         modifier = Modifier.menuAnchor(),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedTextColor = LocalTalkfrlyColors.current.body,
-                            unfocusedBorderColor = LocalTalkfrlyColors.current.primary60
+                            focusedTextColor = LocalTalkfrlyColors.current.body,
+                            unfocusedBorderColor = LocalTalkfrlyColors.current.primary60,
+                            focusedBorderColor = LocalTalkfrlyColors.current.primary60
                         )
                     )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(LocalTalkfrlyColors.current.background)
+                    ) {
+                        options.forEach { option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(option, color = LocalTalkfrlyColors.current.body) },
+                                onClick = {
+                                    DpMenuSelected = option
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
                 }
-                descriptionTxt("Choose the language for the app interface. The page will reload.")
+                Text(
+                    text = "Choose the language for the app interface. The page will reload.",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
                 Button(
                     modifier = Modifier.padding(vertical = 8.dp),
                     onClick = {},
@@ -335,32 +385,4 @@ private fun AccountScreen(
             }
         }
     }
-
-}
-
-@Composable
-private fun smallerTxt(txt: String){
-    Text(
-        text = txt,
-        fontSize = 14.sp,
-        color = Color.Gray
-    )
-}
-
-@Composable
-private fun descriptionTxt(txt: String){
-    Text(
-        text = txt,
-        fontSize = 12.sp,
-        color = Color.Gray
-    )
-}
-
-@Composable
-private fun smallHeader(txt: String){
-    Text(
-        text = txt,
-        fontSize = 16.sp,
-        modifier  = Modifier.padding(vertical = 12.dp)
-    )
 }

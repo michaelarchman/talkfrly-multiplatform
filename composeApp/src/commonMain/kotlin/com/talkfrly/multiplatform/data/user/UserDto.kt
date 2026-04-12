@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserDto(
-    @SerialName("user_id") val userId: String,
+    @SerialName("id") val userId: String,
     @SerialName("email") val email: String,
     @SerialName("display_name") val displayName: String,
     @SerialName("is_admin") val isAdmin: Boolean,

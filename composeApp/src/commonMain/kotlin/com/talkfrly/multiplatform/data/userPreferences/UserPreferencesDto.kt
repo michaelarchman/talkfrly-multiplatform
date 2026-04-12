@@ -9,5 +9,4 @@ data class UserPreferencesDto (
     @SerialName("display_type") val displayType: String,
     @SerialName("app_language") val appLanguage: String,
     @SerialName("default_anonymous") val defaultAnonymous: Boolean
-
     )
