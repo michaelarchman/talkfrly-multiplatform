@@ -2,11 +2,10 @@ package com.talkfrly.multiplatform.ui.screens.publication
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
-import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
-import com.talkfrly.multiplatform.data.user.UserRepository
+import com.talkfrly.multiplatform.data.user.repository.UserRepository
 import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally

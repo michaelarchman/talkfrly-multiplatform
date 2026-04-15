@@ -1,5 +1,6 @@
-package com.talkfrly.multiplatform.data.user
+package com.talkfrly.multiplatform.data.user.mapper
 
+import com.talkfrly.multiplatform.data.user.dto.UserDto
 import com.talkfrly.multiplatform.domain.user.User
 
 fun UserDto.toDomain(): User = User(

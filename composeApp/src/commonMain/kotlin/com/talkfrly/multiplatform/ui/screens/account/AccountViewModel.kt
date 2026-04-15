@@ -3,7 +3,7 @@ package com.talkfrly.multiplatform.ui.screens.account
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
-import com.talkfrly.multiplatform.data.user.UserRepository
+import com.talkfrly.multiplatform.data.user.repository.UserRepository
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally

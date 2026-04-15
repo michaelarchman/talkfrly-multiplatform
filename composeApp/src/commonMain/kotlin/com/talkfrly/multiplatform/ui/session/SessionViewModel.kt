@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
 import com.talkfrly.multiplatform.domain.core.DataError
-import com.talkfrly.multiplatform.data.user.UserRepository
+import com.talkfrly.multiplatform.data.user.repository.UserRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
 import com.talkfrly.multiplatform.domain.core.onSuccess
