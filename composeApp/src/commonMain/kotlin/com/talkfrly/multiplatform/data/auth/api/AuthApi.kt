@@ -13,17 +13,40 @@ import io.ktor.client.HttpClient
 import io.ktor.http.HttpMethod
 
 interface AuthApi {
-    suspend fun login(loginRequestDto: LoginRequestDto): DataResult<LoginResponseDto, DataError.Remote>
-    suspend fun register(registerRequestDto: RegisterRequestDto): DataResult<RegisterResponseDto, DataError.Remote>
-    suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponseDto, DataError.Remote>
-    suspend fun resendVerification(email: String): DataResult<ResendVerificationResponseDto, DataError.Remote>
+    suspend fun login(
+        loginRequestDto: LoginRequestDto
+    ): DataResult<LoginResponseDto, DataError.Remote>
+
+    suspend fun register(
+        registerRequestDto: RegisterRequestDto
+    ): DataResult<RegisterResponseDto, DataError.Remote>
+
+    suspend fun verifyEmail(
+        email: String, code: String
+    ): DataResult<VerifyEmailResponseDto, DataError.Remote>
+
+    suspend fun resendVerification(
+        email: String
+    ): DataResult<ResendVerificationResponseDto, DataError.Remote>
+
+    suspend fun forgotPassword(email: String): DataResult<Unit, DataError.Remote>
+    suspend fun validateResetCode(email: String, code: String): DataResult<Unit, DataError.Remote>
+
+    suspend fun resetPassword(
+        email: String, code: String, newPassword: String
+    ): DataResult<Unit, DataError.Remote>
+
+    suspend fun resendResetCode(email: String): DataResult<Unit, DataError.Remote>
+    suspend fun refresh(): DataResult<Unit, DataError.Remote>
     suspend fun logout(): DataResult<Unit, DataError.Remote>
 }
 
 class AuthApiImpl(
     private val httpClient: HttpClient,
 ): AuthApi {
-    override suspend fun login(loginRequestDto: LoginRequestDto): DataResult<LoginResponseDto, DataError.Remote> {
+    override suspend fun login(
+        loginRequestDto: LoginRequestDto
+    ): DataResult<LoginResponseDto, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
             urlString = "/auth/login",
@@ -32,7 +55,9 @@ class AuthApiImpl(
         )
     }
 
-    override suspend fun register(registerRequestDto: RegisterRequestDto): DataResult<RegisterResponseDto, DataError.Remote> {
+    override suspend fun register(
+        registerRequestDto: RegisterRequestDto
+    ): DataResult<RegisterResponseDto, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
             urlString = "/auth/register",
@@ -41,7 +66,9 @@ class AuthApiImpl(
         )
     }
 
-    override suspend fun verifyEmail(email: String, code: String): DataResult<VerifyEmailResponseDto, DataError.Remote> {
+    override suspend fun verifyEmail(
+        email: String, code: String
+    ): DataResult<VerifyEmailResponseDto, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
             urlString = "/auth/verify-email",
@@ -53,7 +80,9 @@ class AuthApiImpl(
         )
     }
 
-    override suspend fun resendVerification(email: String): DataResult<ResendVerificationResponseDto, DataError.Remote> {
+    override suspend fun resendVerification(
+        email: String
+    ): DataResult<ResendVerificationResponseDto, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
             urlString = "/auth/resend-verification",
@@ -61,6 +90,68 @@ class AuthApiImpl(
             body = mapOf(
                 "email" to email,
             )
+        )
+    }
+
+    override suspend fun forgotPassword(email: String): DataResult<Unit, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "auth/forgot-password",
+            httpMethod = HttpMethod.Post,
+            body = mapOf(
+                "email" to email,
+            )
+        )
+    }
+
+    override suspend fun validateResetCode(
+        email: String,
+        code: String
+    ): DataResult<Unit, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "auth/validate-reset-code",
+            httpMethod = HttpMethod.Post,
+            body = mapOf(
+                "email" to email,
+                "code" to code
+            )
+        )
+    }
+
+    override suspend fun resetPassword(
+        email: String,
+        code: String,
+        newPassword: String
+    ): DataResult<Unit, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "auth/reset-password",
+            httpMethod = HttpMethod.Post,
+            body = mapOf(
+                "email" to email,
+                "code" to code,
+                "new_password" to newPassword
+            )
+        )
+    }
+
+    override suspend fun resendResetCode(email: String): DataResult<Unit, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "auth/resend-reset-code",
+            httpMethod = HttpMethod.Post,
+            body = mapOf(
+                "email" to email,
+            )
+        )
+    }
+
+    override suspend fun refresh(): DataResult<Unit, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "auth/refresh",
+            httpMethod = HttpMethod.Post,
         )
     }
 

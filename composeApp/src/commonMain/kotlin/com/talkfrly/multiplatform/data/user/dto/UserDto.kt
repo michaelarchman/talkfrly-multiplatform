@@ -1,7 +1,13 @@
-package com.talkfrly.multiplatform.data.user
+package com.talkfrly.multiplatform.data.user.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+@Serializable
+data class UserUpdateRequestDto(
+    @SerialName("display_name") val displayName: String? = null,
+    @SerialName("avatar_url") val avatarUrl: String? = null,
+)
 
 @Serializable
 data class UserDto(

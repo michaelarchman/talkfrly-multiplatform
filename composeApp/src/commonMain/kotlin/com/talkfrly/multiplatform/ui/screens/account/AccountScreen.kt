@@ -71,7 +71,7 @@ fun AccountScreenRoot(
     AccountScreen(
         state = state,
 //        navController = navController,
-        backClick = { navController.popBackStack() },
+        onBackClick = { navController.popBackStack() },
         onAction = { intent ->
             viewModel.onIntent(intent, onLogoutSuccess = { onLogout() })
         },
@@ -94,7 +94,7 @@ private fun AccountScreenPreview(){
                     avatarUrl = "https://static.wikia.nocookie.net/bohaterowie/images/b/b8/TransparentBob.png/revision/latest?cb=20221108201843&path-prefix=pl"
                 )
             ),
-            backClick = {},
+            onBackClick = {},
             onAction = {}
         )
     }
@@ -106,7 +106,7 @@ private fun AccountScreenPreview(){
 private fun AccountScreen(
     state: AccountState,
 //    navController: NavController,
-    backClick: () -> Unit,
+    onBackClick: () -> Unit,
     onAction: (AccountIntent) -> Unit,
 ) {
 
@@ -133,7 +133,7 @@ private fun AccountScreen(
                 navigationIcon = {
                     IconButton(
 //                        onClick = { navController.popBackStack() },
-                        onClick = { backClick() },
+                        onClick = { onBackClick() },
                         enabled = true,
                     ) {
                         Icon(

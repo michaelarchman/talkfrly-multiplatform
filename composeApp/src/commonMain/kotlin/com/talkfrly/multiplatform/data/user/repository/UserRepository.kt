@@ -1,5 +1,7 @@
-package com.talkfrly.multiplatform.data.user
+package com.talkfrly.multiplatform.data.user.repository
 
+import com.talkfrly.multiplatform.data.user.api.UserApi
+import com.talkfrly.multiplatform.data.user.mapper.toDomain
 import com.talkfrly.multiplatform.domain.core.DataError
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.map

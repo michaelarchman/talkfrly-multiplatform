@@ -2,7 +2,6 @@ package com.talkfrly.multiplatform.data.auth.mapper
 
 import com.talkfrly.multiplatform.data.auth.dto.RegisterRequestDto
 import com.talkfrly.multiplatform.data.auth.dto.RegisterResponseDto
-import com.talkfrly.multiplatform.data.user.toDomain
 import com.talkfrly.multiplatform.domain.auth.RegisterRequest
 import com.talkfrly.multiplatform.domain.auth.RegisterResponse
 

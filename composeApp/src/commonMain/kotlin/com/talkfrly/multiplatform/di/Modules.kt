@@ -23,10 +23,10 @@ import com.talkfrly.multiplatform.data.uploads.api.UploadApi
 import com.talkfrly.multiplatform.data.uploads.api.UploadApiImpl
 import com.talkfrly.multiplatform.data.uploads.repository.UploadRepository
 import com.talkfrly.multiplatform.data.uploads.repository.UploadRepositoryImpl
-import com.talkfrly.multiplatform.data.user.UserApi
-import com.talkfrly.multiplatform.data.user.UserApiImpl
-import com.talkfrly.multiplatform.data.user.UserRepository
-import com.talkfrly.multiplatform.data.user.UserRepositoryImpl
+import com.talkfrly.multiplatform.data.user.api.UserApi
+import com.talkfrly.multiplatform.data.user.api.UserApiImpl
+import com.talkfrly.multiplatform.data.user.repository.UserRepository
+import com.talkfrly.multiplatform.data.user.repository.UserRepositoryImpl
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesApi
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesApiImpl
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepository
