@@ -38,7 +38,6 @@ interface StreamApi{
 class StreamApiImpl(
     private val httpClient: HttpClient,
 ): StreamApi{
-
     override suspend fun streamList(
         streamListRequestDto: StreamListRequestDto
     ): DataResult<StreamListResponseDto, DataError.Remote> {

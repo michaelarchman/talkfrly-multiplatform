@@ -96,7 +96,7 @@ class AuthApiImpl(
     override suspend fun forgotPassword(email: String): DataResult<Unit, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
-            urlString = "auth/forgot-password",
+            urlString = "/auth/forgot-password",
             httpMethod = HttpMethod.Post,
             body = mapOf(
                 "email" to email,
@@ -110,7 +110,7 @@ class AuthApiImpl(
     ): DataResult<Unit, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
-            urlString = "auth/validate-reset-code",
+            urlString = "/auth/validate-reset-code",
             httpMethod = HttpMethod.Post,
             body = mapOf(
                 "email" to email,
@@ -126,7 +126,7 @@ class AuthApiImpl(
     ): DataResult<Unit, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
-            urlString = "auth/reset-password",
+            urlString = "/auth/reset-password",
             httpMethod = HttpMethod.Post,
             body = mapOf(
                 "email" to email,
@@ -139,7 +139,7 @@ class AuthApiImpl(
     override suspend fun resendResetCode(email: String): DataResult<Unit, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
-            urlString = "auth/resend-reset-code",
+            urlString = "/auth/resend-reset-code",
             httpMethod = HttpMethod.Post,
             body = mapOf(
                 "email" to email,
@@ -150,7 +150,7 @@ class AuthApiImpl(
     override suspend fun refresh(): DataResult<Unit, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
-            urlString = "auth/refresh",
+            urlString = "/auth/refresh",
             httpMethod = HttpMethod.Post,
         )
     }

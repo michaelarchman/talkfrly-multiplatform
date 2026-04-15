@@ -16,13 +16,11 @@ import com.talkfrly.multiplatform.domain.stream.StreamViewerResponse
 fun StreamRequestDto.toDomain(): StreamRequest = StreamRequest(
     name = name,
     category = category,
-    avatarUrl = avatarUrl,
 )
 
 fun StreamRequest.toDto(): StreamRequestDto = StreamRequestDto(
     name = name,
     category = category,
-    avatarUrl = avatarUrl,
 )
 
 fun StreamResponseDto.toDomain(): StreamResponse = StreamResponse(
@@ -31,6 +29,7 @@ fun StreamResponseDto.toDomain(): StreamResponse = StreamResponse(
     ownerId = ownerId,
     category = category,
     avatarUrl = avatarUrl,
+    thumbnailUrl = thumbnailUrl,
     isLive = isLive,
     playbackUrl = playbackUrl,
     createdAt = createdAt,
@@ -43,6 +42,7 @@ fun StreamViewerResponseDto.toDomain(): StreamViewerResponse = StreamViewerRespo
     ownerId = ownerId,
     category = category,
     avatarUrl = avatarUrl,
+    thumbnailUrl = thumbnailUrl,
     isLive = isLive,
     playbackUrl = playbackUrl,
 )

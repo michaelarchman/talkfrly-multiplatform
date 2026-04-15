@@ -10,11 +10,19 @@ import com.talkfrly.multiplatform.data.comments.api.CommentApiImpl
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepositoryImpl
 import com.talkfrly.multiplatform.data.core.HttpClientFactory
+import com.talkfrly.multiplatform.data.feed.api.FeedApi
+import com.talkfrly.multiplatform.data.feed.api.FeedApiImpl
+import com.talkfrly.multiplatform.data.feed.repository.FeedRepository
+import com.talkfrly.multiplatform.data.feed.repository.FeedRepositoryImpl
 import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import com.talkfrly.multiplatform.data.publications.api.PublicationApi
 import com.talkfrly.multiplatform.data.publications.api.PublicationApiImpl
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepositoryImpl
+import com.talkfrly.multiplatform.data.stream.api.StreamApi
+import com.talkfrly.multiplatform.data.stream.api.StreamApiImpl
+import com.talkfrly.multiplatform.data.stream.repository.StreamRepository
+import com.talkfrly.multiplatform.data.stream.repository.StreamRepositoryImpl
 import com.talkfrly.multiplatform.data.threads.api.ThreadApi
 import com.talkfrly.multiplatform.data.threads.api.ThreadApiImpl
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
@@ -31,6 +39,7 @@ import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesApi
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesApiImpl
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepository
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepositoryImpl
+import com.talkfrly.multiplatform.domain.stream.StreamResponse
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationViewModel
 import com.talkfrly.multiplatform.ui.screens.error.ErrorViewModel
@@ -58,6 +67,8 @@ val sharedModule: Module = module {
     singleOf(::UploadApiImpl).bind<UploadApi>()
     singleOf(::UserApiImpl).bind<UserApi>()
     singleOf(::UserPreferencesApiImpl).bind<UserPreferencesApi>()
+    singleOf(::FeedApiImpl).bind<FeedApi>()
+    singleOf(::StreamApiImpl).bind<StreamApi>()
 
     // Repositories
     singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
@@ -67,6 +78,8 @@ val sharedModule: Module = module {
     singleOf(::UploadRepositoryImpl).bind<UploadRepository>()
     singleOf(::UserRepositoryImpl).bind<UserRepository>()
     singleOf(::UserPreferencesRepositoryImpl).bind<UserPreferencesRepository>()
+    singleOf(::FeedRepositoryImpl).bind<FeedRepository>()
+    singleOf(::StreamRepositoryImpl).bind<StreamRepository>()
 
     // ViewModels
     viewModelOf(::AppViewModel)

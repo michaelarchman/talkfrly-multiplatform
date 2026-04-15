@@ -1,6 +1,6 @@
 package com.talkfrly.multiplatform.data.publications.mapper
 
-import com.talkfrly.multiplatform.data.publications.dto.CreatePublicationRequestDto
+import com.talkfrly.multiplatform.data.publications.dto.PublicationRequest
 import com.talkfrly.multiplatform.data.publications.dto.CriterionSummaryDto
 import com.talkfrly.multiplatform.data.publications.dto.PublicationDto
 import com.talkfrly.multiplatform.data.publications.dto.PublicationFilterDto
@@ -91,7 +91,7 @@ fun ModuleType.toDtoModuleType(): String = when (this) {
     ModuleType.UNKNOWN -> "unknown"
 }
 
-fun CreatePublicationRequest.toDto(): CreatePublicationRequestDto = CreatePublicationRequestDto(
+fun CreatePublicationRequest.toDto(): PublicationRequest = PublicationRequest(
     title = title,
     content = content,
     publicationType = publicationType.name.uppercase(),

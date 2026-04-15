@@ -62,7 +62,7 @@ data class CriterionInputDto(
 )
 
 @Serializable
-data class CreatePublicationRequestDto(
+data class PublicationRequest(
     @SerialName("title") val title: String,
     @SerialName("content") val content: String,
     @SerialName("publication_type") val publicationType: String? = null,

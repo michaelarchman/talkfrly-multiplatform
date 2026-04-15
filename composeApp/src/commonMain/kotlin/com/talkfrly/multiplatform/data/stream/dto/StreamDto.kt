@@ -10,6 +10,7 @@ data class StreamResponseDto(
     @SerialName("owner_id") val ownerId: String,
     @SerialName("category") val category: String,
     @SerialName("avatar_url") val avatarUrl: String? = null,
+    @SerialName("thumbnail_url") val thumbnailUrl: String? = null,
     @SerialName("is_live") val isLive: Boolean,
     @SerialName("playback_url") val playbackUrl: String? = null,
     @SerialName("created_at") val createdAt: String,
@@ -23,6 +24,7 @@ data class StreamViewerResponseDto(
     @SerialName("owner_id") val ownerId: String,
     @SerialName("category") val category: String,
     @SerialName("avatar_url") val avatarUrl: String? = null,
+    @SerialName("thumbnail_url") val thumbnailUrl: String? = null,
     @SerialName("is_live") val isLive: Boolean,
     @SerialName("playback_url") val playbackUrl: String? = null,
 )
@@ -31,7 +33,6 @@ data class StreamViewerResponseDto(
 data class StreamRequestDto(
     @SerialName("name") val name: String,
     @SerialName("category") val category: String,
-    @SerialName("avatar_url") val avatarUrl: String? = null
 )
 
 @Serializable
