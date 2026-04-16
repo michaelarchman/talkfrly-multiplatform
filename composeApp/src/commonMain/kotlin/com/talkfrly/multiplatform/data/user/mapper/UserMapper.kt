@@ -8,7 +8,7 @@ fun UserDto.toDomain(): User = User(
         email = email,
         displayName = displayName,
         isAdmin = isAdmin,
-//        avatarUrl = avatarUrl,
+        avatarUrl = avatarUrl,
         isVerified = true,
 //        isApproved = isApproved,
     )

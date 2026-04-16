@@ -15,8 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -44,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.AsyncImage
 import com.talkfrly.multiplatform.domain.user.User
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
@@ -54,6 +54,9 @@ import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
 import talkfrly_multiplatform.composeapp.generated.resources.person
+import kotlin.math.ln
+import kotlin.math.pow
+import kotlin.math.round
 
 @Composable
 fun AccountScreenRoot(
@@ -66,6 +69,7 @@ fun AccountScreenRoot(
     LaunchedEffect(Unit){
         viewModel.onIntent(AccountIntent.GetUser)
         viewModel.onIntent(AccountIntent.GetUserPreferences)
+        viewModel.onIntent(AccountIntent.RefreshImageCacheStats)
     }
 
     AccountScreen(
@@ -175,15 +179,26 @@ private fun AccountScreen(
                 )
                 Row {
                     if(state.user?.avatarUrl != null){
-                        Image(
+//                        Image(
+//                            modifier = Modifier
+//                                .height(100.dp)
+//                                .width(100.dp)
+//                                .border(2.dp, LocalTalkfrlyColors.current.primary60,
+//                                    RoundedCornerShape(8.dp)
+//                                ),
+//                            painter = rememberAsyncImagePainter(model = state.user.avatarUrl),
+//                            contentDescription = null,
+//                        )
+                        AsyncImage(
                             modifier = Modifier
                                 .height(100.dp)
                                 .width(100.dp)
                                 .border(2.dp, LocalTalkfrlyColors.current.primary60,
                                     RoundedCornerShape(8.dp)
                                 ),
-                            painter = rememberAsyncImagePainter(model = state.user.avatarUrl),
+                            model = state.user.avatarUrl,
                             contentDescription = null,
+
                         )
                     }else{
                         Image(
@@ -287,9 +302,9 @@ private fun AccountScreen(
                     }
                 }
                 Text(
+                    modifier  = Modifier.padding(vertical = 12.dp),
                     text = "DISPLAY NAME",
                     fontSize = 16.sp,
-                    modifier  = Modifier.padding(vertical = 12.dp)
                 )
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth().padding(4.dp),
@@ -311,23 +326,23 @@ private fun AccountScreen(
                 )
 
                 Text(
+                    modifier  = Modifier.padding(vertical = 12.dp),
                     text = "APP LANGUAGE",
                     fontSize = 16.sp,
-                    modifier  = Modifier.padding(vertical = 12.dp)
                 )
                 ExposedDropdownMenuBox(
+                    modifier = Modifier.padding(vertical = 4.dp),
                     expanded = expanded,
                     onExpandedChange = { expanded = !expanded },
-                    modifier = Modifier.padding(vertical = 4.dp)
                 ) {
                     OutlinedTextField(
+                        modifier = Modifier.menuAnchor(),
                         value = DpMenuSelected,
                         onValueChange = {},
                         readOnly = true,
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                         },
-                        modifier = Modifier.menuAnchor(),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedTextColor = LocalTalkfrlyColors.current.body,
                             focusedTextColor = LocalTalkfrlyColors.current.body,
@@ -336,9 +351,9 @@ private fun AccountScreen(
                         )
                     )
                     ExposedDropdownMenu(
+                        modifier = Modifier.background(LocalTalkfrlyColors.current.background),
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.background(LocalTalkfrlyColors.current.background)
                     ) {
                         options.forEach { option ->
                             DropdownMenuItem(
@@ -373,6 +388,45 @@ private fun AccountScreen(
                 thickness = 1.dp,
                 color = Color.DarkGray,
             )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = "Image Cache",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "RAM: ${formatBytes(state.memoryCacheSizeBytes)}",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "Disk: ${formatBytes(state.diskCacheSizeBytes)}",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Button(
+                    modifier = Modifier.padding(top = 8.dp),
+                    onClick = { onAction(AccountIntent.ClearImageCache) },
+                    enabled = !state.isClearingImageCache,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = LocalTalkfrlyColors.current.primary,
+                        contentColor = LocalTalkfrlyColors.current.black
+                    )
+                ) {
+                    Text(
+                        if (state.isClearingImageCache) {
+                            "Clearing image cache..."
+                        } else {
+                            "Clear image cache"
+                        }
+                    )
+                }
+            }
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp,
+                color = Color.DarkGray,
+            )
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onAction(AccountIntent.Logout) },
@@ -384,5 +438,20 @@ private fun AccountScreen(
                 Text("Logout")
             }
         }
+    }
+}
+
+private fun formatBytes(bytes: Long?): String {
+    if (bytes == null) return "Unavailable"
+    if (bytes <= 0L) return "0 B"
+
+    val units = listOf("B", "KB", "MB", "GB", "TB")
+    val digitGroup = (ln(bytes.toDouble()) / ln(1024.0)).toInt().coerceAtMost(units.lastIndex)
+    val value = bytes / 1024.0.pow(digitGroup.toDouble())
+
+    return if (digitGroup == 0) {
+        "${bytes} ${units[digitGroup]}"
+    } else {
+        "${round(value * 10) / 10} ${units[digitGroup]}"
     }
 }

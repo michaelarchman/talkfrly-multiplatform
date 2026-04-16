@@ -8,5 +8,8 @@ data class AccountState(
     val message: String = "Account Settings",
     val error: String? = null,
     val userNameInput: String = "",
-    val userPreferences: UserPreferences? = null
+    val userPreferences: UserPreferences? = null,
+    val memoryCacheSizeBytes: Long? = null,
+    val diskCacheSizeBytes: Long? = null,
+    val isClearingImageCache: Boolean = false,
 )

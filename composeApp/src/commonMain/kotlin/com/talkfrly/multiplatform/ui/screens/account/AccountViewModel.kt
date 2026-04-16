@@ -3,20 +3,24 @@ package com.talkfrly.multiplatform.ui.screens.account
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
+import com.talkfrly.multiplatform.data.cache.ImageCacheManager
 import com.talkfrly.multiplatform.data.user.repository.UserRepository
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
 import com.talkfrly.multiplatform.domain.core.onSuccess
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AccountViewModel(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
+    private val imageCacheManager: ImageCacheManager,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(AccountState())
     val state: StateFlow<AccountState> get() = _state
@@ -27,6 +31,8 @@ class AccountViewModel(
             is AccountIntent.GetUser -> fetchUser()
             is AccountIntent.SetUserName -> setUserName( intent.value )
             is AccountIntent.GetUserPreferences -> fetchPreferences()
+            is AccountIntent.RefreshImageCacheStats -> refreshImageCacheStats()
+            is AccountIntent.ClearImageCache -> clearImageCache()
         }
     }
 
@@ -89,5 +95,44 @@ class AccountViewModel(
                 }
             }
             .onFinally { stopLoading() }
+    }
+
+    private fun refreshImageCacheStats() = viewModelScope.launch {
+        val stats = withContext(Dispatchers.Default) {
+            imageCacheManager.getStats()
+        }
+        _state.update {
+            it.copy(
+                memoryCacheSizeBytes = stats.memoryCacheSizeBytes,
+                diskCacheSizeBytes = stats.diskCacheSizeBytes,
+            )
+        }
+    }
+
+    private fun clearImageCache() = viewModelScope.launch {
+        _state.update { it.copy(isClearingImageCache = true) }
+
+        try {
+            withContext(Dispatchers.Default) {
+                imageCacheManager.clear()
+            }
+            val stats = withContext(Dispatchers.Default) {
+                imageCacheManager.getStats()
+            }
+            _state.update {
+                it.copy(
+                    memoryCacheSizeBytes = stats.memoryCacheSizeBytes,
+                    diskCacheSizeBytes = stats.diskCacheSizeBytes,
+                    isClearingImageCache = false,
+                )
+            }
+        } catch (e: Exception) {
+            _state.update {
+                it.copy(
+                    error = e.message ?: "Failed to clear image cache.",
+                    isClearingImageCache = false,
+                )
+            }
+        }
     }
 }
