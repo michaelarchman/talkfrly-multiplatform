@@ -55,5 +55,9 @@ sealed interface Route {
         override val id = "ERROR"
         override val title = "Error"
     }
+    @Serializable data class Stream(val streamId: String) : Route {
+        override val id = "STREAM"
+        override val title = "Stream"
+    }
 
 }
