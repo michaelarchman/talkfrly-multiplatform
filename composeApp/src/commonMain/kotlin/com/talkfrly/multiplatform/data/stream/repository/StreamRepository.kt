@@ -1,16 +1,15 @@
 package com.talkfrly.multiplatform.data.stream.repository
 
 import com.talkfrly.multiplatform.data.stream.api.StreamApi
-import com.talkfrly.multiplatform.data.stream.dto.StreamListRequestDto
 import com.talkfrly.multiplatform.data.stream.mapper.toDomain
 import com.talkfrly.multiplatform.data.stream.mapper.toDto
 import com.talkfrly.multiplatform.domain.core.DataError
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.map
-import com.talkfrly.multiplatform.domain.stream.StreamResponse
 import com.talkfrly.multiplatform.domain.stream.StreamKey
 import com.talkfrly.multiplatform.domain.stream.StreamList
 import com.talkfrly.multiplatform.domain.stream.StreamRequest
+import com.talkfrly.multiplatform.domain.stream.StreamResponse
 import com.talkfrly.multiplatform.domain.stream.StreamStopResponse
 import com.talkfrly.multiplatform.domain.stream.StreamViewerResponse
 
@@ -45,14 +44,17 @@ class StreamRepositoryImpl(
         page: Int,
         limit: Int
     ): DataResult<StreamList, DataError.Remote> {
-        return api
-            .streamList(
-                StreamListRequestDto(
-                    page = page,
-                    limit = limit,
-                )
+        return DataResult.ResultSuccess(
+            StreamList(
+                items = listOf(demoStream),
+                totalCount = 1,
+                page = page,
+                limit = limit,
             )
-            .map { it.toDomain() }
+        )
+//        return api
+//            .streamList(StreamListRequestDto(page, limit))
+//            .map{ it.toDomain()}
     }
 
     override suspend fun createStream(
@@ -70,9 +72,10 @@ class StreamRepositoryImpl(
     }
 
     override suspend fun getStreamById(id: String): DataResult<StreamViewerResponse, DataError.Remote> {
-        return api
-            .getStreamById(id)
-            .map { it.toDomain() }
+        return DataResult.ResultSuccess(demoStream)
+//        return api
+//            .getStreamById(id)
+//            .map { it.toDomain() }
     }
 
     override suspend fun updateStream(
@@ -104,5 +107,18 @@ class StreamRepositoryImpl(
         return api
             .getStreamKey(id)
             .map { it.toDomain() }
+    }
+
+    private companion object {
+        val demoStream = StreamViewerResponse(
+            id = "stream-demo-1",
+            name = "Talkfrly Live Demo",
+            ownerId = "demo-owner",
+            category = "Demo Stream",
+            avatarUrl = "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=200&q=80",
+            thumbnailUrl = "https://m.media-amazon.com/images/M/MV5BNmZkNWNmYTgtNmYyMy00NTM0LThiOWYtY2FmMzBiNTRhNmZiXkEyXkFqcGc@._V1_.jpg",
+            isLive = true,
+            playbackUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        )
     }
 }

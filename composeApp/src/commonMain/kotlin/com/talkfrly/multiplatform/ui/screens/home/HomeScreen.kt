@@ -36,9 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.talkfrly.multiplatform.domain.feed.FeedItem
 import com.talkfrly.multiplatform.ui.Route
-import com.talkfrly.multiplatform.ui.components.publications.PublicationCard
-import com.talkfrly.multiplatform.ui.components.publications.PublicationViewMode
+import com.talkfrly.multiplatform.ui.components.feeds.FeedCard
+import com.talkfrly.multiplatform.ui.components.streams.StreamCard
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
@@ -61,7 +62,8 @@ fun HomeScreenRoot(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.onIntent(HomeIntent.GetPublications)
+        viewModel.onIntent(HomeIntent.GetFeed)
+        viewModel.onIntent(HomeIntent.GetStreams)
     }
 
     HomeScreen(
@@ -241,22 +243,58 @@ private fun HomeScreen(
                 }
             }
 
-            state.publications?.let { publicationList ->
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(publicationList.publications) { publication ->
-                        PublicationCard(
-                            publication = publication,
-                            viewMode = PublicationViewMode.FEED,
-                            onClick = {
-                                navController.navigate(Route.PublicationDetails(publicationId = publication.id))
-                            }
-                        )
-                    }
+            when (state.selectedTabIndex) {
+                0 -> {
+                    FeedTabContent(feedItems = state.feeds?.feed.orEmpty())
                 }
+                1 -> {
+                    StreamsTabContent(
+                        state = state,
+                        onStreamClick = { streamId ->
+                            navController.navigate(Route.Stream(streamId))
+                        },
+                    )
+                }
+                2 -> {
+                   Text("Followed stuff")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FeedTabContent(
+    feedItems: List<FeedItem>,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(feedItems) { feedItem ->
+            FeedCard(feedItem = feedItem)
+        }
+    }
+}
+
+@Composable
+private fun StreamsTabContent(
+    state: HomeState,
+    onStreamClick: (String) -> Unit,
+) {
+    if (state.isLoadingStreams && state.streams.isEmpty()) {
+        Text("Loading streams...")
+    }
+    else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            items(state.streams, key = { it.id }) { stream ->
+                StreamCard(
+                    stream = stream,
+                    onClick = { onStreamClick(stream.id) },
+                )
             }
         }
     }

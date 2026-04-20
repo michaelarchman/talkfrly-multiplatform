@@ -14,6 +14,7 @@ import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationDetailsScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
+import com.talkfrly.multiplatform.ui.screens.stream.StreamScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
@@ -89,6 +90,13 @@ fun AppNavHost(
                navController = navController
            )
         }
-
+        composable<Route.Stream> { backStackEntry ->
+            val route = backStackEntry.toRoute<Route.Stream>()
+            StreamScreenRoot(
+                streamId = route.streamId,
+                viewModel = koinViewModel(),
+                navController = navController,
+            )
+        }
     }
 }

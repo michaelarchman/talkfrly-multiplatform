@@ -179,16 +179,6 @@ private fun AccountScreen(
                 )
                 Row {
                     if(state.user?.avatarUrl != null){
-//                        Image(
-//                            modifier = Modifier
-//                                .height(100.dp)
-//                                .width(100.dp)
-//                                .border(2.dp, LocalTalkfrlyColors.current.primary60,
-//                                    RoundedCornerShape(8.dp)
-//                                ),
-//                            painter = rememberAsyncImagePainter(model = state.user.avatarUrl),
-//                            contentDescription = null,
-//                        )
                         AsyncImage(
                             modifier = Modifier
                                 .height(100.dp)
@@ -257,7 +247,6 @@ private fun AccountScreen(
             )
             Column {
                 Text(
-//                    modifier = Modifier.padding(vertical = 16.dp),
                     text = "Preferences",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold

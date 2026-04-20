@@ -5,13 +5,13 @@ import com.talkfrly.multiplatform.data.auth.api.AuthApi
 import com.talkfrly.multiplatform.data.auth.api.AuthApiImpl
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepositoryImpl
+import com.talkfrly.multiplatform.data.cache.CoilImageCacheManager
+import com.talkfrly.multiplatform.data.cache.ImageCacheManager
 import com.talkfrly.multiplatform.data.comments.api.CommentApi
 import com.talkfrly.multiplatform.data.comments.api.CommentApiImpl
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepositoryImpl
 import com.talkfrly.multiplatform.data.core.HttpClientFactory
-import com.talkfrly.multiplatform.data.cache.CoilImageCacheManager
-import com.talkfrly.multiplatform.data.cache.ImageCacheManager
 import com.talkfrly.multiplatform.data.feed.api.FeedApi
 import com.talkfrly.multiplatform.data.feed.api.FeedApiImpl
 import com.talkfrly.multiplatform.data.feed.repository.FeedRepository
@@ -41,7 +41,6 @@ import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesApi
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesApiImpl
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepository
 import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepositoryImpl
-import com.talkfrly.multiplatform.domain.stream.StreamResponse
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationViewModel
 import com.talkfrly.multiplatform.ui.screens.error.ErrorViewModel
@@ -49,6 +48,7 @@ import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationDetailsViewModel
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
+import com.talkfrly.multiplatform.ui.screens.stream.StreamViewModel
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.core.module.Module
@@ -95,6 +95,7 @@ val sharedModule: Module = module {
     viewModelOf(::CreatePublicationViewModel)
     viewModelOf(::PublicationDetailsViewModel)
     viewModelOf(::ErrorViewModel)
+    viewModelOf(::StreamViewModel)
 }
 
 expect val platformModule: Module
