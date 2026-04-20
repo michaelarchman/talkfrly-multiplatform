@@ -22,7 +22,7 @@ class HomeViewModel(
     fun onIntent(intent: HomeIntent) {
         when (intent) {
             is HomeIntent.Logout -> { }
-            is HomeIntent.GetFeeds -> getFeeds()
+            is HomeIntent.GetFeed -> getFeed()
             is HomeIntent.GetStreams -> getStreams()
             is HomeIntent.SetSelectedTab -> setSelectedTab(intent.index)
         }
@@ -32,7 +32,7 @@ class HomeViewModel(
         _state.update { it.copy(selectedTabIndex = selectedTab) }
     }
 
-    private fun getFeeds() = viewModelScope.launch {
+    private fun getFeed() = viewModelScope.launch {
         startLoading()
         feedRepository.getFeed(
             page = 1,

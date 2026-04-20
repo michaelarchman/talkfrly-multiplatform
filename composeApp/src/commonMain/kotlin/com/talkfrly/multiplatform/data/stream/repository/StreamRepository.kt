@@ -115,7 +115,7 @@ class StreamRepositoryImpl(
             name = "Talkfrly Live Demo",
             ownerId = "demo-owner",
             category = "Demo Stream",
-//            avatarUrl = "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=200&q=80",
+            avatarUrl = "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=200&q=80",
             thumbnailUrl = "https://m.media-amazon.com/images/M/MV5BNmZkNWNmYTgtNmYyMy00NTM0LThiOWYtY2FmMzBiNTRhNmZiXkEyXkFqcGc@._V1_.jpg",
             isLive = true,
             playbackUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",

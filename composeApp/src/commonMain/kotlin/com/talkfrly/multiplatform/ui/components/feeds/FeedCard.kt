@@ -98,7 +98,6 @@ fun FeedCard(
                     }
                 }
 
-
                 Text(
                     text = feedItem.content,
                     color = colors.body,
@@ -231,7 +230,6 @@ private fun FeedStat(
         )
     }
 }
-
 
 private fun formatTimestamp(createdAt: String): String {
     return try {

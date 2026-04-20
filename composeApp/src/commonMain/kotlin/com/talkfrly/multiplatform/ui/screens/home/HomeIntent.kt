@@ -2,7 +2,7 @@ package com.talkfrly.multiplatform.ui.screens.home
 
 sealed class HomeIntent {
     data object Logout: HomeIntent()
-    data object GetFeeds: HomeIntent()
+    data object GetFeed: HomeIntent()
     data object GetStreams: HomeIntent()
     data class SetSelectedTab(val index: Int): HomeIntent()
 }

@@ -62,7 +62,7 @@ fun HomeScreenRoot(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.onIntent(HomeIntent.GetFeeds)
+        viewModel.onIntent(HomeIntent.GetFeed)
         viewModel.onIntent(HomeIntent.GetStreams)
     }
 
