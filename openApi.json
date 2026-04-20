@@ -1,0 +1,2818 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Talkfrly Core Auth/User API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registration successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "409": {
+            "description": "User already exists"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Sets `access_token` and `refresh_token`"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "403": {
+            "description": "Email not verified"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Refresh tokens",
+        "description": "Uses cookie `refresh_token` first. If absent, accepts JSON body.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token refreshed",
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Sets `access_token` and `refresh_token`"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body"
+          },
+          "401": {
+            "description": "Unauthorized or invalid refresh token"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout",
+        "description": "Uses cookie `refresh_token` first. If absent, accepts JSON body.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logged out",
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Clears `access_token` and `refresh_token`"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Verify email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified",
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Sets `access_token` and `refresh_token`"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid code or expired code"
+          },
+          "404": {
+            "description": "User or verification not found"
+          },
+          "409": {
+            "description": "Email already verified"
+          },
+          "429": {
+            "description": "Too many attempts"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/resend-verification": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Resend verification code",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification code sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "User or verification not found"
+          },
+          "409": {
+            "description": "Email already verified"
+          },
+          "429": {
+            "description": "Resend too soon"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Request password reset",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/validate-reset-code": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Validate password reset code",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateResetCodeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Code is valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired code"
+          },
+          "404": {
+            "description": "Reset request not found"
+          },
+          "429": {
+            "description": "Too many attempts"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Reset password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired code"
+          },
+          "404": {
+            "description": "Reset request not found"
+          },
+          "429": {
+            "description": "Too many attempts"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/resend-reset-code": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Resend password reset code",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reset code sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "No active reset request found"
+          },
+          "429": {
+            "description": "Please wait before requesting a new code"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/streams": {
+      "get": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "List streams",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stream list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "Create stream",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStreamRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Stream created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamDashboardResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/streams/me": {
+      "get": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "Get current user's stream (dashboard)",
+        "description": "Returns the stream owned by the authenticated user with full management fields.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owner's stream",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamDashboardResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Stream not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/streams/{id}": {
+      "get": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "Get stream by ID (viewer)",
+        "description": "Returns only the fields needed to watch a stream. Use this when navigating from the stream list to the player.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stream viewer data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamViewerResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Stream not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "Update stream",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStreamRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated stream",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamDashboardResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Stream not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "Delete stream",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stream deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Stream not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/streams/{id}/live-input": {
+      "post": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "Setup live input (create Cloudflare RTMP endpoint)",
+        "description": "Creates a Cloudflare Live Input for the stream and returns RTMP credentials. Idempotent — returns existing credentials if already set up.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Live input ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveInputResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Stream not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/streams/{id}/stop": {
+      "post": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "Stop stream",
+        "description": "Deletes the Cloudflare Live Input, clears RTMP credentials and resets live status. Call `/live-input` again to restart streaming.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stream stopped",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Stream not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/streams/{id}/stream-key": {
+      "get": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "Get RTMP stream key",
+        "description": "Returns existing RTMP credentials. Requires `/live-input` to be called first.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stream key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveInputResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Live input not configured"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Stream not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/streams/webhooks/cloudflare": {
+      "post": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "Cloudflare webhook (internal)",
+        "description": "Public endpoint called by Cloudflare Stream on `live_input.connected` and `live_input.disconnected` events.\nSecured via HMAC-SHA256 signature in the `Webhook-Signature` header (`time=<ts>,sig1=<hex>`).\n**Not intended for direct frontend use.**\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloudflareWebhookRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook processed"
+          },
+          "400": {
+            "description": "Invalid request body"
+          },
+          "401": {
+            "description": "Invalid or missing webhook signature"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get current user",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Profile not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Update current user",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Delete current user",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/feed": {
+      "get": {
+        "tags": ["Feed"],
+        "summary": "Get feed",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 10}}
+        ],
+        "responses": {
+          "200": {"description": "Feed items", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/FeedResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/feed/popular": {
+      "get": {
+        "tags": ["Feed"],
+        "summary": "Get popular feed",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 10}}
+        ],
+        "responses": {
+          "200": {"description": "Popular feed items", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/FeedResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/preferences": {
+      "get": {
+        "tags": ["Preferences"],
+        "summary": "Get current user preferences",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "responses": {
+          "200": {"description": "User preferences", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PreferencesResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "put": {
+        "tags": ["Preferences"],
+        "summary": "Update current user preferences",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UpdatePreferencesRequest"}}}
+        },
+        "responses": {
+          "200": {"description": "Updated preferences", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PreferencesResponse"}}}},
+          "400": {"description": "Invalid request body"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/threads": {
+      "get": {
+        "tags": ["Thread"],
+        "summary": "List threads",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 5}},
+          {"in": "query", "name": "role", "schema": {"type": "string", "enum": ["owner", "member"]}, "description": "Filter threads by authenticated user's role. Requires auth."}
+        ],
+        "responses": {
+          "200": {"description": "Thread list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ThreadListResponse"}}}},
+          "400": {"description": "Invalid role value"},
+          "401": {"description": "Unauthorized — required when role filter is used"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "post": {
+        "tags": ["Thread"],
+        "summary": "Create thread",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateThreadRequest"}}}
+        },
+        "responses": {
+          "201": {"description": "Thread created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ThreadResponse"}}}},
+          "400": {"description": "Invalid request or slug format"},
+          "401": {"description": "Unauthorized"},
+          "409": {"description": "Thread with this slug already exists"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/threads/{id}": {
+      "get": {
+        "tags": ["Thread"],
+        "summary": "Get thread by ID",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Thread", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ThreadResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Thread not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "put": {
+        "tags": ["Thread"],
+        "summary": "Update thread",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UpdateThreadRequest"}}}
+        },
+        "responses": {
+          "200": {"description": "Updated thread", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ThreadResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — not the creator"},
+          "404": {"description": "Thread not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "delete": {
+        "tags": ["Thread"],
+        "summary": "Delete thread",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Thread deleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — only creator can delete"},
+          "404": {"description": "Thread not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/threads/slug/{slug}": {
+      "get": {
+        "tags": ["Thread"],
+        "summary": "Get thread by slug",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "slug", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Thread", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ThreadResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Thread not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/threads/{id}/join": {
+      "post": {
+        "tags": ["Thread"],
+        "summary": "Join thread",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Joined thread", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Thread not found"},
+          "409": {"description": "Already a member"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/threads/{id}/leave": {
+      "delete": {
+        "tags": ["Thread"],
+        "summary": "Leave thread",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Left thread", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "400": {"description": "Not a member"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Creator cannot leave"},
+          "404": {"description": "Thread not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/publications": {
+      "get": {
+        "tags": ["Publication"],
+        "summary": "List publications",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 5}},
+          {"in": "query", "name": "type", "schema": {"type": "string", "enum": ["general","article","review","ranking"]}, "description": "Filter by publication type"},
+          {"in": "query", "name": "sort", "schema": {"type": "string", "enum": ["latest","popular"]}, "description": "Sort order"},
+          {"in": "query", "name": "private", "schema": {"type": "boolean"}, "description": "Show only private publications"}
+        ],
+        "responses": {
+          "200": {"description": "Publication list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PublicationListResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "post": {
+        "tags": ["Publication"],
+        "summary": "Create publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PublicationRequest"}}}
+        },
+        "responses": {
+          "201": {"description": "Publication created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PublicationResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/publications/{id}": {
+      "get": {
+        "tags": ["Publication"],
+        "summary": "Get publication by ID",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Publication", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PublicationResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "put": {
+        "tags": ["Publication"],
+        "summary": "Update publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PublicationRequest"}}}
+        },
+        "responses": {
+          "200": {"description": "Updated publication", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PublicationResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Publication not found"}
+        }
+      },
+      "delete": {
+        "tags": ["Publication"],
+        "summary": "Delete publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Publication deleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Publication not found"}
+        }
+      }
+    },
+    "/publications/{id}/like": {
+      "post": {
+        "tags": ["Publication"],
+        "summary": "Like a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "204": {"description": "Liked"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "delete": {
+        "tags": ["Publication"],
+        "summary": "Unlike a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "204": {"description": "Unliked"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/articles/categories": {
+      "get": {
+        "tags": ["Article"],
+        "summary": "List available article categories",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "responses": {
+          "200": {"description": "Category list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArticleCategoriesResponse"}}}},
+          "401": {"description": "Unauthorized"}
+        }
+      }
+    },
+    "/articles": {
+      "get": {
+        "tags": ["Article"],
+        "summary": "List articles by category",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "category", "required": true, "schema": {"type": "string", "enum": ["technology","politics","business","science","health","entertainment","sports","world","other"]}},
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 20, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Article list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArticleListResponse"}}}},
+          "400": {"description": "Missing or invalid category"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/articles/{id}": {
+      "get": {
+        "tags": ["Article"],
+        "summary": "Get article by ID",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Article", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArticleResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Article not found"}
+        }
+      }
+    },
+    "/publications/{id}/article": {
+      "post": {
+        "tags": ["Article"],
+        "summary": "Create article metadata for a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "id", "required": true, "schema": {"type": "string"}, "description": "Publication ID"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateArticleRequest"}}}
+        },
+        "responses": {
+          "201": {"description": "Article created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArticleResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "get": {
+        "tags": ["Article"],
+        "summary": "Get article metadata for a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "id", "required": true, "schema": {"type": "string"}, "description": "Publication ID"}
+        ],
+        "responses": {
+          "200": {"description": "Article", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArticleResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Article not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "put": {
+        "tags": ["Article"],
+        "summary": "Update article metadata for a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "id", "required": true, "schema": {"type": "string"}, "description": "Publication ID"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UpdateArticleRequest"}}}
+        },
+        "responses": {
+          "200": {"description": "Updated article", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArticleResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — not the article owner"},
+          "404": {"description": "Article not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/reviews/categories": {
+      "get": {
+        "tags": ["Review"],
+        "summary": "List available review categories",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "responses": {
+          "200": {"description": "Category list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReviewCategoriesResponse"}}}},
+          "401": {"description": "Unauthorized"}
+        }
+      }
+    },
+    "/reviews": {
+      "get": {
+        "tags": ["Review"],
+        "summary": "List reviews by category",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "category", "required": true, "schema": {"type": "string", "enum": ["movie","music","book","product","game","restaurant","place","service","other"]}},
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 20, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Review list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReviewListResponse"}}}},
+          "400": {"description": "Missing or invalid category"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/reviews/{id}": {
+      "get": {
+        "tags": ["Review"],
+        "summary": "Get review by ID",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Review", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReviewResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Review not found"}
+        }
+      }
+    },
+    "/publications/{id}/review": {
+      "post": {
+        "tags": ["Review"],
+        "summary": "Create review metadata for a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "id", "required": true, "schema": {"type": "string"}, "description": "Publication ID"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateReviewRequest"}}}
+        },
+        "responses": {
+          "201": {"description": "Review created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReviewResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "get": {
+        "tags": ["Review"],
+        "summary": "Get review metadata for a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "id", "required": true, "schema": {"type": "string"}, "description": "Publication ID"}
+        ],
+        "responses": {
+          "200": {"description": "Review", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReviewResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Review not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "put": {
+        "tags": ["Review"],
+        "summary": "Update review metadata for a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "id", "required": true, "schema": {"type": "string"}, "description": "Publication ID"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UpdateReviewRequest"}}}
+        },
+        "responses": {
+          "200": {"description": "Updated review", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReviewResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — not the review owner"},
+          "404": {"description": "Review not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/uploads/presign": {
+      "post": {
+        "tags": ["Upload"],
+        "summary": "Get presigned URL for R2 upload",
+        "description": "Returns a presigned PUT URL for direct upload to Cloudflare R2 plus the final public file URL.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PresignRequest"}}}
+        },
+        "responses": {
+          "200": {"description": "Presigned upload URL", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PresignResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/publications/{id}/comments": {
+      "get": {
+        "tags": ["Comment"],
+        "summary": "List comments for a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}},
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 20}}
+        ],
+        "responses": {
+          "200": {"description": "Comment list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CommentListResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "post": {
+        "tags": ["Comment"],
+        "summary": "Create a comment",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CommentRequest"}}}
+        },
+        "responses": {
+          "201": {"description": "Comment created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CommentResponse"}}}},
+          "400": {"description": "Bad request"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/comments/{id}": {
+      "put": {
+        "tags": ["Comment"],
+        "summary": "Update a comment",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CommentRequest"}}}
+        },
+        "responses": {
+          "200": {"description": "Comment updated", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CommentResponse"}}}},
+          "400": {"description": "Bad request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Comment not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "delete": {
+        "tags": ["Comment"],
+        "summary": "Delete a comment",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Comment deleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Comment not found"}
+        }
+      }
+    },
+    "/streams/{id}/chat": {
+      "post": {
+        "tags": ["Chat"],
+        "summary": "Create chat for stream",
+        "description": "Owner only. Creates a chat for the given stream. Chat is enabled by default.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Stream ID"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/CreateChatRequest"}
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "Chat created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ChatResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Stream not found"},
+          "409": {"description": "Chat already exists"}
+        }
+      },
+      "get": {
+        "tags": ["Chat"],
+        "summary": "Get chat config for stream",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Stream ID"}
+        ],
+        "responses": {
+          "200": {"description": "Chat config", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ChatResponse"}}}},
+          "404": {"description": "Chat not found"}
+        }
+      },
+      "patch": {
+        "tags": ["Chat"],
+        "summary": "Update chat settings",
+        "description": "Owner only. Toggle enabled or persist_messages.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Stream ID"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/UpdateChatRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Updated chat", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ChatResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Chat not found"}
+        }
+      },
+      "delete": {
+        "tags": ["Chat"],
+        "summary": "Delete chat",
+        "description": "Owner only. Deletes chat and all messages immediately.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Stream ID"}
+        ],
+        "responses": {
+          "204": {"description": "Chat deleted"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Chat not found"}
+        }
+      }
+    },
+    "/streams/{id}/chat/messages": {
+      "get": {
+        "tags": ["Chat"],
+        "summary": "List chat message history",
+        "description": "Returns messages ordered by newest first. Use cursor for pagination.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Stream ID"},
+          {"name": "cursor", "in": "query", "required": false, "schema": {"type": "string"}, "description": "ID of last received message (exclusive)"},
+          {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "default": 50, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Message list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ChatMessageListResponse"}}}},
+          "404": {"description": "Chat not found"}
+        }
+      }
+    },
+    "/streams/{id}/chat/ws": {
+      "get": {
+        "tags": ["Chat"],
+        "summary": "WebSocket connection for live chat",
+        "description": "Upgrade to WebSocket. The handshake uses the same auth as the HTTP API: `Authorization: Bearer <access_token>` or the `access_token` cookie. Browser clients should normally rely on the cookie. Client events: `chat.send`, `chat.ping`, `chat.leave`. Server events: `chat.ready` (includes current `viewers` count from stream presence), `chat.pong`, `chat.message.created`, `chat.error`, `chat.closed`.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Stream ID"}
+        ],
+        "x-websocket-messages": {
+          "clientToServer": {
+            "oneOf": [
+              {"$ref": "#/components/schemas/ChatWsSendEvent"},
+              {"$ref": "#/components/schemas/ChatWsPingEvent"},
+              {"$ref": "#/components/schemas/ChatWsLeaveEvent"}
+            ]
+          },
+          "serverToClient": {
+            "oneOf": [
+              {"$ref": "#/components/schemas/ChatWsReadyEvent"},
+              {"$ref": "#/components/schemas/ChatWsPongEvent"},
+              {"$ref": "#/components/schemas/ChatWsMessageCreatedEvent"},
+              {"$ref": "#/components/schemas/ChatWsErrorEvent"},
+              {"$ref": "#/components/schemas/ChatWsClosedEvent"}
+            ]
+          }
+        },
+        "responses": {
+          "101": {"description": "Switching Protocols — WebSocket upgrade"},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Chat not found or disabled"}
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "tags": ["Search"],
+        "summary": "Search publications",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "q", "required": true, "schema": {"type": "string"}, "description": "Search query — matched against content and tags"},
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 20, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Search results", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SearchResponse"}}}},
+          "400": {"description": "Missing q parameter"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/streams/{id}/viewers/ws": {
+      "get": {
+        "tags": ["Stream"],
+        "summary": "WebSocket connection for stream presence",
+        "description": "Upgrade to WebSocket to observe stream viewer presence independently from chat. The handshake uses the same auth as the HTTP API: `Authorization: Bearer <access_token>` or the `access_token` cookie. Browser clients should normally rely on the cookie. Client events: `viewers.ping`, `viewers.leave`. Server events: `viewers.ready`, `viewers.pong`, `viewers.update`, `viewers.error`, `viewers.closed`.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Stream ID"}
+        ],
+        "x-websocket-messages": {
+          "clientToServer": {
+            "oneOf": [
+              {"$ref": "#/components/schemas/ViewersWsPingEvent"},
+              {"$ref": "#/components/schemas/ViewersWsLeaveEvent"}
+            ]
+          },
+          "serverToClient": {
+            "oneOf": [
+              {"$ref": "#/components/schemas/ViewersWsReadyEvent"},
+              {"$ref": "#/components/schemas/ViewersWsPongEvent"},
+              {"$ref": "#/components/schemas/ViewersWsUpdateEvent"},
+              {"$ref": "#/components/schemas/ViewersWsErrorEvent"},
+              {"$ref": "#/components/schemas/ViewersWsClosedEvent"}
+            ]
+          }
+        },
+        "responses": {
+          "101": {"description": "Switching Protocols — WebSocket upgrade"},
+          "401": {"description": "Unauthorized"},
+          "409": {"description": "Stream is offline"}
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "access_token"
+      }
+    },
+    "schemas": {
+      "MessageResponse": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "EmailRequest": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
+          "display_name": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "required": [
+          "message",
+          "access_token",
+          "refresh_token"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          }
+        }
+      },
+      "RefreshTokenRequest": {
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "properties": {
+          "refresh_token": {
+            "type": "string"
+          }
+        }
+      },
+      "LogoutRequest": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string"
+          }
+        }
+      },
+      "VerifyEmailRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "code"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6,
+            "pattern": "^[0-9]{6}$"
+          }
+        }
+      },
+      "ValidateResetCodeRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "code"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6,
+            "pattern": "^[0-9]{6}$"
+          }
+        }
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "code",
+          "new_password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6,
+            "pattern": "^[0-9]{6}$"
+          },
+          "new_password": {
+            "type": "string",
+            "minLength": 8
+          }
+        }
+      },
+      "CreateStreamRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "category"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateStreamRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "category"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "StreamViewerResponse": {
+        "description": "Viewer-only fields — enough to display and play back a stream.",
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "owner_id",
+          "display_name",
+          "category",
+          "is_live"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "owner_id": {
+            "type": "string"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Stream owner avatar URL."
+          },
+          "thumbnail_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_live": {
+            "type": "boolean"
+          },
+          "playback_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Signed HLS playback URL valid for 4 hours. Absent when live input is not configured. Pass directly to the HLS player — no additional auth needed."
+          }
+        }
+      },
+      "StreamDashboardResponse": {
+        "description": "Full stream data for the owner's management dashboard.",
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "owner_id",
+          "display_name",
+          "category",
+          "is_live",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "owner_id": {
+            "type": "string"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Stream owner avatar URL."
+          },
+          "is_live": {
+            "type": "boolean"
+          },
+          "playback_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Signed HLS playback URL valid for 4 hours. Absent when live input is not configured. Pass directly to the HLS player — no additional auth needed."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "StreamListResponse": {
+        "type": "object",
+        "required": [
+          "items",
+          "total_count",
+          "page",
+          "limit"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StreamViewerResponse"
+            }
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          }
+        }
+      },
+      "LiveInputResponse": {
+        "type": "object",
+        "properties": {
+          "rtmp_url": {
+            "type": "string",
+            "example": "rtmps://live.cloudflare.com:443/live/"
+          },
+          "stream_key": {
+            "type": "string"
+          },
+          "playback_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Signed HLS playback URL valid for 4 hours. Pass directly to the HLS player — no additional auth needed."
+          }
+        }
+      },
+      "CloudflareWebhookRequest": {
+        "type": "object",
+        "required": [
+          "event",
+          "liveInput"
+        ],
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "live_input.connected",
+              "live_input.disconnected"
+            ]
+          },
+          "liveInput": {
+            "type": "object",
+            "required": [
+              "uid"
+            ],
+            "properties": {
+              "uid": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatar_url": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "display_name",
+          "is_admin"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_admin": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {"type": "string"}
+        }
+      },
+      "FeedItemResponse": {
+        "type": "object",
+        "required": ["id", "content", "is_anonymous", "is_private", "thread_members_only", "image_urls", "tags", "comment_count", "vote_score", "liked_by_user", "views", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string"},
+          "user": {"$ref": "#/components/schemas/UserSummaryResponse", "nullable": true},
+          "avatar_url": {"type": "string", "nullable": true},
+          "content": {"type": "string"},
+          "type": {"type": "string", "nullable": true},
+          "is_anonymous": {"type": "boolean"},
+          "is_private": {"type": "boolean"},
+          "thread_members_only": {"type": "boolean"},
+          "thread_id": {"type": "string", "nullable": true},
+          "thread_slug": {"type": "string", "nullable": true},
+          "thread_name": {"type": "string", "nullable": true},
+          "image_urls": {"type": "array", "items": {"type": "string"}},
+          "tags": {"type": "array", "items": {"type": "string"}},
+          "video_id": {"type": "string", "nullable": true},
+          "video_stream_uid": {"type": "string", "nullable": true},
+          "video_url": {"type": "string", "nullable": true},
+          "video_thumbnail": {"type": "string", "nullable": true},
+          "video_embed_url": {"type": "string", "nullable": true},
+          "comment_count": {"type": "integer"},
+          "vote_score": {"type": "integer"},
+          "liked_by_user": {"type": "boolean"},
+          "like_count": {"type": "integer"},
+          "views": {"type": "integer"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "FeedResponse": {
+        "type": "object",
+        "required": ["feed", "page", "limit"],
+        "properties": {
+          "feed": {"type": "array", "items": {"$ref": "#/components/schemas/FeedItemResponse"}},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "PreferencesResponse": {
+        "type": "object",
+        "required": ["display_preference", "display_name", "language"],
+        "properties": {
+          "display_preference": {"type": "string"},
+          "display_name": {"type": "string"},
+          "language": {"type": "string"}
+        }
+      },
+      "UpdatePreferencesRequest": {
+        "type": "object",
+        "required": ["display_preference", "language"],
+        "properties": {
+          "display_preference": {"type": "string"},
+          "language": {"type": "string", "minLength": 2, "maxLength": 2},
+          "display_name": {"type": "string", "nullable": true}
+        }
+      },
+      "CreateThreadRequest": {
+        "type": "object",
+        "required": ["name", "slug"],
+        "properties": {
+          "name": {"type": "string", "maxLength": 100},
+          "slug": {"type": "string", "maxLength": 100, "description": "Lowercase letters, numbers, and hyphens only"},
+          "description": {"type": "string"}
+        }
+      },
+      "UpdateThreadRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {"type": "string", "maxLength": 100},
+          "description": {"type": "string"}
+        }
+      },
+      "ThreadResponse": {
+        "type": "object",
+        "required": ["id", "name", "slug", "creator_id", "member_count", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "slug": {"type": "string"},
+          "description": {"type": "string"},
+          "creator_id": {"type": "string"},
+          "member_count": {"type": "integer"},
+          "role": {"type": "string", "enum": ["owner", "member"], "nullable": true, "description": "Authenticated user's role in this thread. Null if not a member or unauthenticated."},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "ThreadListResponse": {
+        "type": "object",
+        "required": ["threads", "total_count", "page", "limit"],
+        "properties": {
+          "threads": {"type": "array", "items": {"$ref": "#/components/schemas/ThreadResponse"}},
+          "total_count": {"type": "integer"},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "UserSummaryResponse": {
+        "type": "object",
+        "required": ["id", "display_name"],
+        "properties": {
+          "id": {"type": "string"},
+          "display_name": {"type": "string"}
+        }
+      },
+      "CriterionRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {"type": "string", "maxLength": 50},
+          "score": {"type": "integer", "nullable": true}
+        }
+      },
+      "PublicationRequest": {
+        "type": "object",
+        "required": ["content"],
+        "properties": {
+          "content": {"type": "string", "maxLength": 5000},
+          "is_anonymous": {"type": "boolean"},
+          "is_private": {"type": "boolean"},
+          "channel_id": {"type": "string", "nullable": true},
+          "thread_id": {"type": "string", "nullable": true},
+          "type": {"type": "string", "enum": ["general","article","review","ranking"]},
+          "image_urls": {"type": "array", "items": {"type": "string"}},
+          "tags": {"type": "array", "maxItems": 6, "items": {"type": "string"}},
+          "criteria": {"type": "array", "items": {"$ref": "#/components/schemas/CriterionRequest"}},
+          "thread_members_only": {"type": "boolean"},
+          "video_id": {"type": "string", "nullable": true},
+          "video_stream_uid": {"type": "string", "nullable": true}
+        }
+      },
+      "PublicationResponse": {
+        "type": "object",
+        "required": ["id", "content", "is_anonymous", "is_private", "thread_members_only", "is_thread_member", "image_urls", "tags", "languages", "comment_count", "vote_score", "liked_by_user", "like_count", "views", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string"},
+          "domain": {"allOf": [{"$ref": "#/components/schemas/UserSummaryResponse"}], "nullable": true, "description": "Author. Absent when is_anonymous=true."},
+          "channel_id": {"type": "string", "nullable": true},
+          "thread_id": {"type": "string", "nullable": true},
+          "thread_slug": {"type": "string", "nullable": true},
+          "thread_name": {"type": "string", "nullable": true},
+          "type": {"type": "string", "enum": ["general","article","review","ranking"]},
+          "content": {"type": "string"},
+          "is_anonymous": {"type": "boolean"},
+          "is_private": {"type": "boolean"},
+          "thread_members_only": {"type": "boolean"},
+          "is_thread_member": {"type": "boolean"},
+          "image_urls": {"type": "array", "items": {"type": "string"}},
+          "tags": {"type": "array", "items": {"type": "string"}},
+          "languages": {"type": "array", "items": {"type": "string"}},
+          "avatar_url": {"type": "string", "nullable": true},
+          "video_id": {"type": "string", "nullable": true},
+          "video_url": {"type": "string", "nullable": true},
+          "video_thumbnail": {"type": "string", "nullable": true},
+          "video_embed_url": {"type": "string", "nullable": true},
+          "video_stream_uid": {"type": "string", "nullable": true},
+          "comment_count": {"type": "integer"},
+          "vote_score": {"type": "integer"},
+          "liked_by_user": {"type": "boolean"},
+          "like_count": {"type": "integer"},
+          "views": {"type": "integer"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "PublicationListResponse": {
+        "type": "object",
+        "required": ["publications", "total_count", "page", "limit"],
+        "properties": {
+          "publications": {"type": "array", "items": {"$ref": "#/components/schemas/PublicationResponse"}},
+          "total_count": {"type": "integer"},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "CommentRequest": {
+        "type": "object",
+        "required": ["content"],
+        "properties": {
+          "content": {"type": "string", "maxLength": 2000},
+          "parent_comment_id": {"type": "string", "nullable": true},
+          "is_anonymous": {"type": "boolean"},
+          "image_urls": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "CommentResponse": {
+        "type": "object",
+        "required": ["id", "post_id", "content", "is_anonymous", "image_urls", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string"},
+          "post_id": {"type": "string"},
+          "user": {"allOf": [{"$ref": "#/components/schemas/UserSummaryResponse"}], "nullable": true, "description": "Author. Absent when is_anonymous=true."},
+          "parent_comment_id": {"type": "string", "nullable": true},
+          "content": {"type": "string"},
+          "is_anonymous": {"type": "boolean"},
+          "image_urls": {"type": "array", "items": {"type": "string"}},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "CommentListResponse": {
+        "type": "object",
+        "required": ["comments", "total_count", "page", "limit"],
+        "properties": {
+          "comments": {"type": "array", "items": {"$ref": "#/components/schemas/CommentResponse"}},
+          "total_count": {"type": "integer"},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "PresignRequest": {
+        "type": "object",
+        "required": ["filename"],
+        "properties": {
+          "filename": {"type": "string"}
+        }
+      },
+      "PresignResponse": {
+        "type": "object",
+        "required": ["key", "upload_url", "file_url"],
+        "properties": {
+          "key": {"type": "string", "description": "Object key in R2"},
+          "upload_url": {"type": "string", "description": "Presigned PUT URL — upload file directly here"},
+          "file_url": {"type": "string", "description": "Final public URL of the uploaded file"}
+        }
+      },
+      "CreateChatRequest": {
+        "type": "object",
+        "properties": {
+          "persist_messages": {"type": "boolean", "description": "If true, message history survives after stream ends"}
+        }
+      },
+      "UpdateChatRequest": {
+        "type": "object",
+        "properties": {
+          "enabled": {"type": "boolean"},
+          "persist_messages": {"type": "boolean"}
+        }
+      },
+      "ChatResponse": {
+        "type": "object",
+        "required": ["id", "stream_id", "enabled", "persist_messages", "status", "created_at"],
+        "properties": {
+          "id": {"type": "string", "format": "uuid"},
+          "stream_id": {"type": "string", "format": "uuid"},
+          "enabled": {"type": "boolean"},
+          "persist_messages": {"type": "boolean"},
+          "status": {"type": "string", "enum": ["active", "closed"]},
+          "created_at": {"type": "string", "format": "date-time"},
+          "closed_at": {"type": "string", "format": "date-time", "nullable": true}
+        }
+      },
+      "ChatMessageItem": {
+        "type": "object",
+        "required": ["id", "chat_id", "stream_id", "user_id", "username", "content", "kind", "created_at"],
+        "properties": {
+          "id": {"type": "string", "format": "uuid"},
+          "chat_id": {"type": "string", "format": "uuid"},
+          "stream_id": {"type": "string", "format": "uuid"},
+          "user_id": {"type": "string", "format": "uuid"},
+          "username": {"type": "string"},
+          "avatar_url": {"type": "string", "nullable": true},
+          "client_message_id": {"type": "string", "nullable": true},
+          "content": {"type": "string"},
+          "kind": {"type": "string", "enum": ["message", "system"]},
+          "created_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "ChatMessageListResponse": {
+        "type": "object",
+        "required": ["items"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/ChatMessageItem"}
+          },
+          "cursor": {"type": "string", "nullable": true, "description": "Pass as ?cursor= in next request to get older messages"}
+        }
+      },
+      "ChatWsSendPayload": {
+        "type": "object",
+        "required": ["content"],
+        "properties": {
+          "clientMessageId": {"type": "string", "description": "Optional client-side ID echoed back in `chat.message.created` when present"},
+          "content": {"type": "string", "maxLength": 300}
+        }
+      },
+      "ChatWsReadyPayload": {
+        "type": "object",
+        "required": ["streamId", "viewers"],
+        "properties": {
+          "streamId": {"type": "string", "format": "uuid"},
+          "viewers": {"type": "integer", "description": "Current viewer count at the moment of connection"}
+        }
+      },
+      "ChatWsErrorPayload": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {"type": "string"}
+        }
+      },
+      "ChatWsClosedPayload": {
+        "type": "object",
+        "required": ["streamId"],
+        "properties": {
+          "streamId": {"type": "string", "format": "uuid"}
+        }
+      },
+      "ChatWsMessageCreatedPayload": {
+        "type": "object",
+        "required": ["id", "chatId", "streamId", "userId", "username", "content", "kind", "createdAt"],
+        "properties": {
+          "id": {"type": "string", "format": "uuid"},
+          "chatId": {"type": "string", "format": "uuid"},
+          "streamId": {"type": "string", "format": "uuid"},
+          "userId": {"type": "string", "format": "uuid"},
+          "username": {"type": "string"},
+          "avatarUrl": {"type": "string", "nullable": true},
+          "clientMessageId": {"type": "string", "nullable": true},
+          "content": {"type": "string"},
+          "kind": {"type": "string", "enum": ["message", "system"]},
+          "createdAt": {"type": "string", "format": "date-time"}
+        }
+      },
+      "ChatWsSendEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["chat.send"]},
+          "payload": {"$ref": "#/components/schemas/ChatWsSendPayload"}
+        }
+      },
+      "ChatWsPingEvent": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {"type": "string", "enum": ["chat.ping"]},
+          "payload": {"nullable": true}
+        }
+      },
+      "ChatWsLeaveEvent": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {"type": "string", "enum": ["chat.leave"]},
+          "payload": {"nullable": true}
+        }
+      },
+      "ChatWsReadyEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["chat.ready"]},
+          "payload": {"$ref": "#/components/schemas/ChatWsReadyPayload"}
+        }
+      },
+      "ChatWsPongEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["chat.pong"]},
+          "payload": {"nullable": true}
+        }
+      },
+      "ChatWsMessageCreatedEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["chat.message.created"]},
+          "payload": {"$ref": "#/components/schemas/ChatWsMessageCreatedPayload"}
+        }
+      },
+      "ChatWsErrorEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["chat.error"]},
+          "payload": {"$ref": "#/components/schemas/ChatWsErrorPayload"}
+        }
+      },
+      "ChatWsClosedEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["chat.closed"]},
+          "payload": {"$ref": "#/components/schemas/ChatWsClosedPayload"}
+        }
+      },
+      "ViewersWsReadyPayload": {
+        "type": "object",
+        "required": ["streamId", "count"],
+        "properties": {
+          "streamId": {"type": "string", "format": "uuid"},
+          "count": {"type": "integer", "description": "Current viewer count at the moment of connection"}
+        }
+      },
+      "ViewersWsUpdatePayload": {
+        "type": "object",
+        "required": ["count"],
+        "properties": {
+          "count": {"type": "integer", "description": "Updated total viewer count"}
+        }
+      },
+      "ViewersWsErrorPayload": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {"type": "string"}
+        }
+      },
+      "ViewersWsClosedPayload": {
+        "type": "object",
+        "properties": {
+          "streamId": {"type": "string", "format": "uuid"}
+        }
+      },
+      "ViewersWsPingEvent": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {"type": "string", "enum": ["viewers.ping"]},
+          "payload": {"nullable": true}
+        }
+      },
+      "ViewersWsLeaveEvent": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {"type": "string", "enum": ["viewers.leave"]},
+          "payload": {"nullable": true}
+        }
+      },
+      "ViewersWsReadyEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["viewers.ready"]},
+          "payload": {"$ref": "#/components/schemas/ViewersWsReadyPayload"}
+        }
+      },
+      "ViewersWsPongEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["viewers.pong"]},
+          "payload": {"nullable": true}
+        }
+      },
+      "ViewersWsUpdateEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["viewers.update"]},
+          "payload": {"$ref": "#/components/schemas/ViewersWsUpdatePayload"}
+        }
+      },
+      "ViewersWsErrorEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["viewers.error"]},
+          "payload": {"$ref": "#/components/schemas/ViewersWsErrorPayload"}
+        }
+      },
+      "CreateArticleRequest": {
+        "type": "object",
+        "required": ["category"],
+        "properties": {
+          "category": {"type": "string", "enum": ["technology","politics","business","science","health","entertainment","sports","world","other"]},
+          "source": {"type": "string", "nullable": true},
+          "author_name": {"type": "string", "nullable": true},
+          "bibliography": {"type": "array", "items": {"type": "string"}, "description": "List of source/reference URLs"}
+        }
+      },
+      "UpdateArticleRequest": {
+        "type": "object",
+        "required": ["category"],
+        "properties": {
+          "category": {"type": "string", "enum": ["technology","politics","business","science","health","entertainment","sports","world","other"]},
+          "source": {"type": "string", "nullable": true},
+          "author_name": {"type": "string", "nullable": true},
+          "bibliography": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "ArticleResponse": {
+        "type": "object",
+        "required": ["id", "publication_id", "category", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string"},
+          "publication_id": {"type": "string"},
+          "category": {"type": "string"},
+          "source": {"type": "string", "nullable": true},
+          "author_name": {"type": "string", "nullable": true},
+          "bibliography": {"type": "array", "items": {"type": "string"}, "nullable": true},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "ArticleListResponse": {
+        "type": "object",
+        "required": ["articles", "total_count", "page", "limit"],
+        "properties": {
+          "articles": {"type": "array", "items": {"$ref": "#/components/schemas/ArticleResponse"}},
+          "total_count": {"type": "integer"},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "ArticleCategoriesResponse": {
+        "type": "object",
+        "required": ["categories"],
+        "properties": {
+          "categories": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "CreateReviewRequest": {
+        "type": "object",
+        "required": ["subject", "rating", "category"],
+        "properties": {
+          "subject": {"type": "string", "description": "What is being reviewed"},
+          "rating": {"type": "integer", "minimum": 1, "maximum": 10},
+          "category": {"type": "string", "enum": ["movie","music","book","product","game","restaurant","place","service","other"]},
+          "pros": {"type": "array", "items": {"type": "string"}, "nullable": true},
+          "cons": {"type": "array", "items": {"type": "string"}, "nullable": true}
+        }
+      },
+      "UpdateReviewRequest": {
+        "type": "object",
+        "required": ["subject", "rating", "category"],
+        "properties": {
+          "subject": {"type": "string"},
+          "rating": {"type": "integer", "minimum": 1, "maximum": 10},
+          "category": {"type": "string", "enum": ["movie","music","book","product","game","restaurant","place","service","other"]},
+          "pros": {"type": "array", "items": {"type": "string"}, "nullable": true},
+          "cons": {"type": "array", "items": {"type": "string"}, "nullable": true}
+        }
+      },
+      "ReviewResponse": {
+        "type": "object",
+        "required": ["id", "publication_id", "subject", "rating", "category", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string"},
+          "publication_id": {"type": "string"},
+          "subject": {"type": "string"},
+          "rating": {"type": "integer", "minimum": 1, "maximum": 10},
+          "category": {"type": "string"},
+          "pros": {"type": "array", "items": {"type": "string"}, "nullable": true},
+          "cons": {"type": "array", "items": {"type": "string"}, "nullable": true},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "ReviewListResponse": {
+        "type": "object",
+        "required": ["reviews", "total_count", "page", "limit"],
+        "properties": {
+          "reviews": {"type": "array", "items": {"$ref": "#/components/schemas/ReviewResponse"}},
+          "total_count": {"type": "integer"},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "ReviewCategoriesResponse": {
+        "type": "object",
+        "required": ["categories"],
+        "properties": {
+          "categories": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "PublicationSearchResult": {
+        "type": "object",
+        "required": ["id", "type", "created_at"],
+        "properties": {
+          "id": {"type": "string"},
+          "display_name": {"type": "string", "nullable": true},
+          "avatar_url": {"type": "string", "nullable": true},
+          "type": {"type": "string"},
+          "created_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "SearchResponse": {
+        "type": "object",
+        "required": ["publications", "page", "limit"],
+        "properties": {
+          "publications": {"type": "array", "items": {"$ref": "#/components/schemas/PublicationSearchResult"}},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "ViewersWsClosedEvent": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "type": {"type": "string", "enum": ["viewers.closed"]},
+          "payload": {"$ref": "#/components/schemas/ViewersWsClosedPayload"}
+        }
+      }
+    }
+  }
+}
