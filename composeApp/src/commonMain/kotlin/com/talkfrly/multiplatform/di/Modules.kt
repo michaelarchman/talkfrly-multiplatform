@@ -10,6 +10,8 @@ import com.talkfrly.multiplatform.data.comments.api.CommentApiImpl
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepositoryImpl
 import com.talkfrly.multiplatform.data.core.HttpClientFactory
+import com.talkfrly.multiplatform.data.cache.CoilImageCacheManager
+import com.talkfrly.multiplatform.data.cache.ImageCacheManager
 import com.talkfrly.multiplatform.data.feed.api.FeedApi
 import com.talkfrly.multiplatform.data.feed.api.FeedApiImpl
 import com.talkfrly.multiplatform.data.feed.repository.FeedRepository
@@ -58,6 +60,7 @@ import org.koin.dsl.module
 val sharedModule: Module = module {
     //httpClient and cookies storage
     single { HttpClientFactory.create(get(), get<PreferencesRepository>()) }
+    single<ImageCacheManager> { CoilImageCacheManager() }
 
     // Data sources / Api
     singleOf(::AuthApiImpl).bind<AuthApi>()

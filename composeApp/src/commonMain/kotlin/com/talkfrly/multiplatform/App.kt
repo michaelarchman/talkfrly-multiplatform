@@ -17,6 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.compose.LocalPlatformContext
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.memory.MemoryCache
+import coil3.request.CachePolicy
+import coil3.util.DebugLogger
+import com.talkfrly.multiplatform.data.cache.GlobalImageLoaderProvider
 import com.talkfrly.multiplatform.ui.nav.AppNavHost
 import com.talkfrly.multiplatform.ui.session.Session
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
@@ -37,6 +45,21 @@ fun App(
     val navController = rememberNavController()
     val globalLoadingCount by BaseViewModel.globalLoadingCount.collectAsState()
     val isGlobalLoading = globalLoadingCount > 0
+
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader.Builder(context)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .memoryCache {
+                MemoryCache.Builder()
+                    .maxSizePercent(context, .1)
+                    .build()
+            }
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .logger(DebugLogger())
+            .build()
+            .also(GlobalImageLoaderProvider::set)
+    }
+    GlobalImageLoaderProvider.set(SingletonImageLoader.get(LocalPlatformContext.current))
 
     TalkfrlyTheme {
         Box(modifier = Modifier.fillMaxSize()) {
