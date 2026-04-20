@@ -8,21 +8,30 @@ import io.ktor.http.HttpMethod
 
 interface UserPreferencesApi {
     suspend fun getUserPreferences(): DataResult<UserPreferencesDto, DataError.Remote>
-    suspend fun setUserPreferences(): DataResult<Unit, DataError.Remote>
+    suspend fun updateUserPreferences(
+        request: UserPreferencesUpdateRequestDto,
+    ): DataResult<UserPreferencesDto, DataError.Remote>
 }
 
 class UserPreferencesApiImpl(
     private val httpClient: HttpClient,
-): UserPreferencesApi{
+) : UserPreferencesApi {
     override suspend fun getUserPreferences(): DataResult<UserPreferencesDto, DataError.Remote> {
         return makeRequest(
             httpClient = httpClient,
-            urlString = "/preferences/me",
+            urlString = "/preferences",
             httpMethod = HttpMethod.Get,
         )
     }
 
-    override suspend fun setUserPreferences(): DataResult<Unit, DataError.Remote> {
-        TODO("Not yet implemented")
+    override suspend fun updateUserPreferences(
+        request: UserPreferencesUpdateRequestDto,
+    ): DataResult<UserPreferencesDto, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "/preferences",
+            httpMethod = HttpMethod.Put,
+            body = request,
+        )
     }
 }

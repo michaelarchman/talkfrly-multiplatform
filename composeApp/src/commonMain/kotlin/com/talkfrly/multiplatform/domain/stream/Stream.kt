@@ -12,6 +12,7 @@ data class StreamResponse(
     val ownerId: String,
     val category: String,
     val avatarUrl: String? = null,
+    val thumbnailUrl: String? = null,
     val isLive: Boolean,
     val playbackUrl: String? = null,
     val createdAt: String,
