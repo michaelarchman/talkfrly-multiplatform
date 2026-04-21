@@ -1,6 +1,5 @@
 package com.talkfrly.multiplatform.data.user.api
 
-import com.multiplatform.webview.web.WebContent
 import com.talkfrly.multiplatform.data.core.makeRequest
 import com.talkfrly.multiplatform.data.user.dto.UserDto
 import com.talkfrly.multiplatform.data.user.dto.UserUpdateRequestDto
