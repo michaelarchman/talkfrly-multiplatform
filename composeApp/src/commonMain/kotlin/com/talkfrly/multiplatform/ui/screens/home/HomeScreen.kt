@@ -37,9 +37,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.talkfrly.multiplatform.domain.feed.FeedItem
-import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.components.feeds.FeedCard
 import com.talkfrly.multiplatform.ui.components.streams.StreamCard
+import com.talkfrly.multiplatform.ui.nav.AccountRoute
+import com.talkfrly.multiplatform.ui.nav.HomeRoute
+import com.talkfrly.multiplatform.ui.nav.NewPublicationRoute
+import com.talkfrly.multiplatform.ui.nav.StreamRoute
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
@@ -103,9 +106,9 @@ private fun HomeScreen(
                     actionIconContentColor = LocalTalkfrlyColors.current.body,
                 ),
                 actions = {
-                    if (navController.currentBackStackEntry?.destination?.route == Route.Home.id) {
+                    if (navController.currentBackStackEntry?.destination == HomeRoute) {
                         IconButton(
-                            onClick = { navController.navigate(Route.CreatePublication()) },
+                            onClick = { navController.navigate(NewPublicationRoute) },
                             enabled = true,
                         ) {
                             Icon(
@@ -114,7 +117,7 @@ private fun HomeScreen(
                             )
                         }
                         IconButton(
-                            onClick = { navController.navigate(Route.Account.id) },
+                            onClick = { navController.navigate(AccountRoute) },
                             enabled = true,
                         ) {
                             Icon(
@@ -182,7 +185,6 @@ private fun HomeScreen(
                                 )
                                 Text(text = "Threads", fontWeight = FontWeight(600))
                             }
-
                         }
                         Tab(
                             selectedContentColor = LocalTalkfrlyColors.current.body,
@@ -251,7 +253,7 @@ private fun HomeScreen(
                     StreamsTabContent(
                         state = state,
                         onStreamClick = { streamId ->
-                            navController.navigate(Route.Stream(streamId))
+                            navController.navigate(StreamRoute(streamId))
                         },
                     )
                 }

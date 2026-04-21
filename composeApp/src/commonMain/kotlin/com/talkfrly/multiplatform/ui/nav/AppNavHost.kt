@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.screens.account.AccountScreenRoot
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationScreenRoot
 import com.talkfrly.multiplatform.ui.screens.error.ErrorScreenRoot
@@ -25,76 +24,63 @@ fun AppNavHost(
     navController: NavHostController,
     sessionViewModel: SessionViewModel,
 ) {
-//    val state by sessionViewModel.state.collectAsState()
-
     NavHost(
         navController = navController,
-        startDestination = Route.Splash.id
+        startDestination = HomeRoute,
     ) {
-        composable(Route.Login.id) {
+        composable<LoginRoute> {
             LoginScreenRoot(
-                viewModel = koinViewModel(),
-                navController = navController,
-                onLoginSuccess = { sessionViewModel.checkSession() },
+                 navController = navController,
             )
         }
-        composable(Route.Register.id) {
+        composable<RegisterRoute>{
             RegisterScreenRoot(
                 viewModel = koinViewModel(),
                 navController = navController,
             )
         }
-        composable(Route.VerifyEmail.id) {
+        composable<VerifyEmailRoute> {
             VerifyEmailScreenRoot(
                 viewModel = koinViewModel<VerifyEmailViewModel>(),
                 navController = navController,
-                onVerifySuccess = { sessionViewModel.checkSession() },
             )
         }
-        composable(Route.Splash.id) {
+        composable<SplashRoute> {
             SplashScreen()
         }
-        composable(Route.Home.id) {
+        composable<HomeRoute> {
             HomeScreenRoot(
                 viewModel = koinViewModel(),
                 navController = navController,
             )
         }
-        composable(Route.Account.id) {
+        composable<AccountRoute>{
             AccountScreenRoot(
                 viewModel = koinViewModel(),
                 navController = navController,
                 onLogout = { sessionViewModel.logout() }
             )
         }
-        composable<Route.PublicationDetails> { backStackEntry ->
-            val route = backStackEntry.toRoute<Route.PublicationDetails>()
+        composable<PublicationDetailsRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<PublicationDetailsRoute>()
             PublicationDetailsScreenRoot(
                 publicationId = route.publicationId,
                 viewModel = koinViewModel(),
                 navController = navController,
             )
         }
-        composable<Route.CreatePublication> { backStackEntry ->
-            val route = backStackEntry.toRoute<Route.CreatePublication>()
+        composable<NewPublicationRoute> {
             CreatePublicationScreenRoot(
                 navController = navController,
-                threadId = route.threadId,
-                threadName = route.threadName,
-                viewModel = koinViewModel()
             )
         }
-        composable(Route.Error.id){
-           ErrorScreenRoot(
-               viewModel = koinViewModel(),
-               navController = navController
-           )
+        composable<ErrorRoute>{
+           ErrorScreenRoot(navController = navController)
         }
-        composable<Route.Stream> { backStackEntry ->
-            val route = backStackEntry.toRoute<Route.Stream>()
+        composable<StreamRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<StreamRoute>()
             StreamScreenRoot(
                 streamId = route.streamId,
-                viewModel = koinViewModel(),
                 navController = navController,
             )
         }

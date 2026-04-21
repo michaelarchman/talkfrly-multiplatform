@@ -22,10 +22,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.talkfrly.multiplatform.ui.Route
 import com.talkfrly.multiplatform.ui.components.buttons.ButtonPrimary
 import com.talkfrly.multiplatform.ui.components.buttons.ButtonSizeType
 import com.talkfrly.multiplatform.ui.components.inputs.InputText
+import com.talkfrly.multiplatform.ui.nav.LoginRoute
+import com.talkfrly.multiplatform.ui.nav.VerifyEmailRoute
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.imageResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -45,7 +46,7 @@ fun RegisterScreenRoot(
         navController = navController,
         onAction = { intent ->
             viewModel.onIntent(intent) {
-                navController.navigate(Route.VerifyEmail.id)
+                navController.navigate(VerifyEmailRoute)
             }
         }
     )
@@ -70,9 +71,10 @@ private fun RegisterScreen(
     Scaffold(
         containerColor = LocalTalkfrlyColors.current.background,
         contentColor = LocalTalkfrlyColors.current.body,
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
+                .padding(paddingValues)
                 .padding(horizontal = 32.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(
@@ -167,7 +169,7 @@ private fun RegisterScreen(
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight(800),
                     color = LocalTalkfrlyColors.current.body,
-                    modifier = Modifier.clickable { navController.navigate(Route.Login.id) }
+                    modifier = Modifier.clickable { navController.navigate(LoginRoute) }
                 )
 
             }

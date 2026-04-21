@@ -41,7 +41,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavOptionsBuilder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.talkfrly.multiplatform.domain.publication.PublicationType
-import com.talkfrly.multiplatform.ui.Route
+import com.talkfrly.multiplatform.ui.nav.HomeRoute
 import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.vectorResource
@@ -82,8 +81,8 @@ fun CreatePublicationScreenRoot(
 
     LaunchedEffect(state.isSubmitted) {
         if (state.isSubmitted) {
-            navController.navigate(Route.Home.id) {
-                popUpTo(Route.Home.id) { inclusive = true }
+            navController.navigate(HomeRoute) {
+                popUpTo(HomeRoute) { inclusive = true }
                 launchSingleTop = true
             }
         }

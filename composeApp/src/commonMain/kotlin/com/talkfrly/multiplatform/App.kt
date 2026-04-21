@@ -1,40 +1,22 @@
 package com.talkfrly.multiplatform
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import coil3.ImageLoader
-import coil3.SingletonImageLoader
-import coil3.compose.LocalPlatformContext
-import coil3.compose.setSingletonImageLoaderFactory
-import coil3.memory.MemoryCache
-import coil3.request.CachePolicy
-import coil3.util.DebugLogger
-import com.talkfrly.multiplatform.data.cache.GlobalImageLoaderProvider
 import com.talkfrly.multiplatform.ui.nav.AppNavHost
-import com.talkfrly.multiplatform.ui.session.Session
+import com.talkfrly.multiplatform.ui.nav.HomeRoute
+import com.talkfrly.multiplatform.ui.nav.LoginRoute
+import com.talkfrly.multiplatform.ui.nav.SplashRoute
+import com.talkfrly.multiplatform.ui.session.SessionState
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
-import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
-import org.jetbrains.compose.resources.imageResource
 import org.koin.compose.viewmodel.koinViewModel
-import talkfrly_multiplatform.composeapp.generated.resources.Res
-import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
-import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,62 +24,70 @@ fun App(
     viewModel: AppViewModel = koinViewModel<AppViewModel>()
 ) {
     val sessionViewModel: SessionViewModel = koinViewModel<SessionViewModel>()
+    val sessionState by sessionViewModel.state.collectAsState()
     val navController = rememberNavController()
     val globalLoadingCount by BaseViewModel.globalLoadingCount.collectAsState()
     val isGlobalLoading = globalLoadingCount > 0
 
-    setSingletonImageLoaderFactory { context ->
-        ImageLoader.Builder(context)
-            .memoryCachePolicy(CachePolicy.ENABLED)
-            .memoryCache {
-                MemoryCache.Builder()
-                    .maxSizePercent(context, .1)
-                    .build()
-            }
-            .diskCachePolicy(CachePolicy.ENABLED)
-            .logger(DebugLogger())
-            .build()
-            .also(GlobalImageLoaderProvider::set)
-    }
-    GlobalImageLoaderProvider.set(SingletonImageLoader.get(LocalPlatformContext.current))
+    LaunchedEffect(sessionState) {
+        try {
+            if (navController.graph.nodes.isEmpty) return@LaunchedEffect
+        } catch (e: IllegalStateException) {
+            println("Session state didn't initialized: $e")
+            return@LaunchedEffect
+        }
 
-    TalkfrlyTheme {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Session(
-                sessionViewModel,
-                navController
-            ) {
-                AppNavHost(
-                    navController = navController,
-                    sessionViewModel = sessionViewModel
-                )
+        when (sessionState) {
+            SessionState.LoggedIn -> {
+                navController.navigate(HomeRoute) {
+                    popUpTo(0)
+                }
             }
-
-            if (isGlobalLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(LocalTalkfrlyColors.current.background.copy(alpha = 0.9f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            bitmap = if (isSystemInDarkTheme())
-                                imageResource(Res.drawable.talkfrly_logo_dark)
-                            else imageResource(Res.drawable.talkfrly_logo_light),
-                            contentDescription = null,
-                            modifier = Modifier.size(140.dp)
-                        )
-                        CircularProgressIndicator(
-                            color = LocalTalkfrlyColors.current.primary,
-                            trackColor = LocalTalkfrlyColors.current.surface
-                        )
-                    }
+            SessionState.LoggedOut -> {
+                navController.navigate(LoginRoute) {
+                    popUpTo(0)
+                }
+            }
+            SessionState.Loading -> {
+                navController.navigate(SplashRoute) {
+                    popUpTo(0)
                 }
             }
         }
+    }
+
+    TalkfrlyTheme {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AppNavHost(
+                navController = navController,
+                sessionViewModel = sessionViewModel
+            )
+        }
+
+//        if (isGlobalLoading) {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .background(LocalTalkfrlyColors.current.background.copy(alpha = 0.9f)),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Column(
+//                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    Image(
+//                        bitmap = if (isSystemInDarkTheme())
+//                            imageResource(Res.drawable.talkfrly_logo_dark)
+//                        else imageResource(Res.drawable.talkfrly_logo_light),
+//                        contentDescription = null,
+//                        modifier = Modifier.size(140.dp)
+//                    )
+//                    CircularProgressIndicator(
+//                        color = LocalTalkfrlyColors.current.primary,
+//                        trackColor = LocalTalkfrlyColors.current.surface
+//                    )
+//                }
+//            }
+//        }
     }
 }

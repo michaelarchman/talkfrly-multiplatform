@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
 interface PreferencesRepository : CookiesStorage {
     fun getAccessToken(): Flow<String?>
     suspend fun saveAccessToken(token: String)
+    suspend fun clearAccessToken()
 
     fun getRefreshToken(): Flow<String?>
     suspend fun saveRefreshToken(refreshToken: String)
@@ -76,6 +77,12 @@ class PreferencesRepositoryImpl(
         }
 
         return cookies
+    }
+
+    override suspend fun clearAccessToken() {
+        dataStore.edit {
+            it.remove(PreferenceKeys.ACCESS_TOKEN)
+        }
     }
 
     override fun close() {}
