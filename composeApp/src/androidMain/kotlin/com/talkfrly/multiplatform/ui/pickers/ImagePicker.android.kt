@@ -1,5 +1,6 @@
 package com.talkfrly.multiplatform.ui.pickers
 
+import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
 import android.content.pm.PackageManager
@@ -23,6 +24,7 @@ actual fun rememberImagePickerController(): ImagePickerController {
     var onResultCallback by remember { mutableStateOf<(ImagePickerResult) -> Unit>({}) }
     var openCameraAction by remember { mutableStateOf<() -> Unit>({}) }
     var openGalleryAction by remember { mutableStateOf<() -> Unit>({}) }
+    var pasteFromClipboardAction by remember { mutableStateOf<() -> Unit>({}) }
 
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -62,6 +64,27 @@ actual fun rememberImagePickerController(): ImagePickerController {
         )
     }
 
+    pasteFromClipboardAction = {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = clipboard.primaryClip
+        if (clip != null && clip.itemCount > 0) {
+            val item = clip.getItemAt(0)
+            val sourceUri: Uri? = item.uri
+            val mimeType = clip.description.getMimeType(0) ?: ""
+            if (sourceUri != null && mimeType.startsWith("image/")) {
+                try {
+                    val inputStream = context.contentResolver.openInputStream(sourceUri)
+                    if (inputStream != null) {
+                        val tempFile = File.createTempFile("talkfrly_paste_", ".jpg", context.cacheDir)
+                        tempFile.outputStream().use { out -> inputStream.use { it.copyTo(out) } }
+                        val ownUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", tempFile)
+                        onResultCallback(ImagePickerResult(listOf(ownUri.toString())))
+                    }
+                } catch (_: Exception) { }
+            }
+        }
+    }
+
     openCameraAction = {
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED
@@ -78,6 +101,14 @@ actual fun rememberImagePickerController(): ImagePickerController {
         object : ImagePickerController {
             override fun openCamera() = openCameraAction()
             override fun openGallery() = openGalleryAction()
+            override fun pasteFromClipboard() = pasteFromClipboardAction()
+            override fun hasImageInClipboard(): Boolean {
+                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = clipboard.primaryClip ?: return false
+                if (clip.itemCount == 0) return false
+                val mimeType = clip.description.getMimeType(0) ?: return false
+                return mimeType.startsWith("image/")
+            }
             override fun onResult(block: (ImagePickerResult) -> Unit) {
                 onResultCallback = block
             }

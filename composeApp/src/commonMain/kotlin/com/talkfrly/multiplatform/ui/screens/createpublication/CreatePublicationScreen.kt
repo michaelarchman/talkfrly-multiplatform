@@ -62,6 +62,7 @@ import talkfrly_multiplatform.composeapp.generated.resources.add_picture
 import talkfrly_multiplatform.composeapp.generated.resources.campaign
 import talkfrly_multiplatform.composeapp.generated.resources.chat_paste_go
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
+import talkfrly_multiplatform.composeapp.generated.resources.content_paste_go
 import talkfrly_multiplatform.composeapp.generated.resources.icon_chat
 import talkfrly_multiplatform.composeapp.generated.resources.star
 
@@ -234,7 +235,9 @@ private fun CreatePublicationScreen(
                             state = state,
                             onIntent = onIntent,
                             onOpenCamera = { picker.openCamera() },
-                            onOpenGallery = { picker.openGallery() }
+                            onOpenGallery = { picker.openGallery() },
+                            onPasteFromClipboard = { picker.pasteFromClipboard() },
+                            hasImageInClipboard = picker.hasImageInClipboard(),
                         )
                     }
                     else -> {
@@ -324,7 +327,9 @@ private fun GeneralPublicationForm(
     state: CreatePublicationState,
     onIntent: (CreatePublicationIntent) -> Unit,
     onOpenCamera: () -> Unit,
-    onOpenGallery: () -> Unit
+    onOpenGallery: () -> Unit,
+    onPasteFromClipboard: () -> Unit,
+    hasImageInClipboard: Boolean,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -432,6 +437,14 @@ private fun GeneralPublicationForm(
                     enabled = !state.isSubmitting && canAddMorePhotos,
                     onClick = onOpenGallery
                 )
+                if (hasImageInClipboard) {
+                    PhotoActionButton(
+                        label = "Paste",
+                        icon = Res.drawable.content_paste_go,
+                        enabled = !state.isSubmitting && canAddMorePhotos,
+                        onClick = onPasteFromClipboard
+                    )
+                }
             }
 
             if (state.imageUris.isNotEmpty()) {

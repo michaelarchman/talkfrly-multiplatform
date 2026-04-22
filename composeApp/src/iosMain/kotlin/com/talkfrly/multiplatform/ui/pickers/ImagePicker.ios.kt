@@ -16,6 +16,7 @@ import platform.UIKit.UIImageJPEGRepresentation
 import platform.UIKit.UIImagePickerController
 import platform.UIKit.UIImagePickerControllerDelegateProtocol
 import platform.UIKit.UINavigationControllerDelegateProtocol
+import platform.UIKit.UIPasteboard
 import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
 import platform.darwin.NSObject
@@ -66,6 +67,16 @@ private class IosImagePickerController : ImagePickerController {
         picker.delegate = delegate
 
         topViewController()?.presentViewController(picker, animated = true, completion = null)
+    }
+
+    override fun pasteFromClipboard() {
+        val image = UIPasteboard.generalPasteboard.image ?: return
+        val uri = saveImageToTemp(image) ?: return
+        onResultCallback(ImagePickerResult(listOf(uri)))
+    }
+
+    override fun hasImageInClipboard(): Boolean {
+        return UIPasteboard.generalPasteboard.hasImages
     }
 
     override fun openCamera() {

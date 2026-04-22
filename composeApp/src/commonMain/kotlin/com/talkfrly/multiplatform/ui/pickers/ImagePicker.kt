@@ -9,6 +9,8 @@ data class ImagePickerResult(
 interface ImagePickerController {
     fun openCamera()
     fun openGallery()
+    fun pasteFromClipboard()
+    fun hasImageInClipboard(): Boolean
     fun onResult(block: (ImagePickerResult) -> Unit)
 }
 
