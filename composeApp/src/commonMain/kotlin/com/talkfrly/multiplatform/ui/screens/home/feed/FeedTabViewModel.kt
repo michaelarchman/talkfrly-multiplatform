@@ -19,16 +19,26 @@ class FeedTabViewModel(
 
     fun onIntent(intent: FeedTabIntent) {
         when (intent) {
-            is FeedTabIntent.GetFeed -> fetchFeed(intent.page, intent.limit)
+            is FeedTabIntent.GetFeed -> {
+                if (_state.value.isLoadingMore || _state.value.isLoading) return
+                fetchFeed(intent.page, intent.limit)
+            }
+            is FeedTabIntent.Navigate -> { }
         }
     }
 
     private fun fetchFeed(page: Int, limit: Int) = viewModelScope.launch {
         startLoading()
         feedRepository.getFeed(page = page, limit = limit)
-            .onSuccess { feed ->
-                _state.update {
-                    it.copy(feed = feed)
+            .onSuccess { newFeed ->
+                _state.update { current ->
+                    val combined = current.visiblePublications + newFeed.publications
+                    val windowed = if (combined.size > 9) combined.drop(newFeed.limit) else combined
+                    current.copy(
+                        feed = newFeed,
+                        visiblePublications = windowed,
+                        hasNextPage = newFeed.publications.size >= newFeed.limit
+                    )
                 }
             }.onError { error ->
                 println("Error during Feed Fetch, $error")

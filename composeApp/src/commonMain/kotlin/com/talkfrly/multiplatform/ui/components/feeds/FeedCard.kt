@@ -3,6 +3,7 @@ package com.talkfrly.multiplatform.ui.components.feeds
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,16 +15,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.domain.feed.FeedItem
+import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTabIntent
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.vectorResource
@@ -47,6 +51,7 @@ import talkfrly_multiplatform.composeapp.generated.resources.icon_visibility_on
 fun FeedCard(
     feedItem: FeedItem,
     modifier: Modifier = Modifier,
+    onAction: (FeedTabIntent) -> Unit,
 ) {
     val colors = LocalTalkfrlyColors.current
 
@@ -55,11 +60,10 @@ fun FeedCard(
             .fillMaxWidth()
             .padding(horizontal = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = colors.backgroundLighter,
+            containerColor = Color.Transparent,
             contentColor = colors.body,
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        shape = ShapeDefaults.ExtraSmall
+        shape = ShapeDefaults.ExtraSmall,
     ) {
         Column(
             modifier = Modifier
@@ -85,6 +89,7 @@ fun FeedCard(
                         text = feedItem.user.displayName,
                         color = colors.body,
                         fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -93,6 +98,7 @@ fun FeedCard(
                 Text(
                     text = formatTimestamp(feedItem.createdAt),
                     color = colors.bodyMuted,
+                    fontSize = 12.sp,
                     maxLines = 1,
                 )
             }
@@ -101,10 +107,32 @@ fun FeedCard(
                 modifier = Modifier.padding(start = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                var isOverflow by remember { mutableStateOf(false) }
+
                 Text(
                     text = feedItem.content,
                     color = colors.body,
+                    fontSize = 16.sp,
+                    letterSpacing = 0.8.sp,
+                    lineHeight = 28.sp,
+                    fontWeight = FontWeight.Light,
+                    maxLines = 12,
+                    overflow = TextOverflow.Ellipsis,
+                    onTextLayout = { result ->
+                        isOverflow = result.hasVisualOverflow
+                    }
                 )
+
+                if (isOverflow) {
+                    Text(
+                        text = "Read more",
+                        color = colors.primary,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .clickable { onAction(FeedTabIntent.Navigate(feedItem.id)) }
+                            .padding(top = 4.dp)
+                    )
+                }
 
                 feedItem.imageUrls.firstOrNull()?.let { imageUrl ->
                     Image(
@@ -115,8 +143,6 @@ fun FeedCard(
                     )
                 }
             }
-
-            HorizontalDivider(color = colors.backgroundLighter)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -159,7 +185,6 @@ fun FeedCard(
             }
         }
     }
-
 }
 
 @Composable
