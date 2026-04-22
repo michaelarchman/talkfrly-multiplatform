@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.components.feeds
+package com.talkfrly.multiplatform.ui.components.feed
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

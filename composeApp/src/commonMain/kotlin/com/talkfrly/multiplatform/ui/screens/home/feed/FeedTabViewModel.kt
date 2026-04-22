@@ -19,10 +19,7 @@ class FeedTabViewModel(
 
     fun onIntent(intent: FeedTabIntent) {
         when (intent) {
-            is FeedTabIntent.GetFeed -> {
-                if (_state.value.isLoadingMore || _state.value.isLoading) return
-                fetchFeed(intent.page, intent.limit)
-            }
+            is FeedTabIntent.GetFeed -> fetchFeed(intent.page, intent.limit)
             is FeedTabIntent.Navigate -> { }
         }
     }
@@ -33,10 +30,9 @@ class FeedTabViewModel(
             .onSuccess { newFeed ->
                 _state.update { current ->
                     val combined = current.visiblePublications + newFeed.publications
-                    val windowed = if (combined.size > 9) combined.drop(newFeed.limit) else combined
                     current.copy(
                         feed = newFeed,
-                        visiblePublications = windowed,
+                        visiblePublications = combined,
                         hasNextPage = newFeed.publications.size >= newFeed.limit
                     )
                 }
