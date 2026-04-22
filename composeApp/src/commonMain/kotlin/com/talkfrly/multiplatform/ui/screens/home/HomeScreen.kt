@@ -36,11 +36,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.talkfrly.multiplatform.domain.feed.FeedItem
 import com.talkfrly.multiplatform.ui.components.feeds.FeedCard
 import com.talkfrly.multiplatform.ui.components.streams.StreamCard
 import com.talkfrly.multiplatform.ui.nav.AccountRoute
-import com.talkfrly.multiplatform.ui.nav.HomeRoute
 import com.talkfrly.multiplatform.ui.nav.NewPublicationRoute
 import com.talkfrly.multiplatform.ui.nav.StreamRoute
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
@@ -57,6 +55,7 @@ import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
 import talkfrly_multiplatform.composeapp.generated.resources.travel_explore
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
@@ -69,22 +68,6 @@ fun HomeScreenRoot(
         viewModel.onIntent(HomeIntent.GetStreams)
     }
 
-    HomeScreen(
-        state = state,
-        navController = navController,
-        onAction = { intent ->
-            viewModel.onIntent(intent)
-        },
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun HomeScreen(
-    state: HomeState,
-    navController: NavController,
-    onAction: (HomeIntent) -> Unit,
-) {
     Scaffold (
         topBar = {
             TopAppBar(
@@ -93,7 +76,7 @@ private fun HomeScreen(
                         painter = painterResource(
                             if (isSystemInDarkTheme())
                                 Res.drawable.talkfrly_logo_dark
-                                else Res.drawable.talkfrly_logo_light
+                            else Res.drawable.talkfrly_logo_light
                         ),
                         contentDescription = "Talkfrly logo",
                         modifier = Modifier.width(108.dp)
@@ -106,25 +89,23 @@ private fun HomeScreen(
                     actionIconContentColor = LocalTalkfrlyColors.current.body,
                 ),
                 actions = {
-                    if (navController.currentBackStackEntry?.destination == HomeRoute) {
-                        IconButton(
-                            onClick = { navController.navigate(NewPublicationRoute) },
-                            enabled = true,
-                        ) {
-                            Icon(
-                                imageVector = vectorResource(Res.drawable.add),
-                                contentDescription = "Create publication",
-                            )
-                        }
-                        IconButton(
-                            onClick = { navController.navigate(AccountRoute) },
-                            enabled = true,
-                        ) {
-                            Icon(
-                                imageVector = vectorResource(Res.drawable.person),
-                                contentDescription = null,
-                            )
-                        }
+                    IconButton(
+                        onClick = { navController.navigate(NewPublicationRoute) },
+                        enabled = true,
+                    ) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.add),
+                            contentDescription = "Create publication",
+                        )
+                    }
+                    IconButton(
+                        onClick = { navController.navigate(AccountRoute) },
+                        enabled = true,
+                    ) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.person),
+                            contentDescription = null,
+                        )
                     }
                 }
             )
@@ -140,141 +121,149 @@ private fun HomeScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.Start
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp)
-                ) {
-                    SecondaryScrollableTabRow(
-                        selectedTabIndex = state.selectedTabIndex,
-                        containerColor = LocalTalkfrlyColors.current.background,
-                        contentColor = LocalTalkfrlyColors.current.body,
-                        edgePadding = 0.dp,
-                        indicator = {
-                            Box(
-                                modifier = Modifier
-                                    .tabIndicatorOffset(state.selectedTabIndex,
-                                        matchContentSize = false)
-                                    .height(2.dp)
-                                    .background(LocalTalkfrlyColors.current.primary)
-                            )
-                        },
-                        divider = {},
-                        modifier = Modifier.height(40.dp),
-                    ) {
-                        Tab(
-                            selectedContentColor = LocalTalkfrlyColors.current.body,
-                            unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
-                            selected = state.selectedTabIndex == 0,
-                            onClick = { onAction(HomeIntent.SetSelectedTab(0)) },
-                            modifier = Modifier.height(40.dp).padding(2.dp)
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = vectorResource(Res.drawable.gesture),
-                                    contentDescription = null,
-                                    Modifier.size(18.dp).padding(end = 4.dp)
-                                )
-                                Text(text = "Threads", fontWeight = FontWeight(600))
-                            }
-                        }
-                        Tab(
-                            selectedContentColor = LocalTalkfrlyColors.current.body,
-                            unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
-                            selected = state.selectedTabIndex == 1,
-                            onClick = { onAction(HomeIntent.SetSelectedTab(1)) },
-                            modifier = Modifier.height(40.dp).padding(2.dp)
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = vectorResource(Res.drawable.speed_camera),
-                                    contentDescription = null,
-                                    Modifier.size(18.dp).padding(end = 4.dp)
-                                )
-                                Text(
-                                    text = "Streams",
-                                    fontWeight = FontWeight(600),
-                                )
-                            }
-                        }
-                        Tab(
-                            selectedContentColor = LocalTalkfrlyColors.current.body,
-                            unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
-                            selected = state.selectedTabIndex == 2,
-                            onClick = { onAction(HomeIntent.SetSelectedTab(2)) },
-                            modifier = Modifier.height(40.dp).padding(2.dp)
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = vectorResource(Res.drawable.follow_the_signs),
-                                    contentDescription = null,
-                                    Modifier.size(18.dp).padding(end = 4.dp)
-                                )
-                                Text(text = "Followed", fontWeight = FontWeight(600))
-                            }
-                        }
-                    }
-                }
-
-                IconButton(
-                    onClick = { },
-                    enabled = true,
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = LocalTalkfrlyColors.current.body
-                    ),
-                ) {
-                    Icon(
-                        imageVector = vectorResource(Res.drawable.travel_explore),
-                        tint = LocalTalkfrlyColors.current.body,
-                        contentDescription = null,
-                    )
-                }
-            }
-
-            when (state.selectedTabIndex) {
-                0 -> {
-                    FeedTabContent(feedItems = state.feeds?.feed.orEmpty())
-                }
-                1 -> {
-                    StreamsTabContent(
-                        state = state,
-                        onStreamClick = { streamId ->
-                            navController.navigate(StreamRoute(streamId))
-                        },
-                    )
-                }
-                2 -> {
-                   Text("Followed stuff")
-                }
-            }
+            HomeScreen(
+                state = state,
+                navController = navController,
+                onAction = { intent -> viewModel.onIntent(intent) },
+            )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FeedTabContent(
-    feedItems: List<FeedItem>,
+private fun HomeScreen(
+    state: HomeState,
+    navController: NavController,
+    onAction: (HomeIntent) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        items(feedItems) { feedItem ->
-            FeedCard(feedItem = feedItem)
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(40.dp)
+        ) {
+            SecondaryScrollableTabRow(
+                selectedTabIndex = state.selectedTabIndex,
+                containerColor = LocalTalkfrlyColors.current.background,
+                contentColor = LocalTalkfrlyColors.current.body,
+                edgePadding = 0.dp,
+                indicator = {
+                    Box(
+                        modifier = Modifier
+                            .tabIndicatorOffset(state.selectedTabIndex,
+                                matchContentSize = false)
+                            .height(2.dp)
+                            .background(LocalTalkfrlyColors.current.primary)
+                    )
+                },
+                divider = {},
+                modifier = Modifier.height(40.dp),
+            ) {
+                Tab(
+                    selectedContentColor = LocalTalkfrlyColors.current.body,
+                    unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
+                    selected = state.selectedTabIndex == 0,
+                    onClick = { onAction(HomeIntent.SetSelectedTab(0)) },
+                    modifier = Modifier.height(40.dp).padding(2.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.gesture),
+                            contentDescription = null,
+                            Modifier.size(18.dp).padding(end = 4.dp)
+                        )
+                        Text(text = "Threads", fontWeight = FontWeight(600))
+                    }
+                }
+                Tab(
+                    selectedContentColor = LocalTalkfrlyColors.current.body,
+                    unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
+                    selected = state.selectedTabIndex == 1,
+                    onClick = { onAction(HomeIntent.SetSelectedTab(1)) },
+                    modifier = Modifier.height(40.dp).padding(2.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.speed_camera),
+                            contentDescription = null,
+                            Modifier.size(18.dp).padding(end = 4.dp)
+                        )
+                        Text(
+                            text = "Streams",
+                            fontWeight = FontWeight(600),
+                        )
+                    }
+                }
+                Tab(
+                    selectedContentColor = LocalTalkfrlyColors.current.body,
+                    unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
+                    selected = state.selectedTabIndex == 2,
+                    onClick = { onAction(HomeIntent.SetSelectedTab(2)) },
+                    modifier = Modifier.height(40.dp).padding(2.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.follow_the_signs),
+                            contentDescription = null,
+                            Modifier.size(18.dp).padding(end = 4.dp)
+                        )
+                        Text(text = "Followed", fontWeight = FontWeight(600))
+                    }
+                }
+            }
+        }
+
+        IconButton(
+            onClick = { },
+            enabled = true,
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = LocalTalkfrlyColors.current.body
+            ),
+        ) {
+            Icon(
+                imageVector = vectorResource(Res.drawable.travel_explore),
+                tint = LocalTalkfrlyColors.current.body,
+                contentDescription = null,
+            )
+        }
+    }
+
+    when (state.selectedTabIndex) {
+        0 -> {
+            val feedItems = state.feeds?.feed.orEmpty()
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(feedItems) { feedItem ->
+                    FeedCard(feedItem = feedItem)
+                }
+            }
+        }
+        1 -> {
+            StreamsTabContent(
+                state = state,
+                onStreamClick = { streamId ->
+                    navController.navigate(StreamRoute(streamId))
+                },
+            )
+        }
+        2 -> {
+           Text("Followed stuff")
         }
     }
 }
