@@ -109,14 +109,32 @@ fun FeedCard(
             ) {
                 var isOverflow by remember { mutableStateOf(false) }
 
+                val lines = feedItem.content.lines()
+                val headerLine = lines.firstOrNull { it.startsWith("#") }
+                val bodyText = lines.filter { !it.startsWith("#") && it.isNotBlank() }
+                    .firstOrNull().orEmpty()
+
+                if (headerLine != null) {
+                    Text(
+                        text = headerLine.removePrefix("#").trimStart(),
+                        color = colors.body,
+                        fontSize = 18.sp,
+                        letterSpacing = 0.8.sp,
+                        lineHeight = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+
                 Text(
-                    text = feedItem.content,
+                    text = bodyText,
                     color = colors.body,
                     fontSize = 16.sp,
                     letterSpacing = 0.8.sp,
                     lineHeight = 28.sp,
                     fontWeight = FontWeight.Light,
-                    maxLines = 12,
+                    maxLines = 9,
                     overflow = TextOverflow.Ellipsis,
                     onTextLayout = { result ->
                         isOverflow = result.hasVisualOverflow
