@@ -46,7 +46,7 @@ fun RegisterScreenRoot(
         navController = navController,
         onAction = { intent ->
             viewModel.onIntent(intent) {
-                navController.navigate(VerifyEmailRoute)
+                navController.navigate(VerifyEmailRoute(state.email.orEmpty()))
             }
         }
     )

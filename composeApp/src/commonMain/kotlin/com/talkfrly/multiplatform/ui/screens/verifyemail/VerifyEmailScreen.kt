@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -47,9 +48,10 @@ fun VerifyEmailScreenRoot(
 ) {
     val state by viewModel.state.collectAsState()
 
-    // Initialize email if provided
-    if (email.isNotEmpty() && state.email.isEmpty()) {
-        viewModel.initializeEmail(email)
+    LaunchedEffect(email, state.email) {
+        if (email.isNotEmpty() && state.email.isEmpty()) {
+            viewModel.initializeEmail(email)
+        }
     }
 
     VerifyEmailScreen(

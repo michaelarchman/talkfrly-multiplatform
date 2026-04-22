@@ -39,8 +39,10 @@ fun AppNavHost(
                 navController = navController,
             )
         }
-        composable<VerifyEmailRoute> {
+        composable<VerifyEmailRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<VerifyEmailRoute>()
             VerifyEmailScreenRoot(
+                email = route.email,
                 viewModel = koinViewModel<VerifyEmailViewModel>(),
                 navController = navController,
             )

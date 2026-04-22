@@ -9,7 +9,9 @@ data object LoginRoute
 data object RegisterRoute
 
 @Serializable
-data object VerifyEmailRoute
+data class VerifyEmailRoute(
+    val email: String
+)
 
 @Serializable
 data object SplashRoute
