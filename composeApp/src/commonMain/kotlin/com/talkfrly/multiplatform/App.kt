@@ -1,13 +1,10 @@
 package com.talkfrly.multiplatform
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.talkfrly.multiplatform.ui.nav.AppNavHost
 import com.talkfrly.multiplatform.ui.nav.HomeRoute
@@ -29,7 +26,7 @@ fun App(
 
     LaunchedEffect(sessionState) {
         try {
-            if (navController.graph.nodes.isEmpty) return@LaunchedEffect
+            if (navController.graph.nodes.isEmpty()) return@LaunchedEffect
         } catch (e: IllegalStateException) {
             println("Session state didn't initialized: $e")
             return@LaunchedEffect

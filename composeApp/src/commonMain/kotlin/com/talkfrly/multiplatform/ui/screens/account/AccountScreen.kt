@@ -45,11 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.talkfrly.multiplatform.domain.user.User
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
-import com.talkfrly.multiplatform.ui.theme.TalkfrlyTheme
 import org.jetbrains.compose.resources.vectorResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
@@ -81,29 +78,6 @@ fun AccountScreenRoot(
         },
     )
 }
-
-@Composable
-@Preview()
-private fun AccountScreenPreview(){
-    TalkfrlyTheme{
-        AccountScreen(
-            state = AccountState(
-                message = "Preview",
-                user = User(
-                    id = "12fasdf",
-                    email = "adam.dafd.com",
-                    displayName = "Adam",
-                    isAdmin = false,
-                    isVerified = true,
-                    avatarUrl = "https://static.wikia.nocookie.net/bohaterowie/images/b/b8/TransparentBob.png/revision/latest?cb=20221108201843&path-prefix=pl"
-                )
-            ),
-            onBackClick = {},
-            onAction = {}
-        )
-    }
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

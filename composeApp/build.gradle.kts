@@ -15,15 +15,15 @@ kotlin {
         experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
-//    listOf(
-//        iosArm64(),
-//        iosSimulatorArm64()
-//    ).forEach { iosTarget ->
-//        iosTarget.binaries.framework {
-//            baseName = "ComposeApp"
-//            isStatic = true
-//        }
-//    }
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+    }
     
     sourceSets {
         androidMain.dependencies {
@@ -39,7 +39,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
+            implementation(compose.material3)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.components.ui.tooling.preview)
@@ -61,8 +61,8 @@ kotlin {
             api(libs.datastore.preferences)
 
         }
-//        iosMain.dependencies {
-//            implementation(libs.ktor.client.darwin)
-//        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
     }
 }
