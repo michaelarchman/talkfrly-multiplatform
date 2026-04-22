@@ -29,7 +29,8 @@ class FeedTabViewModel(
         feedRepository.getFeed(page = page, limit = limit)
             .onSuccess { newFeed ->
                 _state.update { current ->
-                    val combined = current.visiblePublications + newFeed.publications
+                    val combined = (current.visiblePublications + newFeed.publications)
+                        .distinctBy { it.id }
                     current.copy(
                         feed = newFeed,
                         visiblePublications = combined,
