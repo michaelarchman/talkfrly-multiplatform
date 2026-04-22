@@ -1,7 +1,7 @@
 package com.talkfrly.multiplatform.domain.feed
 
 data class Feed(
-    val feed: List<FeedItem>,
+    val publications: List<FeedItem>,
     val page: Int,
     val limit: Int,
 )

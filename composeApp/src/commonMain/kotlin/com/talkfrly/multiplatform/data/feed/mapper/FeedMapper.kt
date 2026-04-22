@@ -8,7 +8,7 @@ import com.talkfrly.multiplatform.domain.feed.FeedItem
 import com.talkfrly.multiplatform.domain.feed.FeedUser
 
 fun FeedResponseDto.toDomain(): Feed = Feed(
-    feed = feed.map { it.toDomain() },
+    publications = feed.map { it.toDomain() },
     page = page,
     limit = limit,
 )

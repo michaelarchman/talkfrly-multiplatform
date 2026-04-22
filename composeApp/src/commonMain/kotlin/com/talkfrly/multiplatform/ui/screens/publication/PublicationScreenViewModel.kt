@@ -15,14 +15,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class PublicationDetailsViewModel(
+class PublicationScreenViewModel(
     private val publicationRepository: PublicationRepository,
     private val commentRepository: CommentRepository,
     private val threadRepository: ThreadRepository,
     private val userRepository: UserRepository, // UserRepository2
 ) : BaseViewModel() {
-    private val _state = MutableStateFlow(PublicationDetailsState())
-    val state: StateFlow<PublicationDetailsState> get() = _state
+    private val _state = MutableStateFlow(PublicationScreenState())
+    val state: StateFlow<PublicationScreenState> get() = _state
 
     private var publicationId: String = ""
 
@@ -44,35 +44,35 @@ class PublicationDetailsViewModel(
             }
     }
 
-    fun onIntent(intent: PublicationDetailsIntent) {
+    fun onIntent(intent: PublicationScreenIntent) {
         when (intent) {
-            is PublicationDetailsIntent.GetPublicationDetails -> getPublicationDetails()
-            is PublicationDetailsIntent.NavigateBack -> { }
-            is PublicationDetailsIntent.GetComments -> getComments()
-            is PublicationDetailsIntent.UpdateCommentFormContent ->
+            is PublicationScreenIntent.GetPublicationScreen -> getPublicationDetails()
+            is PublicationScreenIntent.NavigateBack -> { }
+            is PublicationScreenIntent.GetComments -> getComments()
+            is PublicationScreenIntent.UpdateCommentFormContent ->
                 _state.update { it.copy(commentFormContent = intent.content) }
-            is PublicationDetailsIntent.UpdateCommentFormIsAnonymous ->
+            is PublicationScreenIntent.UpdateCommentFormIsAnonymous ->
                 _state.update { it.copy(commentFormIsAnonymous = intent.isAnonymous) }
-            is PublicationDetailsIntent.SubmitComment -> submitComment()
-            is PublicationDetailsIntent.StartReply ->
+            is PublicationScreenIntent.SubmitComment -> submitComment()
+            is PublicationScreenIntent.StartReply ->
                 _state.update { it.copy(replyingTo = intent.comment) }
-            is PublicationDetailsIntent.CancelReply ->
+            is PublicationScreenIntent.CancelReply ->
                 _state.update { it.copy(
                     replyingTo = null,
                     replyFormContent = "",
                     replyFormIsAnonymous = false,
                 ) }
-            is PublicationDetailsIntent.UpdateReplyFormContent ->
+            is PublicationScreenIntent.UpdateReplyFormContent ->
                 _state.update { it.copy(replyFormContent = intent.content) }
-            is PublicationDetailsIntent.UpdateReplyFormIsAnonymous ->
+            is PublicationScreenIntent.UpdateReplyFormIsAnonymous ->
                 _state.update { it.copy(replyFormIsAnonymous = intent.isAnonymous) }
-            is PublicationDetailsIntent.SubmitReply -> submitReply()
-            is PublicationDetailsIntent.JoinThread -> joinThread()
-            is PublicationDetailsIntent.ToggleMenu ->
+            is PublicationScreenIntent.SubmitReply -> submitReply()
+            is PublicationScreenIntent.JoinThread -> joinThread()
+            is PublicationScreenIntent.ToggleMenu ->
                 _state.update { it.copy(isMenuExpanded = !it.isMenuExpanded) }
-            is PublicationDetailsIntent.EditPost -> editPost()
-            is PublicationDetailsIntent.DeletePost -> deletePost()
-            is PublicationDetailsIntent.ReportPost -> reportPost()
+            is PublicationScreenIntent.EditPost -> editPost()
+            is PublicationScreenIntent.DeletePost -> deletePost()
+            is PublicationScreenIntent.ReportPost -> reportPost()
         }
     }
 

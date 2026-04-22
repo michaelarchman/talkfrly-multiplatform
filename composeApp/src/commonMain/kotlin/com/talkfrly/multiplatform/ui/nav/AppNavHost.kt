@@ -10,7 +10,7 @@ import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublication
 import com.talkfrly.multiplatform.ui.screens.error.ErrorScreenRoot
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
-import com.talkfrly.multiplatform.ui.screens.publication.PublicationDetailsScreenRoot
+import com.talkfrly.multiplatform.ui.screens.publication.PublicationScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.screens.stream.StreamScreenRoot
@@ -63,7 +63,7 @@ fun AppNavHost(
         }
         composable<PublicationDetailsRoute> { backStackEntry ->
             val route = backStackEntry.toRoute<PublicationDetailsRoute>()
-            PublicationDetailsScreenRoot(
+            PublicationScreenRoot(
                 publicationId = route.publicationId,
                 viewModel = koinViewModel(),
                 navController = navController,

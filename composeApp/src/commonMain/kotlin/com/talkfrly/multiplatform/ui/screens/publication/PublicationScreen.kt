@@ -47,24 +47,24 @@ import talkfrly_multiplatform.composeapp.generated.resources.more_vert
 import talkfrly_multiplatform.composeapp.generated.resources.report
 
 @Composable
-fun PublicationDetailsScreenRoot(
+fun PublicationScreenRoot(
     publicationId: String,
-    viewModel: PublicationDetailsViewModel = koinViewModel(),
+    viewModel: PublicationScreenViewModel = koinViewModel(),
     navController: NavController,
 ) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(publicationId) {
         viewModel.initialize(publicationId)
-        viewModel.onIntent(PublicationDetailsIntent.GetPublicationDetails)
+        viewModel.onIntent(PublicationScreenIntent.GetPublicationScreen)
     }
 
-    PublicationDetailsScreen(
+    PublicationScreen(
         state = state,
         navController = navController,
         onAction = { intent ->
             when (intent) {
-                PublicationDetailsIntent.NavigateBack -> navController.popBackStack()
+                PublicationScreenIntent.NavigateBack -> navController.popBackStack()
                 else -> viewModel.onIntent(intent)
             }
         }
@@ -73,10 +73,10 @@ fun PublicationDetailsScreenRoot(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PublicationDetailsScreen(
-    state: PublicationDetailsState,
+private fun PublicationScreen(
+    state: PublicationScreenState,
     navController: NavController,
-    onAction: (PublicationDetailsIntent) -> Unit,
+    onAction: (PublicationScreenIntent) -> Unit,
 ) {
     Scaffold(
         containerColor = LocalTalkfrlyColors.current.background,
@@ -86,7 +86,7 @@ private fun PublicationDetailsScreen(
                     Text("Publication")
                 },
                 navigationIcon = {
-                    IconButton(onClick = { onAction(PublicationDetailsIntent.NavigateBack) }) {
+                    IconButton(onClick = { onAction(PublicationScreenIntent.NavigateBack) }) {
                         Icon(
                             imageVector = vectorResource(Res.drawable.chevron_left),
                             contentDescription = "Back",
@@ -100,7 +100,7 @@ private fun PublicationDetailsScreen(
                         val canModify = isOwnPost || state.isAdmin
 
                         Box {
-                            IconButton(onClick = { onAction(PublicationDetailsIntent.ToggleMenu) }) {
+                            IconButton(onClick = { onAction(PublicationScreenIntent.ToggleMenu) }) {
                                 Icon(
                                     imageVector = vectorResource(Res.drawable.more_vert),
                                     contentDescription = "More options",
@@ -109,7 +109,7 @@ private fun PublicationDetailsScreen(
                             }
                             DropdownMenu(
                                 expanded = state.isMenuExpanded,
-                                onDismissRequest = { onAction(PublicationDetailsIntent.ToggleMenu) },
+                                onDismissRequest = { onAction(PublicationScreenIntent.ToggleMenu) },
                                 containerColor = LocalTalkfrlyColors.current.backgroundLighter,
                             ) {
                                 if (canModify) {
@@ -129,7 +129,7 @@ private fun PublicationDetailsScreen(
                                                 )
                                             }
                                         },
-                                        onClick = { onAction(PublicationDetailsIntent.EditPost) },
+                                        onClick = { onAction(PublicationScreenIntent.EditPost) },
                                         colors = MenuDefaults.itemColors(
                                             textColor = LocalTalkfrlyColors.current.body
                                         )
@@ -149,7 +149,7 @@ private fun PublicationDetailsScreen(
                                                 )
                                             }
                                         },
-                                        onClick = { onAction(PublicationDetailsIntent.DeletePost) },
+                                        onClick = { onAction(PublicationScreenIntent.DeletePost) },
                                         colors = MenuDefaults.itemColors(
                                             textColor = LocalTalkfrlyColors.current.error
                                         )
@@ -171,7 +171,7 @@ private fun PublicationDetailsScreen(
                                                 )
                                             }
                                         },
-                                        onClick = { onAction(PublicationDetailsIntent.ReportPost) },
+                                        onClick = { onAction(PublicationScreenIntent.ReportPost) },
                                         colors = MenuDefaults.itemColors(
                                             textColor = LocalTalkfrlyColors.current.error
                                         )
@@ -191,8 +191,8 @@ private fun PublicationDetailsScreen(
         bottomBar = {
             BottomBarInput(
                 value = state.commentFormContent,
-                onValueChange = { onAction(PublicationDetailsIntent.UpdateCommentFormContent(it)) },
-                onSendClick = { onAction(PublicationDetailsIntent.SubmitComment) },
+                onValueChange = { onAction(PublicationScreenIntent.UpdateCommentFormContent(it)) },
+                onSendClick = { onAction(PublicationScreenIntent.SubmitComment) },
                 placeholder = "Write a comment...",
             )
         }
@@ -228,7 +228,7 @@ private fun PublicationDetailsScreen(
                                 ThreadJoinPrompt(
                                     threadName = state.publication.threadName ?: "this thread",
                                     isJoining = state.isJoiningThread,
-                                    onJoin = { onAction(PublicationDetailsIntent.JoinThread) },
+                                    onJoin = { onAction(PublicationScreenIntent.JoinThread) },
                                 )
                             }
 
@@ -246,13 +246,13 @@ private fun PublicationDetailsScreen(
                                             isSubmitting = state.isSubmittingReply,
                                         ),
                                         onContentChange = {
-                                            onAction(PublicationDetailsIntent.UpdateReplyFormContent(it))
+                                            onAction(PublicationScreenIntent.UpdateReplyFormContent(it))
                                         },
                                         onAnonymousChange = {
-                                            onAction(PublicationDetailsIntent.UpdateReplyFormIsAnonymous(it))
+                                            onAction(PublicationScreenIntent.UpdateReplyFormIsAnonymous(it))
                                         },
-                                        onSubmit = { onAction(PublicationDetailsIntent.SubmitReply) },
-                                        onCancel = { onAction(PublicationDetailsIntent.CancelReply) },
+                                        onSubmit = { onAction(PublicationScreenIntent.SubmitReply) },
+                                        onCancel = { onAction(PublicationScreenIntent.CancelReply) },
                                         placeholder = "Write a reply...",
                                     )
                                 }
@@ -270,7 +270,7 @@ private fun PublicationDetailsScreen(
                                 comments = state.comments,
                                 isLoading = state.isLoadingComments,
                                 onReply = { comment ->
-                                    onAction(PublicationDetailsIntent.StartReply(comment))
+                                    onAction(PublicationScreenIntent.StartReply(comment))
                                 },
                             )
                         }

@@ -36,11 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.talkfrly.multiplatform.ui.components.feeds.FeedCard
 import com.talkfrly.multiplatform.ui.components.streams.StreamCard
 import com.talkfrly.multiplatform.ui.nav.AccountRoute
 import com.talkfrly.multiplatform.ui.nav.NewPublicationRoute
 import com.talkfrly.multiplatform.ui.nav.StreamRoute
+import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTab
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
@@ -64,7 +64,6 @@ fun HomeScreenRoot(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.onIntent(HomeIntent.GetFeed)
         viewModel.onIntent(HomeIntent.GetStreams)
     }
 
@@ -244,15 +243,7 @@ private fun HomeScreen(
 
     when (state.selectedTabIndex) {
         0 -> {
-            val feedItems = state.feeds?.feed.orEmpty()
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(feedItems) { feedItem ->
-                    FeedCard(feedItem = feedItem)
-                }
-            }
+            FeedTab()
         }
         1 -> {
             StreamsTabContent(
