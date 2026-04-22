@@ -1,10 +1,11 @@
 package com.talkfrly.multiplatform.data.core
 
+import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import com.talkfrly.multiplatform.data.preferences.repository.PreferencesRepository
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -20,6 +21,13 @@ object HttpClientFactory {
         return HttpClient(engine) {
             install(HttpCookies) {
                 storage = preferencesRepository
+            }
+            install(HttpCallValidator) {
+                validateResponse { response ->
+                    if (response.status.value == 401) {
+                        preferencesRepository.clearAccessToken()
+                    }
+                }
             }
             install(ContentNegotiation) {
                 json(

@@ -26,8 +26,6 @@ fun App(
     val sessionViewModel: SessionViewModel = koinViewModel<SessionViewModel>()
     val sessionState by sessionViewModel.state.collectAsState()
     val navController = rememberNavController()
-    val globalLoadingCount by BaseViewModel.globalLoadingCount.collectAsState()
-    val isGlobalLoading = globalLoadingCount > 0
 
     LaunchedEffect(sessionState) {
         try {
@@ -57,12 +55,11 @@ fun App(
     }
 
     TalkfrlyTheme {
-        Box(modifier = Modifier.fillMaxSize()) {
-            AppNavHost(
-                navController = navController,
-                sessionViewModel = sessionViewModel
-            )
-        }
+        AppNavHost(
+            navController = navController,
+            sessionViewModel = sessionViewModel
+        )
+
 
 //        if (isGlobalLoading) {
 //            Box(
