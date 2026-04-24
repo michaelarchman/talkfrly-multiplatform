@@ -12,11 +12,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.talkfrly.multiplatform.domain.feed.FeedItem
 import com.talkfrly.multiplatform.ui.components.feed.FeedCard
 import com.talkfrly.multiplatform.ui.components.feed.FeedCardSkeleton
-import com.talkfrly.multiplatform.ui.nav.PublicationRoute
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.koin.compose.viewmodel.koinViewModel
 
