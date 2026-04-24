@@ -1,7 +1,7 @@
 package com.talkfrly.multiplatform.data.comments.api
 
-import com.talkfrly.multiplatform.data.comments.dto.CommentListResponseDto
 import com.talkfrly.multiplatform.data.comments.dto.CommentDto
+import com.talkfrly.multiplatform.data.comments.dto.CommentListResponseDto
 import com.talkfrly.multiplatform.data.comments.dto.CreateCommentRequestDto
 import com.talkfrly.multiplatform.data.core.makeRequest
 import com.talkfrly.multiplatform.domain.core.DataError

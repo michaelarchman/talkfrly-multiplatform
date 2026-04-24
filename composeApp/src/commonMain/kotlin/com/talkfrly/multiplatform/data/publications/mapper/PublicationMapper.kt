@@ -52,6 +52,7 @@ fun PublicationDto.toDomain(): Publication = Publication(
 fun UserSummaryDto.toDomain(): UserSummary = UserSummary(
     id = id,
     displayName = displayName,
+    avatarUrl = avatarUrl,
 )
 
 fun CriterionSummaryDto.toDomain(): CriterionSummary = CriterionSummary(

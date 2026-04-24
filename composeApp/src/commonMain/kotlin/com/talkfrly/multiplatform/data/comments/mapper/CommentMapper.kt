@@ -7,6 +7,7 @@ import com.talkfrly.multiplatform.data.publications.mapper.toDomain
 import com.talkfrly.multiplatform.domain.comment.Comment
 import com.talkfrly.multiplatform.domain.comment.CommentList
 import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
+import kotlin.time.Instant
 
 fun CommentDto.toDomain(): Comment = Comment(
     id = id,
@@ -16,12 +17,11 @@ fun CommentDto.toDomain(): Comment = Comment(
     parentCommentId = parentCommentId,
     content = content,
     isAnonymous = isAnonymous,
-    avatarUrl = avatarUrl,
     imageUrls = imageUrls,
     videoId = videoId,
     videoEmbedUrl = videoEmbedUrl,
-    createdAt = createdAt,
-    updatedAt = updatedAt,
+    createdAt = Instant.parse(createdAt),
+    updatedAt = Instant.parse(updatedAt),
     replies = replies.map { it.toDomain() },
 )
 

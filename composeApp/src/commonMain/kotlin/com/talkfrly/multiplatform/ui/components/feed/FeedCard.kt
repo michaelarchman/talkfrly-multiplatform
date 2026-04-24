@@ -270,7 +270,9 @@ private fun FeedStat(
             contentDescription = "feed state $label",
             tint = colors.body,
         )
+
         Spacer(Modifier.width(4.dp))
+
         Text(
             text = label,
             color = colors.bodyMuted,
@@ -279,7 +281,6 @@ private fun FeedStat(
         )
     }
 }
-
 
 private fun formatTimestamp(createdAt: String): String {
     return try {

@@ -1,6 +1,7 @@
 package com.talkfrly.multiplatform.domain.comment
 
 import com.talkfrly.multiplatform.domain.publication.UserSummary
+import kotlin.time.Instant
 
 data class Comment(
     val id: String,
@@ -10,12 +11,11 @@ data class Comment(
     val parentCommentId: String? = null,
     val content: String,
     val isAnonymous: Boolean,
-    val avatarUrl: String? = null,
     val imageUrls: List<String> = emptyList(),
     val videoId: String? = null,
     val videoEmbedUrl: String? = null,
-    val createdAt: String,
-    val updatedAt: String,
+    val createdAt: Instant,
+    val updatedAt: Instant,
     val replies: List<Comment> = emptyList(),
 )
 

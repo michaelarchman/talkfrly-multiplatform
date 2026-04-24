@@ -38,6 +38,7 @@ data class Publication(
 data class UserSummary(
     val id: String,
     val displayName: String? = null,
+    val avatarUrl: String? = null,
 )
 
 data class CriterionSummary(
