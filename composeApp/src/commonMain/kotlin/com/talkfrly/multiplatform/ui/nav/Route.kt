@@ -22,7 +22,7 @@ data object AccountRoute
 
 
 @Serializable
-data class PublicationDetailsRoute(
+data class PublicationRoute(
     val publicationId: String
 )
 

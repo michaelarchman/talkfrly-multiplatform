@@ -20,7 +20,6 @@ class FeedTabViewModel(
     fun onIntent(intent: FeedTabIntent) {
         when (intent) {
             is FeedTabIntent.GetFeed -> fetchFeed(intent.page, intent.limit)
-            is FeedTabIntent.Navigate -> { }
         }
     }
 

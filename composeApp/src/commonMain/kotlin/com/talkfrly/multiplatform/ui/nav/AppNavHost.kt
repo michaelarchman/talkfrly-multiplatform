@@ -61,8 +61,8 @@ fun AppNavHost(
                 onLogout = { sessionViewModel.logout() }
             )
         }
-        composable<PublicationDetailsRoute> { backStackEntry ->
-            val route = backStackEntry.toRoute<PublicationDetailsRoute>()
+        composable<PublicationRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<PublicationRoute>()
             PublicationScreenRoot(
                 publicationId = route.publicationId,
                 viewModel = koinViewModel(),

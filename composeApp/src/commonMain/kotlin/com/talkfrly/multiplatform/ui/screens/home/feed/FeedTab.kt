@@ -5,25 +5,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.talkfrly.multiplatform.domain.feed.FeedItem
 import com.talkfrly.multiplatform.ui.components.feed.FeedCard
 import com.talkfrly.multiplatform.ui.components.feed.FeedCardSkeleton
+import com.talkfrly.multiplatform.ui.nav.PublicationRoute
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FeedTab(
-    viewModel: FeedTabViewModel = koinViewModel()
+    viewModel: FeedTabViewModel = koinViewModel(),
+    onFeedItemClick: (FeedItem) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val isLoading by viewModel.loadingCount.collectAsState()
@@ -39,7 +39,11 @@ fun FeedTab(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(state.visiblePublications, key = { it.id }) { item ->
-            FeedCard(feedItem = item, onAction = {})
+            FeedCard(
+                feedItem = item,
+                onAction = { },
+                onItemClick = { feedItem -> onFeedItemClick(feedItem) },
+            )
             HorizontalDivider(color = LocalTalkfrlyColors.current.backgroundLighter)
         }
         if (state.hasNextPage && isLoading == 0) {

@@ -46,33 +46,8 @@ class PublicationScreenViewModel(
 
     fun onIntent(intent: PublicationScreenIntent) {
         when (intent) {
-            is PublicationScreenIntent.GetPublicationScreen -> getPublicationDetails()
-            is PublicationScreenIntent.NavigateBack -> { }
+            is PublicationScreenIntent.GetPublications -> getPublicationDetails()
             is PublicationScreenIntent.GetComments -> getComments()
-            is PublicationScreenIntent.UpdateCommentFormContent ->
-                _state.update { it.copy(commentFormContent = intent.content) }
-            is PublicationScreenIntent.UpdateCommentFormIsAnonymous ->
-                _state.update { it.copy(commentFormIsAnonymous = intent.isAnonymous) }
-            is PublicationScreenIntent.SubmitComment -> submitComment()
-            is PublicationScreenIntent.StartReply ->
-                _state.update { it.copy(replyingTo = intent.comment) }
-            is PublicationScreenIntent.CancelReply ->
-                _state.update { it.copy(
-                    replyingTo = null,
-                    replyFormContent = "",
-                    replyFormIsAnonymous = false,
-                ) }
-            is PublicationScreenIntent.UpdateReplyFormContent ->
-                _state.update { it.copy(replyFormContent = intent.content) }
-            is PublicationScreenIntent.UpdateReplyFormIsAnonymous ->
-                _state.update { it.copy(replyFormIsAnonymous = intent.isAnonymous) }
-            is PublicationScreenIntent.SubmitReply -> submitReply()
-            is PublicationScreenIntent.JoinThread -> joinThread()
-            is PublicationScreenIntent.ToggleMenu ->
-                _state.update { it.copy(isMenuExpanded = !it.isMenuExpanded) }
-            is PublicationScreenIntent.EditPost -> editPost()
-            is PublicationScreenIntent.DeletePost -> deletePost()
-            is PublicationScreenIntent.ReportPost -> reportPost()
         }
     }
 

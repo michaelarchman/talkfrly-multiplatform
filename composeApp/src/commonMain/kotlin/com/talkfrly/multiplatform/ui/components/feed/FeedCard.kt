@@ -55,11 +55,13 @@ fun FeedCard(
     feedItem: FeedItem,
     modifier: Modifier = Modifier,
     onAction: (FeedTabIntent) -> Unit,
+    onItemClick: (FeedItem) -> Unit,
 ) {
     val colors = LocalTalkfrlyColors.current
 
     Card(
         modifier = modifier
+            .clickable(onClick = { onItemClick(feedItem) })
             .fillMaxWidth()
             .padding(horizontal = 8.dp),
         colors = CardDefaults.cardColors(
@@ -106,16 +108,12 @@ fun FeedCard(
                 )
             }
 
-            Column(
-                modifier = Modifier.padding(start = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 var isOverflow by remember { mutableStateOf(false) }
 
                 val lines = feedItem.content.lines()
                 val headerLine = lines.firstOrNull { it.startsWith("#") }
-                val bodyText = lines.filter { !it.startsWith("#") && it.isNotBlank() }
-                    .firstOrNull().orEmpty()
+                val bodyText = lines.firstOrNull { !it.startsWith("#") && it.isNotBlank() }.orEmpty()
 
                 if (headerLine != null) {
                     Text(
@@ -130,46 +128,48 @@ fun FeedCard(
                     )
                 }
 
-                Text(
-                    text = bodyText,
-                    color = colors.body,
-                    fontSize = 16.sp,
-                    letterSpacing = 0.8.sp,
-                    lineHeight = 28.sp,
-                    fontWeight = FontWeight.Light,
-                    maxLines = 9,
-                    overflow = TextOverflow.Ellipsis,
-                    onTextLayout = { result ->
-                        isOverflow = result.hasVisualOverflow
-                    }
-                )
+                if (bodyText.isNotBlank()) {
+                    Text(
+                        text = bodyText,
+                        color = colors.body,
+                        fontSize = 16.sp,
+                        letterSpacing = 0.8.sp,
+                        lineHeight = 28.sp,
+                        fontWeight = FontWeight.Light,
+                        maxLines = 6,
+                        overflow = TextOverflow.Ellipsis,
+                        onTextLayout = { result ->
+                            isOverflow = result.hasVisualOverflow
+                        }
+                    )
+                }
 
                 if (isOverflow) {
                     Text(
                         text = "Read more",
                         color = colors.primary,
                         fontSize = 14.sp,
-                        modifier = Modifier
-                            .clickable { onAction(FeedTabIntent.Navigate(feedItem.id)) }
-                            .padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
 
-                feedItem.imageUrls.firstOrNull()?.let { imageUrl ->
-                    val windowInfo = LocalWindowInfo.current
-                    val density = LocalDensity.current
-                    val screenHeight = with(density) { windowInfo.containerSize.height.toDp() }
-
-                    Image(
-                        painter = rememberAsyncImagePainter(model = imageUrl),
-                        contentDescription = null,
-                        alignment = Alignment.TopCenter,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = screenHeight)
-                            .clip(ShapeDefaults.ExtraSmall),
-                        contentScale = ContentScale.FillWidth,
-                    )
+                feedItem.imageUrls.let { url ->
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        url.forEach { image ->
+                            Image(
+                                painter = rememberAsyncImagePainter(model = image),
+                                contentDescription = null,
+                                alignment = Alignment.TopCenter,
+                                modifier = Modifier
+                                    .heightIn(120.dp, 240.dp)
+                                    .weight(1f)
+                                    .clip(ShapeDefaults.ExtraSmall),
+                                contentScale = ContentScale.Crop,
+                            )
+                        }
+                    }
                 }
             }
 
@@ -217,7 +217,7 @@ fun FeedCard(
 }
 
 @Composable
-private fun FeedAvatar(
+fun FeedAvatar(
     avatarUrl: String?,
     label: String,
 ) {

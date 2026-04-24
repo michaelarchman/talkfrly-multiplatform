@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import com.talkfrly.multiplatform.ui.components.streams.StreamCard
 import com.talkfrly.multiplatform.ui.nav.AccountRoute
 import com.talkfrly.multiplatform.ui.nav.NewPublicationRoute
+import com.talkfrly.multiplatform.ui.nav.PublicationRoute
 import com.talkfrly.multiplatform.ui.nav.StreamRoute
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTab
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
@@ -243,7 +244,11 @@ private fun HomeScreen(
 
     when (state.selectedTabIndex) {
         0 -> {
-            FeedTab()
+            FeedTab(
+                onFeedItemClick = { feedItem ->
+                    navController.navigate(PublicationRoute(feedItem.id))
+                }
+            )
         }
         1 -> {
             StreamsTabContent(

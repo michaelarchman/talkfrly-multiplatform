@@ -2,5 +2,4 @@ package com.talkfrly.multiplatform.ui.screens.home.feed
 
 sealed class FeedTabIntent {
     data class GetFeed(val page: Int, val limit: Int) : FeedTabIntent()
-    data class Navigate(val publicationId: String) : FeedTabIntent()
 }
