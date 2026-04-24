@@ -24,7 +24,9 @@ data class CommentDto(
 @Serializable
 data class CommentListResponseDto(
     val comments: List<CommentDto>,
-    @SerialName("count") val totalCount: Int,
+    @SerialName("total_count") val totalCount: Int,
+    @SerialName("page") val page: Int,
+    @SerialName("limit") val limit: Int,
 )
 
 @Serializable

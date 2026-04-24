@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.ui.components.bars.BottomBarInput
 import com.talkfrly.multiplatform.ui.components.feed.FeedAvatar
+import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -137,15 +138,20 @@ private fun PublicationScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        if (isLoading) {
-            CircularProgressIndicator()
-        }
+
 
         /**
          * Publication content
          */
         if (state.publication == null) {
-            Text("No publication loaded. Try again.")
+            if (isLoading) {
+                SplashScreen()
+            } else {
+                Text(
+                    text = "No publication loaded. Try again.",
+                    color = LocalTalkfrlyColors.current.body,
+                )
+            }
             return
         }
 
