@@ -62,9 +62,9 @@ fun AppNavHost(
             )
         }
         composable<PublicationRoute> { backStackEntry ->
-            val route = backStackEntry.toRoute<PublicationRoute>()
+            val args = backStackEntry.toRoute<PublicationRoute>()
             PublicationScreenRoot(
-                publicationId = route.publicationId,
+                publicationId = args.publicationId,
                 viewModel = koinViewModel(),
                 navController = navController,
             )

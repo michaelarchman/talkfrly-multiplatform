@@ -49,13 +49,9 @@ fun PublicationScreenRoot(
     val state by viewModel.state.collectAsState()
     val loadingCount by viewModel.loadingCount.collectAsState()
 
-    LaunchedEffect(publicationId) {
-        viewModel.initialize(publicationId)
-    }
-
     LaunchedEffect(Unit) {
-        viewModel.onIntent(PublicationScreenIntent.GetPublications)
-        viewModel.onIntent(PublicationScreenIntent.GetComments)
+        viewModel.onIntent(PublicationScreenIntent.GetPublications(publicationId))
+        viewModel.onIntent(PublicationScreenIntent.GetComments(publicationId))
     }
 
     Scaffold(
@@ -104,7 +100,7 @@ fun PublicationScreenRoot(
         },
         bottomBar = {
             BottomBarInput(
-                value = state.commentFormContent,
+                value = "",
                 onValueChange = { },
                 onSendClick = { },
                 placeholder = "Write a comment...",
@@ -196,31 +192,49 @@ private fun PublicationScreen(
         /**
          * Comments
          */
-        Text(
-            text = "Comments (${state.publication.commentCount})",
-            color = LocalTalkfrlyColors.current.body,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp,
-        )
-
-        if (state.comments.isEmpty()) {
+        state.comments?.let {
             Text(
-                text = "No comments yet. Be first!",
-                color = LocalTalkfrlyColors.current.bodyMuted,
+                text = "Comments (${state.publication.commentCount})",
+                color = LocalTalkfrlyColors.current.body,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
             )
-        }
 
-        state.comments.forEach {
-            Column {
+            if (state.comments.isEmpty()) {
                 Text(
-                    text = it.content,
-                    color = LocalTalkfrlyColors.current.body,
-                )
-                Text(
-                    text = it.user?.displayName ?: "Anonymous",
-                    color = LocalTalkfrlyColors.current.body
+                    text = "No comments yet. Be first!",
+                    color = LocalTalkfrlyColors.current.bodyMuted,
                 )
             }
+
+            state.comments.forEach { comment ->
+                Column {
+                    Row {
+                        FeedAvatar(
+                            avatarUrl = comment.avatarUrl,
+                            label = comment.user?.displayName ?: "Anonymous",
+                        )
+
+                        Column {
+                            Text(
+                                text = comment.user?.displayName ?: "Anonymous",
+                                color = LocalTalkfrlyColors.current.body,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+
+                            Text(
+                                text = comment.content,
+                                color = LocalTalkfrlyColors.current.body,
+                                fontWeight = FontWeight.Thin,
+                            )
+                        }
+                    }
+                }
+            }
         }
+
     }
 }
