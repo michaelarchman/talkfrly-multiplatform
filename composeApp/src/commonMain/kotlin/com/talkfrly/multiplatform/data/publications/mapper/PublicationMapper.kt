@@ -44,6 +44,7 @@ fun PublicationDto.toDomain(): Publication = Publication(
     commentCount = commentCount,
     voteScore = voteScore,
     likedByUser = likedByUser,
+    likeCount = likeCount,
     views = views,
     createdAt = createdAt,
     updatedAt = updatedAt,

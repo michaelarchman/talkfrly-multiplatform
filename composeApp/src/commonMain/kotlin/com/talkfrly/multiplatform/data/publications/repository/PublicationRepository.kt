@@ -16,6 +16,8 @@ interface PublicationRepository {
     suspend fun getPublicationById(id: String): DataResult<Publication, DataError.Remote>
     suspend fun createPublication(request: CreatePublicationRequest): DataResult<Publication, DataError.Remote>
     suspend fun deletePublication(id: String): DataResult<Unit, DataError.Remote>
+    suspend fun likePublicationById(id: String): DataResult<Unit, DataError.Remote>
+    suspend fun unlikePublicationById(id: String): DataResult<Unit, DataError.Remote>
 }
 
 class PublicationRepositoryImpl(
@@ -41,5 +43,13 @@ class PublicationRepositoryImpl(
 
     override suspend fun deletePublication(id: String): DataResult<Unit, DataError.Remote> {
         return api.deletePublication(id)
+    }
+
+    override suspend fun likePublicationById(id: String): DataResult<Unit, DataError.Remote> {
+        return api.likePublication(id)
+    }
+
+    override suspend fun unlikePublicationById(id: String): DataResult<Unit, DataError.Remote> {
+        return api.likePublication(id)
     }
 }

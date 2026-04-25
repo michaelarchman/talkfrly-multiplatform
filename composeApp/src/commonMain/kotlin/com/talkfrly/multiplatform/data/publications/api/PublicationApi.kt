@@ -19,6 +19,8 @@ interface PublicationApi {
     suspend fun createPublication(request: PublicationRequest): DataResult<PublicationDto, DataError.Remote>
     suspend fun updatePublication(id: String, request: PublicationRequest): DataResult<PublicationDto, DataError.Remote>
     suspend fun deletePublication(id: String): DataResult<Unit, DataError.Remote>
+    suspend fun likePublication(id: String): DataResult<Unit, DataError.Remote>
+    suspend fun unlikePublication(id: String): DataResult<Unit, DataError.Remote>
 }
 
 class PublicationApiImpl(
@@ -123,6 +125,22 @@ class PublicationApiImpl(
             httpMethod = HttpMethod.Delete,
             httpClient = httpClient,
             urlString = "/publications/$id",
+        )
+    }
+
+    override suspend fun likePublication(id: String): DataResult<Unit, DataError.Remote> {
+        return makeRequest(
+            httpMethod = HttpMethod.Post,
+            httpClient = httpClient,
+            urlString = "/publications/$id/like",
+        )
+    }
+
+    override suspend fun unlikePublication(id: String): DataResult<Unit, DataError.Remote> {
+        return makeRequest(
+            httpMethod = HttpMethod.Delete,
+            httpClient = httpClient,
+            urlString = "/publications/$id/like",
         )
     }
 }

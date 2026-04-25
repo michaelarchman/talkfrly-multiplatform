@@ -35,8 +35,9 @@ data class PublicationDto(
     @SerialName("is_thread_member") val isThreadMember: Boolean,
     @SerialName("comment_count") val commentCount: Int,
     @SerialName("vote_score") val voteScore: Int,
-    @SerialName("liked_by_user") val likedByUser: Boolean? = null,
-    @SerialName("views") val views: Int? = null,
+    @SerialName("liked_by_user") val likedByUser: Boolean,
+    @SerialName("like_count") val likeCount: Int,
+    @SerialName("views") val views: Int,
     @SerialName("created_at") val createdAt: String,
     @SerialName("updated_at") val updatedAt: String,
 )

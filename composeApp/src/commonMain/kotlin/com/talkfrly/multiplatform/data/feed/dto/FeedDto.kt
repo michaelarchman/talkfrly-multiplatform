@@ -30,6 +30,7 @@ data class FeedItemResponseDto(
     @SerialName("tags") val tags: List<String> = emptyList(),
     @SerialName("comment_count") val commentCount: Int,
     @SerialName("vote_score") val voteScore: Int,
+    @SerialName("like_count") val likeCount: Int,
     @SerialName("liked_by_user") val likedByUser: Boolean,
     @SerialName("views") val views: Int,
     @SerialName("created_at") val createdAt: String,

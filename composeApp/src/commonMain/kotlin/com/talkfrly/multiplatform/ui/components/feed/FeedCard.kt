@@ -1,25 +1,19 @@
 package com.talkfrly.multiplatform.ui.components.feed
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,14 +33,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.domain.feed.FeedItem
+import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButton
+import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButtonType
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTabIntent
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.vectorResource
 import talkfrly_multiplatform.composeapp.generated.resources.Res
-import talkfrly_multiplatform.composeapp.generated.resources.heart
-import talkfrly_multiplatform.composeapp.generated.resources.icon_chat
+import talkfrly_multiplatform.composeapp.generated.resources.forum
 import talkfrly_multiplatform.composeapp.generated.resources.icon_visibility_on
+import talkfrly_multiplatform.composeapp.generated.resources.record_voice_over
 
 @Composable
 fun FeedCard(
@@ -179,36 +173,30 @@ fun FeedCard(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    FeedStat(
-                        icon = Res.drawable.heart,
-                        label = "${feedItem.voteScore}",
+                    InteractionStatButton(
+                        isActive = feedItem.likedByUser,
+                        type = InteractionStatButtonType.OUTLINED,
+                        icon = Res.drawable.record_voice_over,
+                        label = feedItem.likeCount,
+                        onClick = {},
                     )
-                    FeedStat(
-                        icon = Res.drawable.icon_chat,
-                        label = "${feedItem.commentCount}",
+
+                    InteractionStatButton(
+                        isActive = false,
+                        type = InteractionStatButtonType.OUTLINED,
+                        icon = Res.drawable.forum,
+                        label = feedItem.commentCount,
+                        onClick = {}
                     )
                 }
 
-                OutlinedButton(
-                    onClick = {},
-                    enabled = true,
-                    border = BorderStroke(0.dp, Color.Transparent),
-                    contentPadding = PaddingValues(horizontal = 6.dp),
-                ) {
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        imageVector = vectorResource(Res.drawable.icon_visibility_on),
-                        contentDescription = "feed view",
-                        tint = colors.bodyMuted,
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        text = feedItem.views.toString(),
-                        color = colors.bodyMuted,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                    )
-                }
+                InteractionStatButton(
+                    type = InteractionStatButtonType.SIMPLE,
+                    icon = Res.drawable.icon_visibility_on,
+                    label = feedItem.views,
+                    isActive = false,
+                    onClick = {}
+                )
             }
         }
     }
@@ -248,37 +236,6 @@ fun FeedAvatar(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun FeedStat(
-    icon: DrawableResource,
-    label: String,
-) {
-    val colors = LocalTalkfrlyColors.current
-
-    OutlinedButton(
-        onClick = {},
-        enabled = true,
-        border = BorderStroke(1.dp, colors.primary20),
-        contentPadding = PaddingValues(horizontal = 6.dp),
-    ) {
-        Icon(
-            modifier = Modifier.size(16.dp),
-            imageVector = vectorResource(icon),
-            contentDescription = "feed state $label",
-            tint = colors.body,
-        )
-
-        Spacer(Modifier.width(4.dp))
-
-        Text(
-            text = label,
-            color = colors.bodyMuted,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-        )
     }
 }
 

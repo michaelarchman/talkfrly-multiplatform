@@ -25,6 +25,7 @@ data class FeedItem(
     val commentCount: Int,
     val voteScore: Int,
     val likedByUser: Boolean,
+    val likeCount: Int,
     val views: Int,
     val createdAt: String,
     val updatedAt: String,

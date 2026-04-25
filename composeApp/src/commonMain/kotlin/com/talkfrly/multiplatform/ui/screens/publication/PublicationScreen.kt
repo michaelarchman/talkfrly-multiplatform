@@ -48,6 +48,8 @@ import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.domain.comment.Comment
 import com.talkfrly.multiplatform.ui.components.bars.BottomBarInput
+import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButton
+import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButtonType
 import com.talkfrly.multiplatform.ui.components.feed.FeedAvatar
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
@@ -58,8 +60,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
 import talkfrly_multiplatform.composeapp.generated.resources.delete
+import talkfrly_multiplatform.composeapp.generated.resources.icon_visibility_on
 import talkfrly_multiplatform.composeapp.generated.resources.more_vert
 import talkfrly_multiplatform.composeapp.generated.resources.person
+import talkfrly_multiplatform.composeapp.generated.resources.record_voice_over
 import talkfrly_multiplatform.composeapp.generated.resources.report
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +81,10 @@ fun PublicationScreenRoot(
     val commentSheetState = rememberModalBottomSheetState()
     var selectedCommentToBottomSheet by remember { mutableStateOf<Comment?>(null) }
 
+    val isOwner = state.currentUser?.id == publicationId
+
     LaunchedEffect(Unit) {
+        viewModel.onIntent(PublicationScreenIntent.GetCurrentUser)
         viewModel.onIntent(PublicationScreenIntent.GetPublications(publicationId))
         viewModel.onIntent(PublicationScreenIntent.GetComments(publicationId))
     }
@@ -366,14 +373,16 @@ private fun PublicationScreen(
                 )
             }
 
-            Text(
-                text = bodyText,
-                color = LocalTalkfrlyColors.current.body,
-                fontSize = 16.sp,
-                letterSpacing = 0.8.sp,
-                lineHeight = 28.sp,
-                fontWeight = FontWeight.Light,
-            )
+            if (bodyText.isNotBlank()) {
+                Text(
+                    text = bodyText,
+                    color = LocalTalkfrlyColors.current.body,
+                    fontSize = 16.sp,
+                    letterSpacing = 0.8.sp,
+                    lineHeight = 28.sp,
+                    fontWeight = FontWeight.Light,
+                )
+            }
         }
 
         state.publication.imageUrls.let {
@@ -382,6 +391,35 @@ private fun PublicationScreen(
                 painter = rememberAsyncImagePainter(model = it.firstOrNull()),
                 contentDescription = "Publication picture",
                 contentScale = ContentScale.FillWidth,
+            )
+        }
+
+        /**
+         * Interaction buttons
+         */
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            InteractionStatButton(
+                isActive = state.publication.likedByUser,
+                type = InteractionStatButtonType.OUTLINED,
+                label = state.publication.likeCount,
+                icon = Res.drawable.record_voice_over,
+                onClick = {
+                    onAction(
+                        if (state.publication.likedByUser) PublicationScreenIntent.UnlikePublication(state.publication.id)
+                        else PublicationScreenIntent.LikePublication(state.publication.id)
+                    )
+                }
+            )
+
+            InteractionStatButton(
+                type = InteractionStatButtonType.SIMPLE,
+                icon = Res.drawable.icon_visibility_on,
+                label = state.publication.views,
+                isActive = false,
             )
         }
 

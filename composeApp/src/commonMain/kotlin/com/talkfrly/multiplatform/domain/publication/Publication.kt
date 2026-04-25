@@ -29,8 +29,9 @@ data class Publication(
     val isThreadMember: Boolean,
     val commentCount: Int,
     val voteScore: Int,
-    val likedByUser: Boolean? = null,
-    val views: Int? = null,
+    val likedByUser: Boolean,
+    val likeCount: Int,
+    val views: Int,
     val createdAt: String,
     val updatedAt: String,
 )

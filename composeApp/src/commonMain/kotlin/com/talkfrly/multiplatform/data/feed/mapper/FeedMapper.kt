@@ -45,6 +45,7 @@ fun FeedItemResponseDto.toDomain(): FeedItem = FeedItem(
     commentCount = commentCount,
     voteScore = voteScore,
     likedByUser = likedByUser,
+    likeCount = likeCount,
     views = views,
     createdAt = createdAt,
     updatedAt = updatedAt,
