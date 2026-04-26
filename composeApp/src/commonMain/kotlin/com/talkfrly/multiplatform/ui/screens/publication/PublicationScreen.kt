@@ -338,17 +338,22 @@ fun PublicationScreenRoot(
                             vectorResource(Res.drawable.icon_chat),
                             "Comment")},
                     trailingIcon = {
-                        InteractionStatButton(
-                            type = InteractionStatButtonType.OUTLINED,
-                            isActive = false,
-                            icon = Res.drawable.chat_paste_go,
-                            onClick = { viewModel.onIntent(PublicationScreenIntent.PostComment(
-                                CreateCommentRequest(
-                                    publicationId = publicationId,
-                                    content = state.newCommentContent,
-                                )
-                            ))}
-                        )
+                        Column(
+                            Modifier.padding(end = 8.dp)
+                        ) {
+                            InteractionStatButton(
+                                type = InteractionStatButtonType.OUTLINED,
+                                isActive = false,
+                                icon = Res.drawable.chat_paste_go,
+                                onClick = { viewModel.onIntent(PublicationScreenIntent.PostComment(
+                                    CreateCommentRequest(
+                                        publicationId = publicationId,
+                                        content = state.newCommentContent,
+                                    )
+                                ))}
+                            )
+                        }
+
                     }
                 )
             }
@@ -474,6 +479,12 @@ private fun PublicationScreen(
                 color = LocalTalkfrlyColors.current.body,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
+            )
+
+            HorizontalDivider(
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = LocalTalkfrlyColors.current.primary20,
             )
 
             if (state.comments.isEmpty()) {
