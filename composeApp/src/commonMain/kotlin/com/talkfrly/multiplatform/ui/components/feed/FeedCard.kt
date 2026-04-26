@@ -178,7 +178,10 @@ fun FeedCard(
                         type = InteractionStatButtonType.OUTLINED,
                         icon = Res.drawable.record_voice_over,
                         label = feedItem.likeCount,
-                        onClick = {},
+                        onClick = {
+                            if (feedItem.likedByUser) onAction(FeedTabIntent.UnlikePublication(feedItem.id))
+                            else onAction(FeedTabIntent.LikePublication(feedItem.id))
+                        },
                     )
 
                     InteractionStatButton(

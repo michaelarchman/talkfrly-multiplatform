@@ -56,13 +56,25 @@ suspend inline fun <reified T> makeRequest(
             }
         }
 
-        if (T::class == Unit::class) {
-            return DataResult.ResultSuccess(Unit as T)
-        }
-
         println("HTTP RESPONSE STATUS: ${response.status}")
-        println("HTTP RESPONSE BODY: ${response.bodyAsText()}")
-        println("HTTP RESPONSE HEADERS: $")
+
+        if (T::class == Unit::class) {
+            return if (response.status.value in 200..299) {
+                DataResult.ResultSuccess(Unit as T)
+            } else {
+                val bodyText = response.bodyAsText().trim()
+                val errorDto = try {
+                    Json.decodeFromString<ErrorDto>(bodyText)
+                } catch (_: Exception) {
+                    ErrorDto(status = response.status.value, message = null, error = null)
+                }
+                val mappedCode = mapHttpCodeToEnum(response.status.value)
+                val message = errorDto.message ?: "Wystąpił błąd (${response.status.value})"
+                DataResult.ResultError(
+                    DataError.Remote(code = mappedCode, error = errorDto.error, message = message)
+                )
+            }
+        }
 
         handleResponse(response)
 
