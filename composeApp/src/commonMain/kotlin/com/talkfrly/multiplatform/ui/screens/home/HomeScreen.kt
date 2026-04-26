@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,9 +35,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.ui.components.streams.StreamCard
 import com.talkfrly.multiplatform.ui.nav.AccountRoute
 import com.talkfrly.multiplatform.ui.nav.NewPublicationRoute
@@ -43,6 +48,8 @@ import com.talkfrly.multiplatform.ui.nav.PublicationRoute
 import com.talkfrly.multiplatform.ui.nav.StreamRoute
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTab
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
+import kotlinx.coroutines.async
+import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -65,6 +72,7 @@ fun HomeScreenRoot(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
+        viewModel.onIntent(HomeIntent.GetCurrentUser)
         viewModel.onIntent(HomeIntent.GetStreams)
     }
 
@@ -98,14 +106,27 @@ fun HomeScreenRoot(
                             contentDescription = "Create publication",
                         )
                     }
+
                     IconButton(
                         onClick = { navController.navigate(AccountRoute) },
                         enabled = true,
                     ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.person),
-                            contentDescription = null,
-                        )
+                        if (state.currentUser?.avatarUrl != null) {
+                            Image(
+                                painter = rememberAsyncImagePainter(state.currentUser?.avatarUrl),
+                                contentDescription = "Go to Account",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .aspectRatio(1f)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.person),
+                                contentDescription = "Go to Account",
+                            )
+                        }
                     }
                 }
             )

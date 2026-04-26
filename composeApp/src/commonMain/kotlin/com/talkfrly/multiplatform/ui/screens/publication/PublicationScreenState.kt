@@ -8,4 +8,5 @@ data class PublicationScreenState(
     val currentUser: User? = null,
     val publication: Publication? = null,
     val comments: List<Comment>? = null,
+    val newCommentContent: String = "",
 )

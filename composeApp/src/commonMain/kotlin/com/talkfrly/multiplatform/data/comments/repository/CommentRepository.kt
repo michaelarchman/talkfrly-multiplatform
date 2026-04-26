@@ -23,6 +23,6 @@ class CommentRepositoryImpl(
     }
 
     override suspend fun createComment(request: CreateCommentRequest): DataResult<Comment, DataError.Remote> {
-        return api.createComment(request.publicationId, request.toDto()).map { it.toDomain() }
+        return api.postComment(request.publicationId, request.toDto()).map { it.toDomain() }
     }
 }

@@ -5,6 +5,7 @@ import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
 import com.talkfrly.multiplatform.data.user.repository.UserRepository
+import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
 import com.talkfrly.multiplatform.domain.core.onSuccess
@@ -26,6 +27,8 @@ class PublicationScreenViewModel(
             is PublicationScreenIntent.GetCurrentUser -> fetchCurrentUser()
             is PublicationScreenIntent.GetPublications -> getPublicationDetails(intent.publicationId)
             is PublicationScreenIntent.GetComments -> getComments(intent.publicationId)
+            is PublicationScreenIntent.SetNewCommentContent -> setNewCommentContent(intent.content)
+            is PublicationScreenIntent.PostComment -> postComment(intent.createCommentRequest)
             is PublicationScreenIntent.LikePublication -> likePublication(intent.publicationId)
             is PublicationScreenIntent.UnlikePublication -> unlikePublication(intent.publicationId)
         }
@@ -64,6 +67,24 @@ class PublicationScreenViewModel(
         commentRepository.getComments(publicationId)
             .onSuccess { commentList ->
                 _state.update { it.copy(comments = commentList.comments) }
+            }
+            .onError { error ->
+                println(error)
+            }
+            .onFinally {
+                stopLoading()
+            }
+    }
+
+    private fun setNewCommentContent(newCommentContent: String) {
+        _state.update { it.copy(newCommentContent = newCommentContent) }
+    }
+
+    private fun postComment(createCommentRequest: CreateCommentRequest) = viewModelScope.launch {
+        startLoading()
+        commentRepository.createComment(createCommentRequest)
+            .onSuccess { comment ->
+                _state.update { it.copy(comments = it.comments.orEmpty() + comment) }
             }
             .onError { error ->
                 println(error)

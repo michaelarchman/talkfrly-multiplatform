@@ -11,7 +11,7 @@ import io.ktor.http.HttpMethod
 
 interface CommentApi {
     suspend fun getComments(publicationId: String): DataResult<CommentListResponseDto, DataError.Remote>
-    suspend fun createComment(publicationId: String, request: CreateCommentRequestDto): DataResult<CommentDto, DataError.Remote>
+    suspend fun postComment(publicationId: String, request: CreateCommentRequestDto): DataResult<CommentDto, DataError.Remote>
 }
 
 class CommentApiImpl(
@@ -25,7 +25,7 @@ class CommentApiImpl(
         )
     }
 
-    override suspend fun createComment(
+    override suspend fun postComment(
         publicationId: String,
         request: CreateCommentRequestDto,
     ): DataResult<CommentDto, DataError.Remote> {

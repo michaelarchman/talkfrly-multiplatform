@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +25,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -47,10 +50,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.domain.comment.Comment
+import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
 import com.talkfrly.multiplatform.ui.components.bars.BottomBarInput
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButton
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButtonType
 import com.talkfrly.multiplatform.ui.components.feed.FeedAvatar
+import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationIntent
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import com.talkfrly.multiplatform.ui.utils.formatRelativeTime
@@ -58,8 +63,11 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
+import talkfrly_multiplatform.composeapp.generated.resources.add_circle
+import talkfrly_multiplatform.composeapp.generated.resources.chat_paste_go
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
 import talkfrly_multiplatform.composeapp.generated.resources.delete
+import talkfrly_multiplatform.composeapp.generated.resources.icon_chat
 import talkfrly_multiplatform.composeapp.generated.resources.icon_visibility_on
 import talkfrly_multiplatform.composeapp.generated.resources.more_vert
 import talkfrly_multiplatform.composeapp.generated.resources.person
@@ -303,11 +311,45 @@ fun PublicationScreenRoot(
                 )
             },
             bottomBar = {
-                BottomBarInput(
-                    value = "",
-                    onValueChange = { },
-                    onSendClick = { },
-                    placeholder = "Write a comment...",
+                TextField(
+                    value = state.newCommentContent,
+                    onValueChange = { viewModel.onIntent(PublicationScreenIntent.SetNewCommentContent(it)) },
+                    label = { Text("Write something") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(60.dp, 160.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                        unfocusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                        disabledContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                        focusedTextColor = LocalTalkfrlyColors.current.body,
+                        unfocusedTextColor = LocalTalkfrlyColors.current.body,
+                        disabledTextColor = LocalTalkfrlyColors.current.body,
+                        focusedLabelColor = LocalTalkfrlyColors.current.body,
+                        unfocusedLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                        disabledLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                        unfocusedIndicatorColor = LocalTalkfrlyColors.current.primary20,
+                        focusedIndicatorColor = LocalTalkfrlyColors.current.primary,
+                        disabledIndicatorColor = LocalTalkfrlyColors.current.primary20,
+                        cursorColor = LocalTalkfrlyColors.current.surface,
+                    ),
+                    maxLines = 10,
+                    leadingIcon = { Icon(
+                            vectorResource(Res.drawable.icon_chat),
+                            "Comment")},
+                    trailingIcon = {
+                        InteractionStatButton(
+                            type = InteractionStatButtonType.OUTLINED,
+                            isActive = false,
+                            icon = Res.drawable.chat_paste_go,
+                            onClick = { viewModel.onIntent(PublicationScreenIntent.PostComment(
+                                CreateCommentRequest(
+                                    publicationId = publicationId,
+                                    content = state.newCommentContent,
+                                )
+                            ))}
+                        )
+                    }
                 )
             }
         ) {
