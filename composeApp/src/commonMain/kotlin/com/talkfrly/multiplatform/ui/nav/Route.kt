@@ -30,6 +30,12 @@ data class PublicationRoute(
 data object NewPublicationRoute
 
 @Serializable
+data object ForgotPasswordRoute
+
+@Serializable
+data class ResetPasswordRoute(val email: String)
+
+@Serializable
 data object ErrorRoute
 
 @Serializable

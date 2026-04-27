@@ -8,10 +8,12 @@ import androidx.navigation.toRoute
 import com.talkfrly.multiplatform.ui.screens.account.AccountScreenRoot
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationScreenRoot
 import com.talkfrly.multiplatform.ui.screens.error.ErrorScreenRoot
+import com.talkfrly.multiplatform.ui.screens.forgotpassword.ForgotPasswordScreenRoot
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
+import com.talkfrly.multiplatform.ui.screens.resetpassword.ResetPasswordScreenRoot
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.screens.stream.StreamScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
@@ -71,6 +73,20 @@ fun AppNavHost(
         }
         composable<NewPublicationRoute> {
             CreatePublicationScreenRoot(
+                navController = navController,
+            )
+        }
+        composable<ForgotPasswordRoute> {
+            ForgotPasswordScreenRoot(
+                viewModel = koinViewModel(),
+                navController = navController,
+            )
+        }
+        composable<ResetPasswordRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<ResetPasswordRoute>()
+            ResetPasswordScreenRoot(
+                email = route.email,
+                viewModel = koinViewModel(),
                 navController = navController,
             )
         }

@@ -44,17 +44,18 @@ import com.talkfrly.multiplatform.data.userPreferences.UserPreferencesRepository
 import com.talkfrly.multiplatform.ui.screens.account.AccountViewModel
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationViewModel
 import com.talkfrly.multiplatform.ui.screens.error.ErrorViewModel
+import com.talkfrly.multiplatform.ui.screens.forgotpassword.ForgotPasswordViewModel
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTabViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationScreenViewModel
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
+import com.talkfrly.multiplatform.ui.screens.resetpassword.ResetPasswordViewModel
 import com.talkfrly.multiplatform.ui.screens.stream.StreamViewModel
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -92,6 +93,8 @@ val sharedModule: Module = module {
     viewModelOf(::LoginViewModel)
     viewModelOf(::RegisterViewModel)
     viewModelOf(::VerifyEmailViewModel)
+    viewModelOf(::ForgotPasswordViewModel)
+    viewModelOf(::ResetPasswordViewModel)
     viewModelOf(::HomeViewModel)
     viewModelOf(::AccountViewModel)
     viewModelOf(::CreatePublicationViewModel)
