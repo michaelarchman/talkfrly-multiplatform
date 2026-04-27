@@ -101,7 +101,9 @@ fun FeedCard(
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                var isOverflow by remember { mutableStateOf(false) }
+                var isOverflow by remember(feedItem.id, feedItem.updatedAt, feedItem.content) {
+                    mutableStateOf(false)
+                }
 
                 val lines = feedItem.content.lines()
                 val headerLine = lines.firstOrNull { it.startsWith("#") }

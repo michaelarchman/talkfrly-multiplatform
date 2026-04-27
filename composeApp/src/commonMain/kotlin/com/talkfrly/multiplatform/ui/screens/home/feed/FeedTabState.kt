@@ -7,7 +7,7 @@ import com.talkfrly.multiplatform.domain.feed.FeedItem
 data class FeedTabState(
     val visiblePublications: List<FeedItem> = emptyList(),
     val feed: Feed? = null,
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val isLoadingMore: Boolean = false,
     val hasNextPage: Boolean = true,
     val error: DataError.Remote? = null,

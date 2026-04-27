@@ -21,7 +21,10 @@ class FeedTabViewModel(
 
     fun onIntent(intent: FeedTabIntent) {
         when (intent) {
-            is FeedTabIntent.GetFeed -> fetchFeed(intent.page, intent.limit)
+            is FeedTabIntent.GetFeed -> {
+                if (intent.page == 1) _state.update { it.copy(visiblePublications = emptyList(), isLoading = true) }
+                fetchFeed(intent.page, intent.limit)
+            }
             is FeedTabIntent.LikePublication -> likePublication(intent.publicationId)
             is FeedTabIntent.UnlikePublication -> unlikePublication(intent.publicationId)
         }
@@ -72,12 +75,17 @@ class FeedTabViewModel(
     }
 
     private fun fetchFeed(page: Int, limit: Int) = viewModelScope.launch {
+        if (page == 1) _state.update { it.copy(visiblePublications = emptyList(), isLoading = true) }
         startLoading()
         feedRepository.getFeed(page = page, limit = limit)
             .onSuccess { newFeed ->
                 _state.update { current ->
-                    val combined = (current.visiblePublications + newFeed.publications)
-                        .distinctBy { it.id }
+                    val combined = if (page == 1) {
+                        newFeed.publications
+                    } else {
+                        (current.visiblePublications + newFeed.publications)
+                            .distinctBy { it.id }
+                    }
                     current.copy(
                         feed = newFeed,
                         visiblePublications = combined,
@@ -87,6 +95,7 @@ class FeedTabViewModel(
             }.onError { error ->
                 println("Error during Feed Fetch, $error")
             }.onFinally {
+                _state.update { it.copy(isLoading = false) }
                 stopLoading()
             }
     }
