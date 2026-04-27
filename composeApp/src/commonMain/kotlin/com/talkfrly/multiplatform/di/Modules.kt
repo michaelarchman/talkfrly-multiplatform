@@ -25,6 +25,10 @@ import com.talkfrly.multiplatform.data.stream.api.StreamApi
 import com.talkfrly.multiplatform.data.stream.api.StreamApiImpl
 import com.talkfrly.multiplatform.data.stream.repository.StreamRepository
 import com.talkfrly.multiplatform.data.stream.repository.StreamRepositoryImpl
+import com.talkfrly.multiplatform.data.simpleThread.api.Thread2Api
+import com.talkfrly.multiplatform.data.simpleThread.api.Thread2ApiImpl
+import com.talkfrly.multiplatform.data.simpleThread.repository.Thread2Repository
+import com.talkfrly.multiplatform.data.simpleThread.repository.Thread2RepositoryImpl
 import com.talkfrly.multiplatform.data.threads.api.ThreadApi
 import com.talkfrly.multiplatform.data.threads.api.ThreadApiImpl
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
@@ -52,6 +56,7 @@ import com.talkfrly.multiplatform.ui.screens.publication.PublicationScreenViewMo
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
 import com.talkfrly.multiplatform.ui.screens.resetpassword.ResetPasswordViewModel
 import com.talkfrly.multiplatform.ui.screens.stream.StreamViewModel
+import com.talkfrly.multiplatform.ui.screens.thread.ThreadViewModel
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.core.module.Module
@@ -75,6 +80,7 @@ val sharedModule: Module = module {
     singleOf(::UserPreferencesApiImpl).bind<UserPreferencesApi>()
     singleOf(::FeedApiImpl).bind<FeedApi>()
     singleOf(::StreamApiImpl).bind<StreamApi>()
+    singleOf(::Thread2ApiImpl).bind<Thread2Api>()
 
     // Repositories
     singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
@@ -86,6 +92,7 @@ val sharedModule: Module = module {
     singleOf(::UserPreferencesRepositoryImpl).bind<UserPreferencesRepository>()
     singleOf(::FeedRepositoryImpl).bind<FeedRepository>()
     singleOf(::StreamRepositoryImpl).bind<StreamRepository>()
+    singleOf(::Thread2RepositoryImpl).bind<Thread2Repository>()
 
     // ViewModels
     viewModelOf(::AppViewModel)
@@ -102,6 +109,7 @@ val sharedModule: Module = module {
     viewModelOf(::ErrorViewModel)
     viewModelOf(::StreamViewModel)
     viewModelOf(::FeedTabViewModel)
+    viewModelOf(::ThreadViewModel)
 }
 
 expect val platformModule: Module

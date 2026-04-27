@@ -46,6 +46,7 @@ import com.talkfrly.multiplatform.ui.nav.AccountRoute
 import com.talkfrly.multiplatform.ui.nav.NewPublicationRoute
 import com.talkfrly.multiplatform.ui.nav.PublicationRoute
 import com.talkfrly.multiplatform.ui.nav.StreamRoute
+import com.talkfrly.multiplatform.ui.nav.ThreadRoute
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTab
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import kotlinx.coroutines.async
@@ -104,6 +105,16 @@ fun HomeScreenRoot(
                         Icon(
                             imageVector = vectorResource(Res.drawable.add),
                             contentDescription = "Create publication",
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { navController.navigate(ThreadRoute) },
+                        enabled = true,
+                    ) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.gesture),
+                            contentDescription = "Go to Thread",
                         )
                     }
 
