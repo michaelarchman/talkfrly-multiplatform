@@ -2,6 +2,7 @@ package com.talkfrly.multiplatform.ui.screens.publication
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -229,7 +230,6 @@ fun PublicationScreenRoot(
                         )
                     }
 
-
                     Row(
                         modifier = Modifier.clickable {
                             /* report */
@@ -246,6 +246,7 @@ fun PublicationScreenRoot(
 
                         Text("Report comment", color = LocalTalkfrlyColors.current.body)
                     }
+
                     Row(
                         modifier = Modifier.clickable {
                             /* delete */
@@ -326,7 +327,44 @@ fun PublicationScreenRoot(
                 )
             },
             bottomBar = {
-                Column( verticalArrangement = Arrangement.spacedBy(8.dp)){
+                Column(
+                    modifier = Modifier.background(color = LocalTalkfrlyColors.current.backgroundLighter),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ){
+                    if(isCommentTextFieldFocused){
+                        Row(modifier = Modifier.padding(8.dp)) {
+                            PhotoActionButton(
+                                label = "Photo",
+                                icon = Res.drawable.add_a_photo,
+                                enabled = state.imageUri == null,
+                                onClick = { picker.openCamera() },
+                            )
+
+                            PhotoActionButton(
+                                label = "Image",
+                                icon = Res.drawable.add_picture,
+                                enabled = state.imageUri == null,
+                                onClick = { picker.openGallery() },
+                            )
+
+                            state.imageUri?.let { uri ->
+                                val status = state.imageUploadStatus ?: ImageUploadStatus.PENDING
+                                val thumbnail = state.uploadedImageUrl ?: uri
+                                val errorText = state.imageUploadError
+
+                                ImageChip(
+                                    label = "Photo 1",
+                                    thumbnail = thumbnail,
+                                    status = status,
+                                    errorText = errorText,
+                                    enabled = true,
+                                    onRemove = { viewModel.onIntent(PublicationScreenIntent.RemoveImage) },
+                                    onRetry = { viewModel.onIntent(PublicationScreenIntent.RetryImage(uri)) }
+                                )
+                            }
+                        }
+                    }
+
                     TextField(
                         value = state.newCommentContent,
                         onValueChange = { viewModel.onIntent(PublicationScreenIntent.SetNewCommentContent(it)) },
@@ -375,39 +413,7 @@ fun PublicationScreenRoot(
                             }
                         }
                     )
-                    if(isCommentTextFieldFocused){
-                        Row(modifier = Modifier.padding(8.dp)) {
-                            PhotoActionButton(
-                                label = "Photo",
-                                icon = Res.drawable.add_a_photo,
-                                enabled = state.imageUri == null,
-                                onClick = { picker.openCamera() },
-                            )
-                            PhotoActionButton(
-                                label = "Image",
-                                icon = Res.drawable.add_picture,
-                                enabled = state.imageUri == null,
-                                onClick = { picker.openGallery() },
-                            )
-
-                            state.imageUri?.let { uri ->
-                                val status = state.imageUploadStatus ?: ImageUploadStatus.PENDING
-                                val thumbnail = state.uploadedImageUrl ?: uri
-                                val errorText = state.imageUploadError
-                                ImageChip(
-                                    label = "Photo 1",
-                                    thumbnail = thumbnail,
-                                    status = status,
-                                    errorText = errorText,
-                                    enabled = true,
-                                    onRemove = { viewModel.onIntent(PublicationScreenIntent.RemoveImage) },
-                                    onRetry = { viewModel.onIntent(PublicationScreenIntent.RetryImage(uri)) }
-                                )
-                            }
-                        }
-                    }
                 }
-
             }
         ) {
             LazyColumn(
