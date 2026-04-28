@@ -3,6 +3,7 @@ package com.talkfrly.multiplatform.ui.screens.createpublication
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
+import com.talkfrly.multiplatform.data.uploads.ImageUploadStatus
 import com.talkfrly.multiplatform.data.uploads.repository.UploadRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onSuccess

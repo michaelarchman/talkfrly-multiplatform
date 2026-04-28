@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
+import com.talkfrly.multiplatform.data.uploads.ImageUploadStatus
+import com.talkfrly.multiplatform.data.uploads.repository.UploadRepository
 import com.talkfrly.multiplatform.data.user.repository.UserRepository
 import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
 import com.talkfrly.multiplatform.domain.core.onError
@@ -18,6 +20,7 @@ class PublicationScreenViewModel(
     private val publicationRepository: PublicationRepository,
     private val commentRepository: CommentRepository,
     private val userRepository: UserRepository,
+    private val uploadRepository: UploadRepository,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(PublicationScreenState())
     val state: StateFlow<PublicationScreenState> get() = _state
@@ -31,6 +34,9 @@ class PublicationScreenViewModel(
             is PublicationScreenIntent.PostComment -> postComment(intent.createCommentRequest)
             is PublicationScreenIntent.LikePublication -> likePublication(intent.publicationId)
             is PublicationScreenIntent.UnlikePublication -> unlikePublication(intent.publicationId)
+            is PublicationScreenIntent.AddImage -> addImage(intent.uri)
+            is PublicationScreenIntent.RemoveImage -> removeImage()
+            is PublicationScreenIntent.RetryImage -> retryImage(intent.uri)
         }
     }
 
@@ -134,5 +140,54 @@ class PublicationScreenViewModel(
             .onFinally {
                 stopLoading()
             }
+    }
+
+    private fun addImage(uri: String) = viewModelScope.launch {
+        startLoading()
+        _state.update {
+            it.copy(
+                imageUri = uri,
+                imageUploadStatus = ImageUploadStatus.UPLOADING,
+                imageUploadError = null,
+                uploadedImageUrl = null,
+            )
+        }
+        uploadRepository.uploadImage(uri)
+            .onSuccess { uploadedUrl ->
+                _state.update {
+                    it.copy(
+                        imageUploadStatus = ImageUploadStatus.SUCCESS,
+                        uploadedImageUrl = uploadedUrl
+                    )
+                }
+            }
+            .onError { error ->
+                _state.update {
+                    it.copy(
+                        imageUploadStatus = ImageUploadStatus.ERROR,
+                        imageUploadError = error.message ?: "Upload failed"
+                    )
+                }
+            }
+            .onFinally {
+                stopLoading()
+            }
+    }
+
+    private fun retryImage(uri: String) = viewModelScope.launch {
+        if (_state.value.imageUri == uri) {
+            addImage(uri)
+        }
+    }
+
+    private fun removeImage() = viewModelScope.launch {
+        _state.update {
+            it.copy(
+                imageUri = null,
+                imageUploadStatus = null,
+                imageUploadError = null,
+                uploadedImageUrl = null
+            )
+        }
     }
 }
