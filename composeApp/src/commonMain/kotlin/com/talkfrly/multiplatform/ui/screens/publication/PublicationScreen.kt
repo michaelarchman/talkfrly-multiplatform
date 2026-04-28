@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,13 +50,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
+import com.talkfrly.multiplatform.data.uploads.ImageUploadStatus
 import com.talkfrly.multiplatform.domain.comment.Comment
 import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
-import com.talkfrly.multiplatform.ui.components.bars.BottomBarInput
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButton
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButtonType
+import com.talkfrly.multiplatform.ui.components.buttons.PhotoActionButton
+import com.talkfrly.multiplatform.ui.components.chips.ImageChip
 import com.talkfrly.multiplatform.ui.components.feed.FeedAvatar
-import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationIntent
+import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import com.talkfrly.multiplatform.ui.utils.formatRelativeTime
@@ -63,7 +66,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
-import talkfrly_multiplatform.composeapp.generated.resources.add_circle
+import talkfrly_multiplatform.composeapp.generated.resources.add_a_photo
+import talkfrly_multiplatform.composeapp.generated.resources.add_picture
 import talkfrly_multiplatform.composeapp.generated.resources.chat_paste_go
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
 import talkfrly_multiplatform.composeapp.generated.resources.delete
@@ -89,12 +93,23 @@ fun PublicationScreenRoot(
     val commentSheetState = rememberModalBottomSheetState()
     var selectedCommentToBottomSheet by remember { mutableStateOf<Comment?>(null) }
 
+    var isCommentTextFieldFocused by remember { mutableStateOf(false) }
+    val picker = rememberImagePickerController()
+
     val isOwner = state.currentUser?.id == publicationId
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(PublicationScreenIntent.GetCurrentUser)
         viewModel.onIntent(PublicationScreenIntent.GetPublications(publicationId))
         viewModel.onIntent(PublicationScreenIntent.GetComments(publicationId))
+    }
+
+    LaunchedEffect(Unit) {
+        picker.onResult { result ->
+            result.uriPaths.firstOrNull()?.let { uri ->
+                viewModel.onIntent(PublicationScreenIntent.AddImage(uri))
+            }
+        }
     }
 
     ModalNavigationDrawer(
@@ -311,50 +326,88 @@ fun PublicationScreenRoot(
                 )
             },
             bottomBar = {
-                TextField(
-                    value = state.newCommentContent,
-                    onValueChange = { viewModel.onIntent(PublicationScreenIntent.SetNewCommentContent(it)) },
-                    label = { Text("Write something") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(60.dp, 160.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
-                        unfocusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
-                        disabledContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
-                        focusedTextColor = LocalTalkfrlyColors.current.body,
-                        unfocusedTextColor = LocalTalkfrlyColors.current.body,
-                        disabledTextColor = LocalTalkfrlyColors.current.body,
-                        focusedLabelColor = LocalTalkfrlyColors.current.body,
-                        unfocusedLabelColor = LocalTalkfrlyColors.current.bodyMuted,
-                        disabledLabelColor = LocalTalkfrlyColors.current.bodyMuted,
-                        unfocusedIndicatorColor = LocalTalkfrlyColors.current.primary20,
-                        focusedIndicatorColor = LocalTalkfrlyColors.current.primary,
-                        disabledIndicatorColor = LocalTalkfrlyColors.current.primary20,
-                        cursorColor = LocalTalkfrlyColors.current.surface,
-                    ),
-                    maxLines = 10,
-                    leadingIcon = { Icon(
+                Column( verticalArrangement = Arrangement.spacedBy(8.dp)){
+                    TextField(
+                        value = state.newCommentContent,
+                        onValueChange = { viewModel.onIntent(PublicationScreenIntent.SetNewCommentContent(it)) },
+                        label = { Text("Write something") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(60.dp, 160.dp)
+                            .onFocusChanged{ focusState ->
+                                isCommentTextFieldFocused = focusState.isFocused
+                            },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                            unfocusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                            disabledContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                            focusedTextColor = LocalTalkfrlyColors.current.body,
+                            unfocusedTextColor = LocalTalkfrlyColors.current.body,
+                            disabledTextColor = LocalTalkfrlyColors.current.body,
+                            focusedLabelColor = LocalTalkfrlyColors.current.body,
+                            unfocusedLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                            disabledLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                            unfocusedIndicatorColor = LocalTalkfrlyColors.current.primary20,
+                            focusedIndicatorColor = LocalTalkfrlyColors.current.primary,
+                            disabledIndicatorColor = LocalTalkfrlyColors.current.primary20,
+                            cursorColor = LocalTalkfrlyColors.current.surface,
+                        ),
+                        maxLines = 10,
+                        leadingIcon = { Icon(
                             vectorResource(Res.drawable.icon_chat),
                             "Comment")},
-                    trailingIcon = {
-                        Column(
-                            Modifier.padding(end = 8.dp)
-                        ) {
-                            InteractionStatButton(
-                                type = InteractionStatButtonType.OUTLINED,
-                                isActive = false,
-                                icon = Res.drawable.chat_paste_go,
-                                onClick = { viewModel.onIntent(PublicationScreenIntent.PostComment(
-                                    CreateCommentRequest(
-                                        publicationId = publicationId,
-                                        content = state.newCommentContent,
-                                    )
-                                ))}
+                        trailingIcon = {
+                            Column(
+                                Modifier.padding(end = 8.dp)
+                            ) {
+                                InteractionStatButton(
+                                    type = InteractionStatButtonType.OUTLINED,
+                                    isActive = state.newCommentContent.isNotBlank() && (state.imageUploadStatus == ImageUploadStatus.SUCCESS || state.imageUploadStatus == null),
+                                    icon = Res.drawable.chat_paste_go,
+                                    onClick = { viewModel.onIntent(PublicationScreenIntent.PostComment(
+                                        CreateCommentRequest(
+                                            publicationId = publicationId,
+                                            content = state.newCommentContent,
+                                            imageUrls = state.uploadedImageUrl?.let(::listOf).orEmpty(),
+                                        )
+                                    ))}
+                                )
+                            }
+                        }
+                    )
+                    if(isCommentTextFieldFocused){
+                        Row(modifier = Modifier.padding(8.dp)) {
+                            PhotoActionButton(
+                                label = "Photo",
+                                icon = Res.drawable.add_a_photo,
+                                enabled = state.imageUri == null,
+                                onClick = { picker.openCamera() },
                             )
+                            PhotoActionButton(
+                                label = "Image",
+                                icon = Res.drawable.add_picture,
+                                enabled = state.imageUri == null,
+                                onClick = { picker.openGallery() },
+                            )
+
+                            state.imageUri?.let { uri ->
+                                val status = state.imageUploadStatus ?: ImageUploadStatus.PENDING
+                                val thumbnail = state.uploadedImageUrl ?: uri
+                                val errorText = state.imageUploadError
+                                ImageChip(
+                                    label = "Photo 1",
+                                    thumbnail = thumbnail,
+                                    status = status,
+                                    errorText = errorText,
+                                    enabled = true,
+                                    onRemove = { viewModel.onIntent(PublicationScreenIntent.RemoveImage) },
+                                    onRetry = { viewModel.onIntent(PublicationScreenIntent.RetryImage(uri)) }
+                                )
+                            }
                         }
                     }
-                )
+                }
+
             }
         ) {
             LazyColumn(
@@ -543,6 +596,12 @@ private fun PublicationScreen(
                             Text(
                                 text = comment.content,
                                 color = LocalTalkfrlyColors.current.body,
+                            )
+                            Image(
+                                modifier = Modifier.clip(ShapeDefaults.ExtraSmall),
+                                painter = rememberAsyncImagePainter(model = comment.imageUrls.firstOrNull()),
+                                contentDescription = "Comment picture",
+                                contentScale = ContentScale.FillWidth,
                             )
                         }
                     }

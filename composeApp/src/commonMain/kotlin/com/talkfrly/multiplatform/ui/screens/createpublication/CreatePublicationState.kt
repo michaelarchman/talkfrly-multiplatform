@@ -1,18 +1,12 @@
 package com.talkfrly.multiplatform.ui.screens.createpublication
 
+import com.talkfrly.multiplatform.data.uploads.ImageUploadStatus
 import com.talkfrly.multiplatform.domain.publication.PublicationType
 
 enum class VisibilityOption {
     PUBLIC,
     THREAD_ONLY,
     PRIVATE
-}
-
-enum class ImageUploadStatus {
-    PENDING,
-    UPLOADING,
-    SUCCESS,
-    ERROR
 }
 
 data class CreatePublicationState(

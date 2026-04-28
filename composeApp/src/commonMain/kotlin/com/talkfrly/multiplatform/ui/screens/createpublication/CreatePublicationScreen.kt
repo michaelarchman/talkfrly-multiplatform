@@ -49,8 +49,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
+import com.talkfrly.multiplatform.data.uploads.ImageUploadStatus
 import com.talkfrly.multiplatform.domain.publication.PublicationType
+import com.talkfrly.multiplatform.ui.components.buttons.PhotoActionButton
+import com.talkfrly.multiplatform.ui.components.chips.ImageChip
 import com.talkfrly.multiplatform.ui.nav.HomeRoute
 import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
@@ -687,106 +689,4 @@ private fun TagChip(
     }
 }
 
-@Composable
-private fun PhotoActionButton(
-    label: String,
-    icon: org.jetbrains.compose.resources.DrawableResource,
-    enabled: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .clickable(enabled = enabled) { onClick() }
-            .padding(horizontal = 8.dp, vertical = 6.dp)
-    ) {
-        Icon(
-            imageVector = vectorResource(icon),
-            contentDescription = label,
-            tint = LocalTalkfrlyColors.current.body
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            text = label,
-            fontSize = 13.sp,
-            color = LocalTalkfrlyColors.current.body
-        )
-    }
-}
 
-@Composable
-private fun ImageChip(
-    label: String,
-    thumbnail: String,
-    status: ImageUploadStatus,
-    errorText: String?,
-    enabled: Boolean,
-    onRemove: () -> Unit,
-    onRetry: () -> Unit,
-) {
-    Column {
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(LocalTalkfrlyColors.current.primary.copy(alpha = 0.1f))
-                .padding(horizontal = 10.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            AsyncImage(
-                model = thumbnail,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(RoundedCornerShape(6.dp)),
-            )
-            Text(
-                text = label,
-                fontSize = 12.sp,
-                color = LocalTalkfrlyColors.current.body
-            )
-            when (status) {
-                ImageUploadStatus.UPLOADING -> Text(
-                    text = "Uploading",
-                    fontSize = 11.sp,
-                    color = LocalTalkfrlyColors.current.bodyMuted
-                )
-                ImageUploadStatus.SUCCESS -> Text(
-                    text = "Ready",
-                    fontSize = 11.sp,
-                    color = LocalTalkfrlyColors.current.primary
-                )
-                ImageUploadStatus.ERROR -> Text(
-                    text = "Failed",
-                    fontSize = 11.sp,
-                    color = Color.Red,
-                    modifier = Modifier.clickable(enabled = enabled) { onRetry() }
-                )
-                ImageUploadStatus.PENDING -> {}
-            }
-            Box(
-                modifier = Modifier
-                    .size(16.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable(enabled = enabled) { onRemove() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "×",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = LocalTalkfrlyColors.current.bodyMuted
-                )
-            }
-        }
-        if (status == ImageUploadStatus.ERROR && !errorText.isNullOrBlank()) {
-            Text(
-                text = errorText,
-                fontSize = 11.sp,
-                color = Color.Red,
-                modifier = Modifier.padding(start = 8.dp, top = 2.dp)
-            )
-        }
-    }
-}
