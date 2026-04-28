@@ -69,7 +69,7 @@ class PublicationScreenViewModel(
     }
 
     private fun getComments(publicationId: String) = viewModelScope.launch {
-        startLoading()
+        _state.update { it.copy(isLoadingComments = true) }
         commentRepository.getComments(publicationId)
             .onSuccess { commentList ->
                 _state.update { it.copy(comments = commentList.comments) }
@@ -78,7 +78,7 @@ class PublicationScreenViewModel(
                 println(error)
             }
             .onFinally {
-                stopLoading()
+                _state.update { it.copy(isLoadingComments = false) }
             }
     }
 
@@ -87,16 +87,25 @@ class PublicationScreenViewModel(
     }
 
     private fun postComment(createCommentRequest: CreateCommentRequest) = viewModelScope.launch {
-        startLoading()
+        _state.update { it.copy(isPostingComment = true) }
         commentRepository.createComment(createCommentRequest)
-            .onSuccess { comment ->
-                _state.update { it.copy(comments = it.comments.orEmpty() + comment) }
+            .onSuccess {
+                _state.update {
+                    it.copy(
+                        newCommentContent = "",
+                        imageUri = null,
+                        imageUploadStatus = null,
+                        imageUploadError = null,
+                        uploadedImageUrl = null,
+                    )
+                }
+                getComments(createCommentRequest.publicationId)
             }
             .onError { error ->
                 println(error)
             }
             .onFinally {
-                stopLoading()
+                _state.update { it.copy(isPostingComment = false) }
             }
     }
 

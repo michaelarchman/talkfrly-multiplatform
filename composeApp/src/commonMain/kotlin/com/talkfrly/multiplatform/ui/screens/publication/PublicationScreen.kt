@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -44,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -96,8 +100,24 @@ fun PublicationScreenRoot(
 
     var isCommentTextFieldFocused by remember { mutableStateOf(false) }
     val picker = rememberImagePickerController()
+    val focusManager = LocalFocusManager.current
 
-    val isOwner = state.currentUser?.id == publicationId
+    LaunchedEffect(state.isPostingComment) {
+        if (!state.isPostingComment && state.newCommentContent.isEmpty()) {
+            focusManager.clearFocus()
+        }
+    }
+
+    val listState = rememberLazyListState()
+    var prevCommentCount by remember { mutableStateOf(0) }
+
+    LaunchedEffect(state.comments?.size) {
+        val size = state.comments?.size ?: 0
+        if (size > prevCommentCount && prevCommentCount > 0) {
+            listState.animateScrollToItem(size + 1)
+        }
+        prevCommentCount = size
+    }
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(PublicationScreenIntent.GetCurrentUser)
@@ -400,7 +420,7 @@ fun PublicationScreenRoot(
                             ) {
                                 InteractionStatButton(
                                     type = InteractionStatButtonType.OUTLINED,
-                                    isActive = state.newCommentContent.isNotBlank() && (state.imageUploadStatus == ImageUploadStatus.SUCCESS || state.imageUploadStatus == null),
+                                    isActive = state.newCommentContent.isNotBlank() && !state.isPostingComment && (state.imageUploadStatus == ImageUploadStatus.SUCCESS || state.imageUploadStatus == null),
                                     icon = Res.drawable.chat_paste_go,
                                     onClick = { viewModel.onIntent(PublicationScreenIntent.PostComment(
                                         CreateCommentRequest(
@@ -415,17 +435,47 @@ fun PublicationScreenRoot(
                     )
                 }
             }
-        ) {
+        ) { paddingValues ->
             LazyColumn(
-                Modifier.padding(it)
+                state = listState,
+                modifier = Modifier.padding(paddingValues),
             ) {
-                item {
-                    PublicationScreen(
+                item(key = "publication") {
+                    PublicationContent(
                         state = state,
                         isLoading = loadingCount > 0,
-                        onAction = { intent -> viewModel.onIntent(intent)},
-                        onCommentOptionClick = { comment -> selectedCommentToBottomSheet = comment }
+                        onAction = { intent: PublicationScreenIntent -> viewModel.onIntent(intent) },
                     )
+                }
+
+                if (state.publication != null) {
+                    if (state.isLoadingComments || state.isPostingComment) {
+                        item(key = "comments_loading") {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(24.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    } else {
+                        val publication = state.publication
+                        item(key = "comments_header") {
+                            CommentsHeader(
+                                commentCount = publication?.commentCount ?: 0,
+                                isEmpty = state.comments?.isEmpty() == true,
+                            )
+                        }
+                        items(
+                            items = state.comments.orEmpty(),
+                            key = { it.id },
+                        ) { comment ->
+                            CommentItem(
+                                comment = comment,
+                                onOptionClick = { selectedCommentToBottomSheet = comment },
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -433,11 +483,10 @@ fun PublicationScreenRoot(
 }
 
 @Composable
-private fun PublicationScreen(
+private fun PublicationContent(
     state: PublicationScreenState,
     isLoading: Boolean,
     onAction: (PublicationScreenIntent) -> Unit,
-    onCommentOptionClick: (Comment) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -445,9 +494,6 @@ private fun PublicationScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        /**
-         * Publication content
-         */
         if (state.publication == null) {
             if (isLoading) {
                 SplashScreen()
@@ -460,62 +506,58 @@ private fun PublicationScreen(
             return
         }
 
-        state.publication.content.let { pub ->
-            val lines = pub.lines()
-            val headerLine = lines.firstOrNull { it.startsWith("#") }
-            val bodyText = lines.firstOrNull { !it.startsWith("#") && it.isNotBlank() }.orEmpty()
+        val pub = state.publication
+        val lines = pub.content.lines()
+        val headerLine = lines.firstOrNull { it.startsWith("#") }
+        val bodyText = lines.firstOrNull { !it.startsWith("#") && it.isNotBlank() }.orEmpty()
 
-            if (headerLine != null) {
-                Text(
-                    text = headerLine.removePrefix("#").trimStart(),
-                    color = LocalTalkfrlyColors.current.body,
-                    fontSize = 18.sp,
-                    letterSpacing = 0.8.sp,
-                    lineHeight = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-            if (bodyText.isNotBlank()) {
-                Text(
-                    text = bodyText,
-                    color = LocalTalkfrlyColors.current.body,
-                    fontSize = 16.sp,
-                    letterSpacing = 0.8.sp,
-                    lineHeight = 28.sp,
-                    fontWeight = FontWeight.Light,
-                )
-            }
+        if (headerLine != null) {
+            Text(
+                text = headerLine.removePrefix("#").trimStart(),
+                color = LocalTalkfrlyColors.current.body,
+                fontSize = 18.sp,
+                letterSpacing = 0.8.sp,
+                lineHeight = 28.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
 
-        state.publication.imageUrls.let {
+        if (bodyText.isNotBlank()) {
+            Text(
+                text = bodyText,
+                color = LocalTalkfrlyColors.current.body,
+                fontSize = 16.sp,
+                letterSpacing = 0.8.sp,
+                lineHeight = 28.sp,
+                fontWeight = FontWeight.Light,
+            )
+        }
+
+        if (pub.imageUrls.isNotEmpty()) {
             Image(
                 modifier = Modifier.clip(ShapeDefaults.ExtraSmall),
-                painter = rememberAsyncImagePainter(model = it.firstOrNull()),
+                painter = rememberAsyncImagePainter(model = pub.imageUrls.first()),
                 contentDescription = "Publication picture",
                 contentScale = ContentScale.FillWidth,
             )
         }
 
-        /**
-         * Interaction buttons
-         */
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             InteractionStatButton(
-                isActive = state.publication.likedByUser,
+                isActive = pub.likedByUser,
                 type = InteractionStatButtonType.OUTLINED,
-                label = state.publication.likeCount,
+                label = pub.likeCount,
                 icon = Res.drawable.record_voice_over,
                 onClick = {
                     onAction(
-                        if (state.publication.likedByUser) PublicationScreenIntent.UnlikePublication(state.publication.id)
-                        else PublicationScreenIntent.LikePublication(state.publication.id)
+                        if (pub.likedByUser) PublicationScreenIntent.UnlikePublication(pub.id)
+                        else PublicationScreenIntent.LikePublication(pub.id)
                     )
                 }
             )
@@ -523,101 +565,105 @@ private fun PublicationScreen(
             InteractionStatButton(
                 type = InteractionStatButtonType.SIMPLE,
                 icon = Res.drawable.icon_visibility_on,
-                label = state.publication.views,
+                label = pub.views,
                 isActive = false,
             )
         }
+    }
+}
 
-        /**
-         * Comments
-         */
-        state.comments?.let {
+@Composable
+private fun CommentsHeader(commentCount: Int, isEmpty: Boolean) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = "Comments ($commentCount)",
+            color = LocalTalkfrlyColors.current.body,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 18.sp,
+        )
+
+        HorizontalDivider(
+            thickness = 1.dp,
+            modifier = Modifier.padding(vertical = 8.dp),
+            color = LocalTalkfrlyColors.current.primary20,
+        )
+
+        if (isEmpty) {
             Text(
-                text = "Comments (${state.publication.commentCount})",
-                color = LocalTalkfrlyColors.current.body,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
+                text = "No comments yet. Be first!",
+                color = LocalTalkfrlyColors.current.bodyMuted,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CommentItem(comment: Comment, onOptionClick: () -> Unit) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            FeedAvatar(
+                avatarUrl = comment.user?.avatarUrl,
+                label = comment.user?.displayName ?: "Anonymous",
             )
 
-            HorizontalDivider(
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = LocalTalkfrlyColors.current.primary20,
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    Text(
+                        text = comment.user?.displayName ?: "Anonymous",
+                        color = LocalTalkfrlyColors.current.body,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
 
-            if (state.comments.isEmpty()) {
-                Text(
-                    text = "No comments yet. Be first!",
-                    color = LocalTalkfrlyColors.current.bodyMuted,
-                )
-            }
-
-            state.comments.forEach { comment ->
-                Column {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        FeedAvatar(
-                            avatarUrl = comment.user?.avatarUrl,
-                            label = comment.user?.displayName ?: "Anonymous",
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = formatRelativeTime(comment.createdAt),
+                            color = LocalTalkfrlyColors.current.bodyMuted,
+                            fontSize = 14.sp,
                         )
 
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Text(
-                                    text = comment.user?.displayName ?: "Anonymous",
-                                    color = LocalTalkfrlyColors.current.body,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 14.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Text(
-                                        text = formatRelativeTime(comment.createdAt),
-                                        color = LocalTalkfrlyColors.current.bodyMuted,
-                                        fontSize = 14.sp,
-                                    )
-
-                                    Icon(
-                                        modifier = Modifier
-                                            .size(16.dp)
-                                            .clickable(onClick = { onCommentOptionClick(comment) }),
-                                        imageVector = vectorResource(Res.drawable.more_vert),
-                                        contentDescription = "feed view",
-                                        tint = LocalTalkfrlyColors.current.bodyMuted,
-                                    )
-                                }
-                            }
-
-                            Text(
-                                text = comment.content,
-                                color = LocalTalkfrlyColors.current.body,
-                            )
-                            Image(
-                                modifier = Modifier.clip(ShapeDefaults.ExtraSmall),
-                                painter = rememberAsyncImagePainter(model = comment.imageUrls.firstOrNull()),
-                                contentDescription = "Comment picture",
-                                contentScale = ContentScale.FillWidth,
-                            )
-                        }
+                        Icon(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clickable(onClick = onOptionClick),
+                            imageVector = vectorResource(Res.drawable.more_vert),
+                            contentDescription = null,
+                            tint = LocalTalkfrlyColors.current.bodyMuted,
+                        )
                     }
                 }
 
-                HorizontalDivider(
-                    modifier = Modifier.height(1.dp),
-                    color = LocalTalkfrlyColors.current.backgroundLighter
+                Text(
+                    text = comment.content,
+                    color = LocalTalkfrlyColors.current.body,
                 )
+
+                if (comment.imageUrls.isNotEmpty()) {
+                    Image(
+                        modifier = Modifier.clip(ShapeDefaults.ExtraSmall),
+                        painter = rememberAsyncImagePainter(model = comment.imageUrls.first()),
+                        contentDescription = "Comment picture",
+                        contentScale = ContentScale.FillWidth,
+                    )
+                }
             }
         }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 8.dp),
+            thickness = 1.dp,
+            color = LocalTalkfrlyColors.current.backgroundLighter,
+        )
     }
 }
