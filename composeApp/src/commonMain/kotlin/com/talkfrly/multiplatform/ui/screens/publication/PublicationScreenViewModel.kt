@@ -37,6 +37,9 @@ class PublicationScreenViewModel(
             is PublicationScreenIntent.AddImage -> addImage(intent.uri)
             is PublicationScreenIntent.RemoveImage -> removeImage()
             is PublicationScreenIntent.RetryImage -> retryImage(intent.uri)
+            is PublicationScreenIntent.UpdateComment -> updateComment(intent.content, intent.commentId)
+            is PublicationScreenIntent.DeleteComment -> deleteComment(intent.commentId, intent.publicationId)
+
         }
     }
 
@@ -105,6 +108,41 @@ class PublicationScreenViewModel(
                 println(error)
             }
             .onFinally {
+                _state.update { it.copy(isPostingComment = false) }
+            }
+    }
+
+    private fun updateComment(updateCommentRequest: CreateCommentRequest, commentId: String) = viewModelScope.launch {
+        _state.update { it.copy(isPostingComment = true) }
+        commentRepository.updateComment(commentId, updateCommentRequest)
+            .onSuccess {
+                _state.update {
+                    it.copy(
+                        newCommentContent = "",
+                        imageUri = null,
+                        imageUploadStatus = null,
+                        imageUploadError = null,
+                        uploadedImageUrl = null,
+                    )
+                }
+                getComments(updateCommentRequest.publicationId)
+            }
+            .onError { error ->
+                println(error)
+            }
+            .onFinally {
+                _state.update { it.copy(isPostingComment = false) }
+            }
+    }
+
+    private fun deleteComment(commentId: String, publicationId: String) = viewModelScope.launch {
+        _state.update { it.copy(isPostingComment = true) }
+        commentRepository.deleteComment(commentId)
+            .onSuccess {
+                getComments(publicationId)
+            }.onError { error ->
+                println(error)
+            }.onFinally {
                 _state.update { it.copy(isPostingComment = false) }
             }
     }

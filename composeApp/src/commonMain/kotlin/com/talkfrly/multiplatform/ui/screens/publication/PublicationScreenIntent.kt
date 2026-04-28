@@ -13,4 +13,6 @@ sealed class PublicationScreenIntent {
     data class PostComment(val createCommentRequest: CreateCommentRequest) : PublicationScreenIntent()
     data class LikePublication(val publicationId: String) : PublicationScreenIntent()
     data class UnlikePublication(val publicationId: String) : PublicationScreenIntent()
+    data class UpdateComment(val commentId: String, val content: CreateCommentRequest) : PublicationScreenIntent()
+    data class DeleteComment(val publicationId: String, val commentId: String) : PublicationScreenIntent()
 }

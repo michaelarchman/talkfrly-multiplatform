@@ -64,6 +64,8 @@ import com.talkfrly.multiplatform.ui.components.buttons.PhotoActionButton
 import com.talkfrly.multiplatform.ui.components.chips.ImageChip
 import com.talkfrly.multiplatform.ui.components.feed.FeedAvatar
 import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
+import com.talkfrly.multiplatform.ui.screens.publication.comment.CommentItem
+import com.talkfrly.multiplatform.ui.screens.publication.comment.CommentsHeader
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import com.talkfrly.multiplatform.ui.utils.formatRelativeTime
@@ -94,6 +96,7 @@ fun PublicationScreenRoot(
     val loadingCount by viewModel.loadingCount.collectAsState()
     val scope = rememberCoroutineScope()
 
+
     val publicationDrawerState = rememberDrawerState(DrawerValue.Closed)
     val commentSheetState = rememberModalBottomSheetState()
     var selectedCommentToBottomSheet by remember { mutableStateOf<Comment?>(null) }
@@ -113,7 +116,7 @@ fun PublicationScreenRoot(
 
     LaunchedEffect(state.comments?.size) {
         val size = state.comments?.size ?: 0
-        if (size > prevCommentCount && prevCommentCount > 0) {
+        if (prevCommentCount in 1..<size) {
             listState.animateScrollToItem(size + 1)
         }
         prevCommentCount = size
@@ -197,27 +200,6 @@ fun PublicationScreenRoot(
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
-
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.report),
-                            contentDescription = "Back",
-                            tint = LocalTalkfrlyColors.current.bodyMuted,
-                        )
-
-                        Text(
-                            text = "Report publication",
-                            color = LocalTalkfrlyColors.current.body,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
                 }
             }
         }
@@ -267,21 +249,28 @@ fun PublicationScreenRoot(
                         Text("Report comment", color = LocalTalkfrlyColors.current.body)
                     }
 
-                    Row(
-                        modifier = Modifier.clickable {
-                            /* delete */
-                            scope.launch { commentSheetState.hide()
-                            selectedCommentToBottomSheet = null } },
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.delete),
-                            contentDescription = null,
-                            tint = LocalTalkfrlyColors.current.bodyMuted
-                        )
+                    if (selectedCommentToBottomSheet?.user?.id
+                        == state.currentUser?.id && state.currentUser?.id != null) {
+                        Row(
+                            modifier = Modifier.clickable {
+                                viewModel.onIntent(
+                                    PublicationScreenIntent.DeleteComment(publicationId,
+                                        selectedCommentToBottomSheet?.id ?: ""
+                                    )
+                                )
+                                scope.launch { commentSheetState.hide()
+                                    selectedCommentToBottomSheet = null } },
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.delete),
+                                contentDescription = null,
+                                tint = LocalTalkfrlyColors.current.bodyMuted
+                            )
 
-                        Text("Delete comment", color = LocalTalkfrlyColors.current.body)
+                            Text("Delete comment", color = LocalTalkfrlyColors.current.body)
+                        }
                     }
                 }
             }
@@ -411,9 +400,12 @@ fun PublicationScreenRoot(
                             cursorColor = LocalTalkfrlyColors.current.surface,
                         ),
                         maxLines = 10,
-                        leadingIcon = { Icon(
+                        leadingIcon = {
+                            Icon(
                             vectorResource(Res.drawable.icon_chat),
-                            "Comment")},
+                            "Comment"
+                            )
+                        },
                         trailingIcon = {
                             Column(
                                 Modifier.padding(end = 8.dp)
@@ -455,7 +447,10 @@ fun PublicationScreenRoot(
                                 modifier = Modifier.fillMaxWidth().padding(24.dp),
                                 contentAlignment = Alignment.Center,
                             ) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(
+                                    color = LocalTalkfrlyColors.current.primary,
+                                    trackColor = LocalTalkfrlyColors.current.surface
+                                )
                             }
                         }
                     } else {
@@ -466,6 +461,7 @@ fun PublicationScreenRoot(
                                 isEmpty = state.comments?.isEmpty() == true,
                             )
                         }
+
                         items(
                             items = state.comments.orEmpty(),
                             key = { it.id },
@@ -569,101 +565,5 @@ private fun PublicationContent(
                 isActive = false,
             )
         }
-    }
-}
-
-@Composable
-private fun CommentsHeader(commentCount: Int, isEmpty: Boolean) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(
-            text = "Comments ($commentCount)",
-            color = LocalTalkfrlyColors.current.body,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 18.sp,
-        )
-
-        HorizontalDivider(
-            thickness = 1.dp,
-            modifier = Modifier.padding(vertical = 8.dp),
-            color = LocalTalkfrlyColors.current.primary20,
-        )
-
-        if (isEmpty) {
-            Text(
-                text = "No comments yet. Be first!",
-                color = LocalTalkfrlyColors.current.bodyMuted,
-            )
-        }
-    }
-}
-
-@Composable
-private fun CommentItem(comment: Comment, onOptionClick: () -> Unit) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            FeedAvatar(
-                avatarUrl = comment.user?.avatarUrl,
-                label = comment.user?.displayName ?: "Anonymous",
-            )
-
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    Text(
-                        text = comment.user?.displayName ?: "Anonymous",
-                        color = LocalTalkfrlyColors.current.body,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(
-                            text = formatRelativeTime(comment.createdAt),
-                            color = LocalTalkfrlyColors.current.bodyMuted,
-                            fontSize = 14.sp,
-                        )
-
-                        Icon(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .clickable(onClick = onOptionClick),
-                            imageVector = vectorResource(Res.drawable.more_vert),
-                            contentDescription = null,
-                            tint = LocalTalkfrlyColors.current.bodyMuted,
-                        )
-                    }
-                }
-
-                Text(
-                    text = comment.content,
-                    color = LocalTalkfrlyColors.current.body,
-                )
-
-                if (comment.imageUrls.isNotEmpty()) {
-                    Image(
-                        modifier = Modifier.clip(ShapeDefaults.ExtraSmall),
-                        painter = rememberAsyncImagePainter(model = comment.imageUrls.first()),
-                        contentDescription = "Comment picture",
-                        contentScale = ContentScale.FillWidth,
-                    )
-                }
-            }
-        }
-
-        HorizontalDivider(
-            modifier = Modifier.padding(top = 8.dp),
-            thickness = 1.dp,
-            color = LocalTalkfrlyColors.current.backgroundLighter,
-        )
     }
 }
