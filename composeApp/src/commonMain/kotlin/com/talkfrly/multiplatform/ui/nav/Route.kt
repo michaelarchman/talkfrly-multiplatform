@@ -20,6 +20,8 @@ data object HomeRoute
 @Serializable
 data object AccountRoute
 
+@Serializable
+data object ThreadRoute
 
 @Serializable
 data class PublicationRoute(

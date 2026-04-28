@@ -52,6 +52,7 @@ import com.talkfrly.multiplatform.ui.screens.publication.PublicationScreenViewMo
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
 import com.talkfrly.multiplatform.ui.screens.resetpassword.ResetPasswordViewModel
 import com.talkfrly.multiplatform.ui.screens.stream.StreamViewModel
+import com.talkfrly.multiplatform.ui.screens.thread.ThreadViewModel
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.core.module.Module
@@ -102,6 +103,7 @@ val sharedModule: Module = module {
     viewModelOf(::ErrorViewModel)
     viewModelOf(::StreamViewModel)
     viewModelOf(::FeedTabViewModel)
+    viewModelOf(::ThreadViewModel)
 }
 
 expect val platformModule: Module

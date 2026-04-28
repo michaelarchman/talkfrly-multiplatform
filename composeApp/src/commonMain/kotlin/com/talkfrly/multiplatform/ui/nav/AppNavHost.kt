@@ -16,6 +16,7 @@ import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
 import com.talkfrly.multiplatform.ui.screens.resetpassword.ResetPasswordScreenRoot
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.screens.stream.StreamScreenRoot
+import com.talkfrly.multiplatform.ui.screens.thread.ThreadScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
@@ -61,6 +62,11 @@ fun AppNavHost(
                 viewModel = koinViewModel(),
                 navController = navController,
                 onLogout = { sessionViewModel.logout() }
+            )
+        }
+        composable<ThreadRoute> {
+            ThreadScreenRoot(
+                navController = navController,
             )
         }
         composable<PublicationRoute> { backStackEntry ->
