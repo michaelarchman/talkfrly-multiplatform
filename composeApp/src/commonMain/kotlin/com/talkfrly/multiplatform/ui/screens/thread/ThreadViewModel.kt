@@ -2,18 +2,18 @@ package com.talkfrly.multiplatform.ui.screens.thread
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
-import com.talkfrly.multiplatform.data.simpleThread.repository.Thread2Repository
+import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
 import com.talkfrly.multiplatform.domain.core.onSuccess
-import com.talkfrly.multiplatform.domain.simpleThread.Thread2ListRequest
+import com.talkfrly.multiplatform.domain.thread.ThreadListRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ThreadViewModel(
-    private val threadRepository: Thread2Repository,
+    private val threadRepository: ThreadRepository,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(ThreadState())
     val state: StateFlow<ThreadState> get() = _state
@@ -33,7 +33,7 @@ class ThreadViewModel(
             )
         }
 
-        threadRepository.getThreads(Thread2ListRequest(1,10,""))
+        threadRepository.threadList(ThreadListRequest(1, 10, ""))
             .onSuccess { response ->
                 _state.update {
                     it.copy(
