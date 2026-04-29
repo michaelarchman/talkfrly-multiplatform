@@ -39,7 +39,7 @@ class PublicationScreenViewModel(
             is PublicationScreenIntent.RetryImage -> retryImage(intent.uri)
             is PublicationScreenIntent.UpdateComment -> updateComment(intent.content, intent.commentId)
             is PublicationScreenIntent.DeleteComment -> deleteComment(intent.commentId, intent.publicationId)
-
+            is PublicationScreenIntent.DeletePublication -> deletePublication(intent.id)
         }
     }
 
@@ -236,5 +236,32 @@ class PublicationScreenViewModel(
                 uploadedImageUrl = null
             )
         }
+    }
+
+    private fun deletePublication(id: String) = viewModelScope.launch {
+        if (_state.value.isDeletingPublication) return@launch
+
+        _state.update {
+            it.copy(
+                isDeletingPublication = true,
+                deletePublicationError = null,
+            )
+        }
+        publicationRepository.deletePublication(id)
+            .onSuccess {
+                _state.update { it.copy(isPublicationDeleted = true) }
+            }
+            .onError { error ->
+                _state.update {
+                    it.copy(
+                        deletePublicationError = error.message ?: "Failed to delete publication",
+                    )
+                }
+            }
+            .onFinally {
+                _state.update {
+                    it.copy(isDeletingPublication = false)
+                }
+            }
     }
 }

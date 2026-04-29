@@ -122,6 +122,13 @@ fun PublicationScreenRoot(
         prevCommentCount = size
     }
 
+    LaunchedEffect(state.isPublicationDeleted) {
+        if (state.isPublicationDeleted) {
+            publicationDrawerState.close()
+            navController.popBackStack()
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.onIntent(PublicationScreenIntent.GetCurrentUser)
         viewModel.onIntent(PublicationScreenIntent.GetPublications(publicationId))
@@ -199,6 +206,41 @@ fun PublicationScreenRoot(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
+                    }
+
+                    if (state.publication?.user?.id
+                        == state.currentUser?.id && state.currentUser?.id != null) {
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .clickable(enabled = !state.isDeletingPublication) {
+                                    viewModel.onIntent(
+                                        PublicationScreenIntent.DeletePublication(publicationId)
+                                    )
+                                },
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.delete),
+                                contentDescription = null,
+                                tint = LocalTalkfrlyColors.current.bodyMuted
+                            )
+
+                            Text(
+                                text = if (state.isDeletingPublication) "Deleting publication..." else "Delete publication",
+                                color = LocalTalkfrlyColors.current.body,
+                            )
+                        }
+
+                        state.deletePublicationError?.let { error ->
+                            Text(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                text = error,
+                                color = LocalTalkfrlyColors.current.error,
+                                fontSize = 14.sp,
+                            )
+                        }
                     }
                 }
             }
