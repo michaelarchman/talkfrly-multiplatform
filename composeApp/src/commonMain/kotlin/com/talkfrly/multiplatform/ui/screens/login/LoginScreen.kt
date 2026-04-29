@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -69,6 +70,7 @@ private fun LoginScreen(
     val username = state.email
     val password = state.password
     val message = state.message
+    val uriHandler = LocalUriHandler.current
 
     Column(
         modifier = Modifier
@@ -148,6 +150,16 @@ private fun LoginScreen(
                 )
             }
 
+        }
+
+        TextButton(
+            onClick = { uriHandler.openUri("https://talkfrly.com/privacy-policy") },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text(
+                text = "Privacy Policy",
+                color = LocalTalkfrlyColors.current.bodyMuted,
+            )
         }
 
         message?.let{
