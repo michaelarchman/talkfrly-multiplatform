@@ -5,6 +5,7 @@ import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
 sealed class PublicationScreenIntent {
     data object GetCurrentUser : PublicationScreenIntent()
     data class GetPublications(val publicationId: String) : PublicationScreenIntent()
+    data class DeletePublication(val id: String) : PublicationScreenIntent()
     data class GetComments(val publicationId: String) : PublicationScreenIntent()
     data class SetNewCommentContent(val content: String) : PublicationScreenIntent()
     data class AddImage(val uri: String) : PublicationScreenIntent()

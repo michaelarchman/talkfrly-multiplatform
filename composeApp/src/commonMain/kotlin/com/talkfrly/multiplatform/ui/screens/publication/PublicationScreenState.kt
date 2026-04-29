@@ -8,6 +8,9 @@ import com.talkfrly.multiplatform.domain.user.User
 data class PublicationScreenState(
     val isLoadingComments: Boolean = false,
     val isPostingComment: Boolean = false,
+    val isDeletingPublication: Boolean = false,
+    val isPublicationDeleted: Boolean = false,
+    val deletePublicationError: String? = null,
     val currentUser: User? = null,
     val publication: Publication? = null,
     val comments: List<Comment>? = null,
