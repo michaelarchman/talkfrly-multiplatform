@@ -16,6 +16,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,6 +34,7 @@ import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -100,6 +104,7 @@ fun PublicationScreenRoot(
     val publicationDrawerState = rememberDrawerState(DrawerValue.Closed)
     val commentSheetState = rememberModalBottomSheetState()
     var selectedCommentToBottomSheet by remember { mutableStateOf<Comment?>(null) }
+    var showDeletePublicationDialog by remember { mutableStateOf(false) }
 
     var isCommentTextFieldFocused by remember { mutableStateOf(false) }
     val picker = rememberImagePickerController()
@@ -214,9 +219,7 @@ fun PublicationScreenRoot(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .clickable(enabled = !state.isDeletingPublication) {
-                                    viewModel.onIntent(
-                                        PublicationScreenIntent.DeletePublication(publicationId)
-                                    )
+                                    showDeletePublicationDialog = true
                                 },
                             horizontalArrangement = Arrangement.spacedBy(16.dp),
                             verticalAlignment = Alignment.CenterVertically,
@@ -228,7 +231,7 @@ fun PublicationScreenRoot(
                             )
 
                             Text(
-                                text = if (state.isDeletingPublication) "Deleting publication..." else "Delete publication",
+                                text = (if (state.isDeletingPublication) "Deleting publication..." else "Delete publication"),
                                 color = LocalTalkfrlyColors.current.body,
                             )
                         }
@@ -246,6 +249,51 @@ fun PublicationScreenRoot(
             }
         }
     ) {
+        if (showDeletePublicationDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    if (!state.isDeletingPublication) {
+                        showDeletePublicationDialog = false
+                    }
+                },
+                title = {
+                    Text("Delete publication?")
+                },
+                text = {
+                    Text("Are you sure you want to delete this publication?")
+                },
+                confirmButton = {
+                    Button(
+                        enabled = !state.isDeletingPublication,
+                        onClick = {
+                            showDeletePublicationDialog = false
+
+                            viewModel.onIntent(
+                                PublicationScreenIntent.DeletePublication(publicationId)
+                            )
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = LocalTalkfrlyColors.current.error,
+                            contentColor = LocalTalkfrlyColors.current.body,
+                        ),
+                    ) {
+                        Text(if (state.isDeletingPublication) "Deleting..." else "Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        enabled = !state.isDeletingPublication,
+                        onClick = { showDeletePublicationDialog = false },
+                    ) {
+                        Text(text = "Cancel", color = LocalTalkfrlyColors.current.body)
+                    }
+                },
+                containerColor = LocalTalkfrlyColors.current.background,
+                titleContentColor = LocalTalkfrlyColors.current.body,
+                textContentColor = LocalTalkfrlyColors.current.bodyMuted,
+            )
+        }
+
         selectedCommentToBottomSheet?.let {
             ModalBottomSheet(
                 onDismissRequest = { selectedCommentToBottomSheet = null },
