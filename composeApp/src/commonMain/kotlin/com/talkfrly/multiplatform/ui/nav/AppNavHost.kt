@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.talkfrly.multiplatform.ui.screens.account.AccountScreenRoot
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationScreenRoot
-import com.talkfrly.multiplatform.ui.screens.error.ErrorScreenRoot
 import com.talkfrly.multiplatform.ui.screens.forgotpassword.ForgotPasswordScreenRoot
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
@@ -95,9 +94,6 @@ fun AppNavHost(
                 viewModel = koinViewModel(),
                 navController = navController,
             )
-        }
-        composable<ErrorRoute>{
-           ErrorScreenRoot(navController = navController)
         }
         composable<StreamRoute> { backStackEntry ->
             val route = backStackEntry.toRoute<StreamRoute>()
