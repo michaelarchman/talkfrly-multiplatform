@@ -50,6 +50,8 @@ fun ThreadScreenRoot(
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(ThreadIntent.GetThreads)
+        viewModel.onIntent(ThreadIntent.GetJoinedThreads)
+        viewModel.onIntent(ThreadIntent.GetOwnedThreads)
     }
 
     ThreadScreen(
@@ -66,6 +68,11 @@ private fun ThreadScreen(
     onBackClick: () -> Unit,
     onAction: (ThreadIntent) -> Unit,
 ) {
+    val ownedThreadIds = state.ownedThreads.map { it.id }.toSet()
+    val joinedThreadIds = state.joinedThreads.map { it.id }.toSet()
+    val userThreadIds = ownedThreadIds + joinedThreadIds
+    val availableThreads = state.threads.filterNot { it.id in userThreadIds }
+
     Scaffold(
         containerColor = LocalTalkfrlyColors.current.background,
         contentColor = LocalTalkfrlyColors.current.body,
@@ -119,20 +126,20 @@ private fun ThreadScreen(
                 )
             }
 
-            if (!state.isLoading && state.threads.isEmpty() && state.errorMessage == null) {
+            if (!state.isLoading && availableThreads.isEmpty() && state.errorMessage == null) {
                 item {
                     Text("No threads found")
                 }
             }
 
-            items(state.threads, key = { it.id }) { thread ->
+            items(availableThreads, key = { it.id }) { thread ->
                 ThreadCard(
                     thread = thread,
                     onJoinClick = { onAction(ThreadIntent.JoinThread(thread.id)) },
                 )
             }
 
-            if (state.myThreads.isNotEmpty()) {
+            if (state.ownedThreads.isNotEmpty()) {
                 item {
                     HorizontalDivider(
                         thickness = 1.dp,
@@ -143,21 +150,41 @@ private fun ThreadScreen(
 
                 item {
                     Text(
-                        text = "Your threads",
+                        text = "Owned threads",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 }
 
-                items(state.myThreads, key = { "my-${it.id}" }) { thread ->
+                items(state.ownedThreads, key = { "owned-${it.id}" }) { thread ->
                     ThreadCard(
                         thread = thread,
-                        showOwnerChip = thread.role == "owner",
-                        onLeaveClick = if (thread.role != "owner") {
-                            { onAction(ThreadIntent.LeaveThread(thread.id)) }
-                        } else {
-                            null
-                        },
+                        showOwnerChip = true,
+                    )
+                }
+            }
+
+            if (state.joinedThreads.isNotEmpty()) {
+                item {
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = LocalTalkfrlyColors.current.primary20,
+                    )
+                }
+
+                item {
+                    Text(
+                        text = "Joined threads",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
+                items(state.joinedThreads, key = { "my-${it.id}" }) { thread ->
+                    ThreadCard(
+                        thread = thread,
+                        onLeaveClick = { onAction(ThreadIntent.LeaveThread(thread.id)) },
                     )
                 }
             }
