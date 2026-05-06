@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,11 +14,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -43,15 +46,15 @@ import talkfrly_multiplatform.composeapp.generated.resources.remove_circle
 
 @Composable
 fun ThreadScreenRoot(
-    viewModel: ThreadViewModel = koinViewModel(),
+    viewModel: ThreadsViewModel = koinViewModel(),
     navController: NavController,
 ) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.onIntent(ThreadIntent.GetThreads)
-        viewModel.onIntent(ThreadIntent.GetJoinedThreads)
-        viewModel.onIntent(ThreadIntent.GetOwnedThreads)
+        viewModel.onIntent(ThreadsIntent.GetThreads)
+        viewModel.onIntent(ThreadsIntent.GetJoinedThreads)
+        viewModel.onIntent(ThreadsIntent.GetOwnedThreads)
     }
 
     ThreadScreen(
@@ -64,14 +67,42 @@ fun ThreadScreenRoot(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ThreadScreen(
-    state: ThreadState,
+    state: ThreadsState,
     onBackClick: () -> Unit,
-    onAction: (ThreadIntent) -> Unit,
+    onAction: (ThreadsIntent) -> Unit,
 ) {
     val ownedThreadIds = state.ownedThreads.map { it.id }.toSet()
     val joinedThreadIds = state.joinedThreads.map { it.id }.toSet()
     val userThreadIds = ownedThreadIds + joinedThreadIds
-    val availableThreads = state.threads.filterNot { it.id in userThreadIds }
+    val availableThreads = state.allThreads.filterNot { it.id in userThreadIds }
+
+    val selectedThreads = when (state.selectedThreadFilter) {
+        ThreadFilter.Popular -> availableThreads
+        ThreadFilter.Owned -> state.ownedThreads
+        ThreadFilter.Joined -> state.joinedThreads
+    }
+    val emptyMessage = when (state.selectedThreadFilter) {
+        ThreadFilter.Popular -> "No popular threads found"
+        ThreadFilter.Owned -> "No owned threads found"
+        ThreadFilter.Joined -> "No joined threads found"
+    }
+    val currentPage = when (state.selectedThreadFilter) {
+        ThreadFilter.Popular -> state.allThreadsPage
+        ThreadFilter.Owned -> state.ownedThreadsPage
+        ThreadFilter.Joined -> state.joinedThreadsPage
+    }
+    val currentLimit = when (state.selectedThreadFilter) {
+        ThreadFilter.Popular -> state.allThreadsLimit
+        ThreadFilter.Owned -> state.ownedThreadsLimit
+        ThreadFilter.Joined -> state.joinedThreadsLimit
+    }
+    val currentTotalCount = when (state.selectedThreadFilter) {
+        ThreadFilter.Popular -> state.allThreadsTotalCount
+        ThreadFilter.Owned -> state.ownedThreadsTotalCount
+        ThreadFilter.Joined -> state.joinedThreadsTotalCount
+    }
+    val hasPreviousPage = currentPage > 1
+    val hasNextPage = currentLimit > 0 && currentPage * currentLimit < currentTotalCount
 
     Scaffold(
         containerColor = LocalTalkfrlyColors.current.background,
@@ -119,73 +150,112 @@ private fun ThreadScreen(
             }
 
             item {
-                Text(
-                    text = "Threads",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Text(
+                        text = "Threads",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
 
-            if (!state.isLoading && availableThreads.isEmpty() && state.errorMessage == null) {
-                item {
-                    Text("No threads found")
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        ThreadFilter.entries.forEach { filter ->
+                            FilterChip(
+                                selected = state.selectedThreadFilter == filter,
+                                onClick = {
+                                    onAction(ThreadsIntent.SelectThreadFilter(filter))
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    containerColor = LocalTalkfrlyColors.current.backgroundDarker,
+                                    labelColor = LocalTalkfrlyColors.current.body,
+                                    selectedContainerColor = LocalTalkfrlyColors.current.primary20,
+                                    selectedLabelColor = LocalTalkfrlyColors.current.body,
+                                ),
+                                border = FilterChipDefaults.filterChipBorder(
+                                    enabled = true,
+                                    selected = state.selectedThreadFilter == filter,
+                                    borderColor = LocalTalkfrlyColors.current.primary60,
+                                    selectedBorderColor = LocalTalkfrlyColors.current.primary60,
+                                ),
+                                label = {
+                                    Text(filter.label)
+                                },
+                            )
+                        }
+                    }
                 }
             }
 
-            items(availableThreads, key = { it.id }) { thread ->
+            if (!state.isLoading && selectedThreads.isEmpty() && state.errorMessage == null) {
+                item {
+                    Text(emptyMessage)
+                }
+            }
+
+            items(selectedThreads, key = { "${state.selectedThreadFilter.name}-${it.id}" }) { thread ->
                 ThreadCard(
                     thread = thread,
-                    onJoinClick = { onAction(ThreadIntent.JoinThread(thread.id)) },
+                    showOwnerChip = state.selectedThreadFilter == ThreadFilter.Owned,
+                    onJoinClick = if (state.selectedThreadFilter == ThreadFilter.Popular) {
+                        { onAction(ThreadsIntent.JoinThread(thread.id)) }
+                    } else {
+                        null
+                    },
+                    onLeaveClick = if (state.selectedThreadFilter == ThreadFilter.Joined) {
+                        { onAction(ThreadsIntent.LeaveThread(thread.id)) }
+                    } else {
+                        null
+                    },
                 )
             }
 
-            if (state.ownedThreads.isNotEmpty()) {
+            if (hasPreviousPage || hasNextPage) {
                 item {
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        color = LocalTalkfrlyColors.current.primary20,
-                    )
-                }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (hasPreviousPage) {
+                            TextButton(
+                                onClick = {
+                                    onAction(
+                                        ThreadsIntent.ChangeThreadPage(
+                                            filter = state.selectedThreadFilter,
+                                            page = currentPage - 1,
+                                        ),
+                                    )
+                                },
+                            ) {
+                                Text(
+                                    text = "< Back",
+                                    color = LocalTalkfrlyColors.current.primary60,
+                                )
+                            }
+                        }
 
-                item {
-                    Text(
-                        text = "Owned threads",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
+                        Spacer(modifier = Modifier.weight(1f))
 
-                items(state.ownedThreads, key = { "owned-${it.id}" }) { thread ->
-                    ThreadCard(
-                        thread = thread,
-                        showOwnerChip = true,
-                    )
-                }
-            }
-
-            if (state.joinedThreads.isNotEmpty()) {
-                item {
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        color = LocalTalkfrlyColors.current.primary20,
-                    )
-                }
-
-                item {
-                    Text(
-                        text = "Joined threads",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-
-                items(state.joinedThreads, key = { "my-${it.id}" }) { thread ->
-                    ThreadCard(
-                        thread = thread,
-                        onLeaveClick = { onAction(ThreadIntent.LeaveThread(thread.id)) },
-                    )
+                        if (hasNextPage) {
+                            TextButton(
+                                onClick = {
+                                    onAction(
+                                        ThreadsIntent.ChangeThreadPage(
+                                            filter = state.selectedThreadFilter,
+                                            page = currentPage + 1,
+                                        ),
+                                    )
+                                },
+                            ) {
+                                Text(
+                                    text = "Next >",
+                                    color = LocalTalkfrlyColors.current.primary60,
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -211,7 +281,7 @@ private fun ThreadCard(
                 color = LocalTalkfrlyColors.current.backgroundDarker,
                 shape = RoundedCornerShape(12.dp),
             )
-            .padding(16.dp),
+            .padding(12.dp),
     ) {
         Column(
             modifier = Modifier.weight(1f),
