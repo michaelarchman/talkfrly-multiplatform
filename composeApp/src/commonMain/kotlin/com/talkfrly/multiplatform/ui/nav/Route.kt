@@ -21,9 +21,6 @@ data object HomeRoute
 data object AccountRoute
 
 @Serializable
-data object ThreadRoute
-
-@Serializable
 data class PublicationRoute(
     val publicationId: String
 )
