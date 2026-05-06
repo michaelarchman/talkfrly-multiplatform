@@ -7,6 +7,8 @@ import com.talkfrly.multiplatform.data.stream.mapper.toDto
 import com.talkfrly.multiplatform.domain.core.DataError
 import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.map
+import com.talkfrly.multiplatform.domain.stream.StreamCategory
+import com.talkfrly.multiplatform.domain.stream.StreamCategoryList
 import com.talkfrly.multiplatform.domain.stream.StreamKey
 import com.talkfrly.multiplatform.domain.stream.StreamList
 import com.talkfrly.multiplatform.domain.stream.StreamRequest
@@ -16,6 +18,7 @@ import com.talkfrly.multiplatform.domain.stream.StreamViewerResponse
 
 interface StreamRepository {
     suspend fun streamList(page: Int, limit: Int): DataResult<StreamList, DataError.Remote>
+    suspend fun getCategories(page: Int = 1, limit: Int = 50): DataResult<StreamCategoryList, DataError.Remote>
     suspend fun createStream(streamRequest: StreamRequest): DataResult<StreamResponse, DataError.Remote>
     suspend fun getCurrentStream(): DataResult<StreamResponse, DataError.Remote>
     suspend fun getStreamById(id: String): DataResult<StreamViewerResponse, DataError.Remote>
@@ -33,6 +36,10 @@ class StreamRepositoryImpl(
         return api
             .streamList(StreamListRequestDto(page, limit))
             .map { it.toDomain() }
+    }
+
+    override suspend fun getCategories(page: Int, limit: Int): DataResult<StreamCategoryList, DataError.Remote> {
+        return api.getCategories(page, limit).map { it.toDomain() }
     }
 
     override suspend fun createStream(streamRequest: StreamRequest): DataResult<StreamResponse, DataError.Remote> {

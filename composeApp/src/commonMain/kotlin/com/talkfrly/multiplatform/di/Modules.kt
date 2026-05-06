@@ -66,6 +66,7 @@ import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublication
 import com.talkfrly.multiplatform.ui.screens.forgotpassword.ForgotPasswordViewModel
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTabViewModel
+import com.talkfrly.multiplatform.ui.screens.home.streams.StreamsTabViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationScreenViewModel
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
@@ -130,6 +131,7 @@ val sharedModule: Module = module {
     viewModelOf(::PublicationScreenViewModel)
     viewModelOf(::StreamViewModel)
     viewModelOf(::FeedTabViewModel)
+    viewModelOf(::StreamsTabViewModel)
     viewModelOf(::ThreadViewModel)
 }
 

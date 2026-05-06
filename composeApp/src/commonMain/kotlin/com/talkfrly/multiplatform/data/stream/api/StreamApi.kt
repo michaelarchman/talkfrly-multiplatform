@@ -1,6 +1,7 @@
 package com.talkfrly.multiplatform.data.stream.api
 
 import com.talkfrly.multiplatform.data.core.makeRequest
+import com.talkfrly.multiplatform.data.stream.dto.StreamCategoryListResponseDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamDashboardResponseDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamKeyDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamListRequestDto
@@ -17,6 +18,8 @@ interface StreamApi {
     suspend fun streamList(
         streamListRequestDto: StreamListRequestDto,
     ): DataResult<StreamListResponseDto, DataError.Remote>
+
+    suspend fun getCategories(page: Int = 1, limit: Int = 50): DataResult<StreamCategoryListResponseDto, DataError.Remote>
 
     suspend fun createStream(
         streamRequestDto: StreamRequestDto,
@@ -50,6 +53,15 @@ class StreamApiImpl(
                 "page" to streamListRequestDto.page,
                 "limit" to streamListRequestDto.limit,
             ),
+        )
+    }
+
+    override suspend fun getCategories(page: Int, limit: Int): DataResult<StreamCategoryListResponseDto, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "/streams/categories",
+            httpMethod = HttpMethod.Get,
+            queryParams = mapOf("page" to page, "limit" to limit),
         )
     }
 

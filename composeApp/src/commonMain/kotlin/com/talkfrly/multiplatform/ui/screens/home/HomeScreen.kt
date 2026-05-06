@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,25 +39,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
-import com.talkfrly.multiplatform.ui.components.streams.StreamCard
 import com.talkfrly.multiplatform.ui.nav.AccountRoute
 import com.talkfrly.multiplatform.ui.nav.NewPublicationRoute
 import com.talkfrly.multiplatform.ui.nav.PublicationRoute
-import com.talkfrly.multiplatform.ui.nav.StreamRoute
-import com.talkfrly.multiplatform.ui.nav.ThreadRoute
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTab
+import com.talkfrly.multiplatform.ui.screens.home.threads.ThreadsTab
+import com.talkfrly.multiplatform.ui.screens.home.streams.StreamsTab
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
-import kotlinx.coroutines.async
-import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
-import talkfrly_multiplatform.composeapp.generated.resources.add
-import talkfrly_multiplatform.composeapp.generated.resources.chat_paste_go
-import talkfrly_multiplatform.composeapp.generated.resources.follow_the_signs
 import talkfrly_multiplatform.composeapp.generated.resources.forum
-import talkfrly_multiplatform.composeapp.generated.resources.gesture
 import talkfrly_multiplatform.composeapp.generated.resources.icon_add_ad
 import talkfrly_multiplatform.composeapp.generated.resources.person
 import talkfrly_multiplatform.composeapp.generated.resources.siren_open
@@ -280,38 +271,13 @@ private fun HomeScreen(
             )
         }
         1 -> {
-            StreamsTabContent(
-                state = state,
-                onStreamClick = { streamId ->
-                    navController.navigate(StreamRoute(streamId))
-                },
-            )
+            ThreadsTab()
         }
         2 -> {
-           Text("Followed stuff")
+            StreamsTab(
+                onCategoryClick = { },
+            )
         }
     }
 }
 
-@Composable
-private fun StreamsTabContent(
-    state: HomeState,
-    onStreamClick: (String) -> Unit,
-) {
-    if (state.isLoadingStreams && state.streams.isEmpty()) {
-        Text("Loading streams...")
-    }
-    else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(state.streams, key = { it.id }) { stream ->
-                StreamCard(
-                    stream = stream,
-                    onClick = { onStreamClick(stream.id) },
-                )
-            }
-        }
-    }
-}

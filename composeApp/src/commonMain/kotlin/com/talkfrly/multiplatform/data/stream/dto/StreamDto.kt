@@ -48,3 +48,19 @@ data class StreamRequestDto(
 data class StreamStopResponseDto(
     @SerialName("message") val message: String,
 )
+
+@Serializable
+data class StreamCategoryResponseDto(
+    @SerialName("id") val id: String,
+    @SerialName("name") val name: String,
+    @SerialName("slug") val slug: String,
+    @SerialName("cover_url") val coverUrl: String? = null,
+)
+
+@Serializable
+data class StreamCategoryListResponseDto(
+    @SerialName("items") val items: List<StreamCategoryResponseDto>,
+    @SerialName("total_count") val totalCount: Int,
+    @SerialName("page") val page: Int,
+    @SerialName("limit") val limit: Int,
+)

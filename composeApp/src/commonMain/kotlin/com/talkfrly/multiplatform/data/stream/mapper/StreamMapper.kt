@@ -1,11 +1,15 @@
 package com.talkfrly.multiplatform.data.stream.mapper
 
+import com.talkfrly.multiplatform.data.stream.dto.StreamCategoryListResponseDto
+import com.talkfrly.multiplatform.data.stream.dto.StreamCategoryResponseDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamDashboardResponseDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamKeyDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamListResponseDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamRequestDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamStopResponseDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamViewerResponseDto
+import com.talkfrly.multiplatform.domain.stream.StreamCategory
+import com.talkfrly.multiplatform.domain.stream.StreamCategoryList
 import com.talkfrly.multiplatform.domain.stream.StreamKey
 import com.talkfrly.multiplatform.domain.stream.StreamList
 import com.talkfrly.multiplatform.domain.stream.StreamRequest
@@ -66,4 +70,18 @@ fun StreamKeyDto.toDomain(): StreamKey = StreamKey(
 
 fun StreamStopResponseDto.toDomain(): StreamStopResponse = StreamStopResponse(
     message = message,
+)
+
+fun StreamCategoryResponseDto.toDomain(): StreamCategory = StreamCategory(
+    id = id,
+    name = name,
+    slug = slug,
+    coverUrl = coverUrl,
+)
+
+fun StreamCategoryListResponseDto.toDomain(): StreamCategoryList = StreamCategoryList(
+    items = items.map { it.toDomain() },
+    totalCount = totalCount,
+    page = page,
+    limit = limit,
 )

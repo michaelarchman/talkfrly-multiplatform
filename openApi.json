@@ -544,7 +544,7 @@
           "Stream"
         ],
         "summary": "Get current user's stream (dashboard)",
-        "description": "Returns the stream owned by the authenticated user with full management fields.",
+        "description": "Returns the stream owned by the authenticated user with full management fields. Returns `200 null` when the user has no stream.",
         "security": [
           {
             "bearerAuth": []
@@ -555,11 +555,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Owner's stream",
+            "description": "Owner's stream, or null if none exists",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StreamDashboardResponse"
+                  "oneOf": [
+                    {"$ref": "#/components/schemas/StreamDashboardResponse"},
+                    {"type": "null"}
+                  ]
                 }
               }
             }
@@ -567,8 +570,40 @@
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Stream not found"
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/streams/categories": {
+      "get": {
+        "tags": [
+          "Stream"
+        ],
+        "summary": "List stream categories",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {"type": "integer", "default": 50, "maximum": 200}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamCategoryListResponse"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal server error"
@@ -3003,6 +3038,26 @@
         "required": ["publications", "page", "limit"],
         "properties": {
           "publications": {"type": "array", "items": {"$ref": "#/components/schemas/PublicationSearchResult"}},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "StreamCategoryResponse": {
+        "type": "object",
+        "required": ["id", "name", "slug"],
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "slug": {"type": "string"},
+          "cover_url": {"type": "string", "nullable": true}
+        }
+      },
+      "StreamCategoryListResponse": {
+        "type": "object",
+        "required": ["items", "total_count", "page", "limit"],
+        "properties": {
+          "items": {"type": "array", "items": {"$ref": "#/components/schemas/StreamCategoryResponse"}},
+          "total_count": {"type": "integer"},
           "page": {"type": "integer"},
           "limit": {"type": "integer"}
         }
