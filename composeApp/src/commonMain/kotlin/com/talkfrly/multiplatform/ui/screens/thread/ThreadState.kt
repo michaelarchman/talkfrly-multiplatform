@@ -4,6 +4,8 @@ import com.talkfrly.multiplatform.domain.thread.Thread
 
 data class ThreadState(
     val threads: List<Thread> = emptyList(),
+    val joinedThreads: List<Thread> = emptyList(),
+    val ownedThreads: List<Thread> = emptyList(),
     val totalCount: Int = 0,
     val page: Int = 1,
     val limit: Int = 0,
