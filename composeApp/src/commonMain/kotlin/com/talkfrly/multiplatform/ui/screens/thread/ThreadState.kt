@@ -3,7 +3,11 @@ package com.talkfrly.multiplatform.ui.screens.thread
 import com.talkfrly.multiplatform.domain.thread.Thread
 
 data class ThreadState(
-    val threads: List<Thread> = emptyList(),
+    val allThreads: List<Thread> = emptyList(),
+    val allThreadsTotal: Int = 0,
+    val allThreadsPage: Int = 1,
+    val allThreadsLimit: Int = 0,
+
     val joinedThreads: List<Thread> = emptyList(),
     val ownedThreads: List<Thread> = emptyList(),
     val totalCount: Int = 0,

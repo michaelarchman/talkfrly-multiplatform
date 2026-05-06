@@ -1,37 +1,37 @@
 package com.talkfrly.multiplatform.data.stream.mapper
 
-import com.talkfrly.multiplatform.data.stream.dto.StreamRequestDto
+import com.talkfrly.multiplatform.data.stream.dto.StreamDashboardResponseDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamKeyDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamListResponseDto
-import com.talkfrly.multiplatform.data.stream.dto.StreamResponseDto
+import com.talkfrly.multiplatform.data.stream.dto.StreamRequestDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamStopResponseDto
 import com.talkfrly.multiplatform.data.stream.dto.StreamViewerResponseDto
-import com.talkfrly.multiplatform.domain.stream.StreamResponse
 import com.talkfrly.multiplatform.domain.stream.StreamKey
 import com.talkfrly.multiplatform.domain.stream.StreamList
 import com.talkfrly.multiplatform.domain.stream.StreamRequest
+import com.talkfrly.multiplatform.domain.stream.StreamResponse
 import com.talkfrly.multiplatform.domain.stream.StreamStopResponse
 import com.talkfrly.multiplatform.domain.stream.StreamViewerResponse
-
-fun StreamRequestDto.toDomain(): StreamRequest = StreamRequest(
-    name = name,
-    category = category,
-)
 
 fun StreamRequest.toDto(): StreamRequestDto = StreamRequestDto(
     name = name,
     category = category,
+    avatarUrl = avatarUrl,
+    threadId = threadId,
 )
 
-fun StreamResponseDto.toDomain(): StreamResponse = StreamResponse(
+fun StreamDashboardResponseDto.toDomain(): StreamResponse = StreamResponse(
     id = id,
     name = name,
     ownerId = ownerId,
+    displayName = displayName,
     category = category,
     avatarUrl = avatarUrl,
-    thumbnailUrl = thumbnailUrl,
     isLive = isLive,
     playbackUrl = playbackUrl,
+    threadId = threadId,
+    threadSlug = threadSlug,
+    threadName = threadName,
     createdAt = createdAt,
     updatedAt = updatedAt,
 )
@@ -40,11 +40,15 @@ fun StreamViewerResponseDto.toDomain(): StreamViewerResponse = StreamViewerRespo
     id = id,
     name = name,
     ownerId = ownerId,
+    displayName = displayName,
     category = category,
     avatarUrl = avatarUrl,
     thumbnailUrl = thumbnailUrl,
     isLive = isLive,
     playbackUrl = playbackUrl,
+    threadId = threadId,
+    threadSlug = threadSlug,
+    threadName = threadName,
 )
 
 fun StreamListResponseDto.toDomain(): StreamList = StreamList(

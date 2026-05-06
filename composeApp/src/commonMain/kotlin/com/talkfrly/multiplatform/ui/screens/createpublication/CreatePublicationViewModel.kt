@@ -185,9 +185,8 @@ class CreatePublicationViewModel(
         val imageUrls = currentState.imageUris.mapNotNull { currentState.uploadedImageUrls[it] }
 
         val request = CreatePublicationRequest(
-            title = currentState.title.ifBlank { content.take(50) },
             content = content,
-            publicationType = currentState.selectedType,
+            type = currentState.selectedType.apiValue,
             threadId = currentState.threadId,
             isAnonymous = currentState.isAnonymous,
             imageUrls = imageUrls,

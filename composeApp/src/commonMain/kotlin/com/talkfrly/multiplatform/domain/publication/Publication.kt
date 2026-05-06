@@ -1,15 +1,16 @@
 package com.talkfrly.multiplatform.domain.publication
 
+import com.talkfrly.multiplatform.domain.ranking.Ranking
+
 data class Publication(
     val id: String,
-    val userId: String? = null,
     val user: UserSummary? = null,
     val channelId: String? = null,
-    val topicId: String? = null,
     val threadId: String? = null,
     val threadSlug: String? = null,
     val threadName: String? = null,
-    val moduleType: ModuleType? = null,
+    val type: String? = null,
+    val ranking: Ranking? = null,
     val articleCategory: String? = null,
     val content: String,
     val isAnonymous: Boolean,
@@ -22,11 +23,9 @@ data class Publication(
     val videoEmbedUrl: String? = null,
     val tags: List<String> = emptyList(),
     val languages: List<String> = emptyList(),
-    val criteria: List<CriterionSummary>? = null,
-    val pseudonym: String? = null,
     val avatarUrl: String? = null,
-    val threadMembersOnly: Boolean? = null,
-    val isThreadMember: Boolean,
+    val threadMembersOnly: Boolean = false,
+    val isThreadMember: Boolean = false,
     val commentCount: Int,
     val voteScore: Int,
     val likedByUser: Boolean,
@@ -42,26 +41,12 @@ data class UserSummary(
     val avatarUrl: String? = null,
 )
 
-data class CriterionSummary(
-    val name: String,
-    val average: Double,
-    val voteCount: Int,
-    val userScore: Double? = null,
-)
-
-enum class ModuleType {
-    GENERAL,
-    ARTICLES,
-    RANKINGS,
-    REVIEWS,
-    UNKNOWN,
-}
-
 data class PublicationFilter(
     val channelId: String? = null,
-    val topicId: String? = null,
     val threadId: String? = null,
-    val moduleType: ModuleType? = null,
+    val type: String? = null,
+    val sort: String? = null,
+    val private: Boolean? = null,
 )
 
 data class PublicationList(

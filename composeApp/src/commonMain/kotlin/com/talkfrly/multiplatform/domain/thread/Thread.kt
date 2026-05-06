@@ -7,8 +7,9 @@ data class Thread(
     val description: String? = null,
     val creatorId: String,
     val memberCount: Int,
-    val isMember: Boolean? = null,
     val role: String? = null,
+    val streamId: String? = null,
+    val isLive: Boolean = false,
     val createdAt: String,
     val updatedAt: String,
 )

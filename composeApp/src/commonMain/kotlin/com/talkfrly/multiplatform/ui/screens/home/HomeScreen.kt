@@ -56,9 +56,13 @@ import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.add
+import talkfrly_multiplatform.composeapp.generated.resources.chat_paste_go
 import talkfrly_multiplatform.composeapp.generated.resources.follow_the_signs
+import talkfrly_multiplatform.composeapp.generated.resources.forum
 import talkfrly_multiplatform.composeapp.generated.resources.gesture
+import talkfrly_multiplatform.composeapp.generated.resources.icon_add_ad
 import talkfrly_multiplatform.composeapp.generated.resources.person
+import talkfrly_multiplatform.composeapp.generated.resources.siren_open
 import talkfrly_multiplatform.composeapp.generated.resources.speed_camera
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
@@ -103,18 +107,8 @@ fun HomeScreenRoot(
                         enabled = true,
                     ) {
                         Icon(
-                            imageVector = vectorResource(Res.drawable.add),
+                            imageVector = vectorResource(Res.drawable.icon_add_ad),
                             contentDescription = "Create publication",
-                        )
-                    }
-
-                    IconButton(
-                        onClick = { navController.navigate(ThreadRoute) },
-                        enabled = true,
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.gesture),
-                            contentDescription = "Go to Thread",
                         )
                     }
 
@@ -208,11 +202,11 @@ private fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = vectorResource(Res.drawable.gesture),
+                            imageVector = vectorResource(Res.drawable.siren_open),
                             contentDescription = null,
-                            Modifier.size(18.dp).padding(end = 4.dp)
+                            Modifier.size(24.dp).padding(end = 4.dp)
                         )
-                        Text(text = "Threads", fontWeight = FontWeight(600))
+                        Text(text = "Feed", fontWeight = FontWeight(600))
                     }
                 }
                 Tab(
@@ -223,17 +217,17 @@ private fun HomeScreen(
                     modifier = Modifier.height(40.dp).padding(2.dp)
                 ) {
                     Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = vectorResource(Res.drawable.speed_camera),
+                            imageVector = vectorResource(Res.drawable.forum),
                             contentDescription = null,
-                            Modifier.size(18.dp).padding(end = 4.dp)
+                            Modifier.size(24.dp).padding(end = 4.dp)
                         )
                         Text(
-                            text = "Streams",
-                            fontWeight = FontWeight(600),
+                            text = "Threads",
+                            fontWeight = FontWeight(600)
                         )
                     }
                 }
@@ -245,15 +239,18 @@ private fun HomeScreen(
                     modifier = Modifier.height(40.dp).padding(2.dp)
                 ) {
                     Row(
-                        horizontalArrangement = Arrangement.Start,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = vectorResource(Res.drawable.follow_the_signs),
+                            imageVector = vectorResource(Res.drawable.speed_camera),
                             contentDescription = null,
-                            Modifier.size(18.dp).padding(end = 4.dp)
+                            Modifier.size(24.dp).padding(end = 4.dp)
                         )
-                        Text(text = "Followed", fontWeight = FontWeight(600))
+                        Text(
+                            text = "Streams",
+                            fontWeight = FontWeight(600),
+                        )
                     }
                 }
             }

@@ -39,6 +39,7 @@ import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTabIntent
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.forum
+import talkfrly_multiplatform.composeapp.generated.resources.icon_sms
 import talkfrly_multiplatform.composeapp.generated.resources.icon_visibility_on
 import talkfrly_multiplatform.composeapp.generated.resources.record_voice_over
 
@@ -78,12 +79,12 @@ fun FeedCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     FeedAvatar(
-                        avatarUrl = feedItem.user.avatarUrl,
-                        label = feedItem.user.displayName,
+                        avatarUrl = feedItem.user?.avatarUrl,
+                        label = feedItem.user?.displayName ?: "",
                     )
 
                     Text(
-                        text = feedItem.user.displayName,
+                        text = feedItem.user?.displayName ?: "",
                         color = colors.body,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
@@ -189,7 +190,7 @@ fun FeedCard(
                     InteractionStatButton(
                         isActive = false,
                         type = InteractionStatButtonType.OUTLINED,
-                        icon = Res.drawable.forum,
+                        icon = Res.drawable.icon_sms,
                         label = feedItem.commentCount,
                         onClick = {}
                     )
