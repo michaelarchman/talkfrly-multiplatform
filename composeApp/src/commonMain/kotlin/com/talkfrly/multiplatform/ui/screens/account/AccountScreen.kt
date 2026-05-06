@@ -39,7 +39,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -88,6 +90,7 @@ private fun AccountScreen(
     onAction: (AccountIntent) -> Unit,
 ) {
 
+    val uriHandler = LocalUriHandler.current
     var selected by remember { mutableStateOf("B") }
 
     var expanded by remember { mutableStateOf(false) }
@@ -399,6 +402,16 @@ private fun AccountScreen(
                 )
             ){
                 Text("Logout")
+            }
+
+            TextButton(
+                onClick = { uriHandler.openUri("https://talkfrly.com/privacy-policy") },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "Privacy Policy",
+                    color = LocalTalkfrlyColors.current.bodyMuted,
+                )
             }
         }
     }

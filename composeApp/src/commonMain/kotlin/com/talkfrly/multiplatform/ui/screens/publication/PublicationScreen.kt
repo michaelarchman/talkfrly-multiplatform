@@ -2,19 +2,28 @@ package com.talkfrly.multiplatform.ui.screens.publication
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
@@ -24,6 +33,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -39,27 +51,38 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
+import com.talkfrly.multiplatform.data.uploads.ImageUploadStatus
 import com.talkfrly.multiplatform.domain.comment.Comment
-import com.talkfrly.multiplatform.ui.components.bars.BottomBarInput
+import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButton
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButtonType
+import com.talkfrly.multiplatform.ui.components.buttons.PhotoActionButton
+import com.talkfrly.multiplatform.ui.components.chips.ImageChip
 import com.talkfrly.multiplatform.ui.components.feed.FeedAvatar
+import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
+import com.talkfrly.multiplatform.ui.screens.publication.comment.CommentItem
+import com.talkfrly.multiplatform.ui.screens.publication.comment.CommentsHeader
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
-import com.talkfrly.multiplatform.ui.utils.formatRelativeTime
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
+import talkfrly_multiplatform.composeapp.generated.resources.add_a_photo
+import talkfrly_multiplatform.composeapp.generated.resources.add_picture
+import talkfrly_multiplatform.composeapp.generated.resources.chat_paste_go
 import talkfrly_multiplatform.composeapp.generated.resources.chevron_left
 import talkfrly_multiplatform.composeapp.generated.resources.delete
+import talkfrly_multiplatform.composeapp.generated.resources.icon_chat
 import talkfrly_multiplatform.composeapp.generated.resources.icon_visibility_on
 import talkfrly_multiplatform.composeapp.generated.resources.more_vert
 import talkfrly_multiplatform.composeapp.generated.resources.person
@@ -77,16 +100,52 @@ fun PublicationScreenRoot(
     val loadingCount by viewModel.loadingCount.collectAsState()
     val scope = rememberCoroutineScope()
 
+
     val publicationDrawerState = rememberDrawerState(DrawerValue.Closed)
     val commentSheetState = rememberModalBottomSheetState()
     var selectedCommentToBottomSheet by remember { mutableStateOf<Comment?>(null) }
+    var showDeletePublicationDialog by remember { mutableStateOf(false) }
 
-    val isOwner = state.currentUser?.id == publicationId
+    var isCommentTextFieldFocused by remember { mutableStateOf(false) }
+    val picker = rememberImagePickerController()
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(state.isPostingComment) {
+        if (!state.isPostingComment && state.newCommentContent.isEmpty()) {
+            focusManager.clearFocus()
+        }
+    }
+
+    val listState = rememberLazyListState()
+    var prevCommentCount by remember { mutableStateOf(0) }
+
+    LaunchedEffect(state.comments?.size) {
+        val size = state.comments?.size ?: 0
+        if (prevCommentCount in 1..<size) {
+            listState.animateScrollToItem(size + 1)
+        }
+        prevCommentCount = size
+    }
+
+    LaunchedEffect(state.isPublicationDeleted) {
+        if (state.isPublicationDeleted) {
+            publicationDrawerState.close()
+            navController.popBackStack()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(PublicationScreenIntent.GetCurrentUser)
         viewModel.onIntent(PublicationScreenIntent.GetPublications(publicationId))
         viewModel.onIntent(PublicationScreenIntent.GetComments(publicationId))
+    }
+
+    LaunchedEffect(Unit) {
+        picker.onResult { result ->
+            result.uriPaths.firstOrNull()?.let { uri ->
+                viewModel.onIntent(PublicationScreenIntent.AddImage(uri))
+            }
+        }
     }
 
     ModalNavigationDrawer(
@@ -154,30 +213,87 @@ fun PublicationScreenRoot(
                         )
                     }
 
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.report),
-                            contentDescription = "Back",
-                            tint = LocalTalkfrlyColors.current.bodyMuted,
-                        )
+                    if (state.publication?.user?.id
+                        == state.currentUser?.id && state.currentUser?.id != null) {
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .clickable(enabled = !state.isDeletingPublication) {
+                                    showDeletePublicationDialog = true
+                                },
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.delete),
+                                contentDescription = null,
+                                tint = LocalTalkfrlyColors.current.bodyMuted
+                            )
 
-                        Text(
-                            text = "Report publication",
-                            color = LocalTalkfrlyColors.current.body,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+                            Text(
+                                text = (if (state.isDeletingPublication) "Deleting publication..." else "Delete publication"),
+                                color = LocalTalkfrlyColors.current.body,
+                            )
+                        }
+
+                        state.deletePublicationError?.let { error ->
+                            Text(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                text = error,
+                                color = LocalTalkfrlyColors.current.error,
+                                fontSize = 14.sp,
+                            )
+                        }
                     }
                 }
             }
         }
     ) {
+        if (showDeletePublicationDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    if (!state.isDeletingPublication) {
+                        showDeletePublicationDialog = false
+                    }
+                },
+                title = {
+                    Text("Delete publication?")
+                },
+                text = {
+                    Text("Are you sure you want to delete this publication?")
+                },
+                confirmButton = {
+                    Button(
+                        enabled = !state.isDeletingPublication,
+                        onClick = {
+                            showDeletePublicationDialog = false
+
+                            viewModel.onIntent(
+                                PublicationScreenIntent.DeletePublication(publicationId)
+                            )
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = LocalTalkfrlyColors.current.primary,
+                            contentColor = LocalTalkfrlyColors.current.body,
+                        ),
+                    ) {
+                        Text(if (state.isDeletingPublication) "Deleting..." else "Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        enabled = !state.isDeletingPublication,
+                        onClick = { showDeletePublicationDialog = false },
+                    ) {
+                        Text(text = "Cancel", color = LocalTalkfrlyColors.current.body)
+                    }
+                },
+                containerColor = LocalTalkfrlyColors.current.background,
+                titleContentColor = LocalTalkfrlyColors.current.body,
+                textContentColor = LocalTalkfrlyColors.current.bodyMuted,
+            )
+        }
+
         selectedCommentToBottomSheet?.let {
             ModalBottomSheet(
                 onDismissRequest = { selectedCommentToBottomSheet = null },
@@ -206,7 +322,6 @@ fun PublicationScreenRoot(
                         )
                     }
 
-
                     Row(
                         modifier = Modifier.clickable {
                             /* report */
@@ -223,21 +338,29 @@ fun PublicationScreenRoot(
 
                         Text("Report comment", color = LocalTalkfrlyColors.current.body)
                     }
-                    Row(
-                        modifier = Modifier.clickable {
-                            /* delete */
-                            scope.launch { commentSheetState.hide()
-                            selectedCommentToBottomSheet = null } },
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.delete),
-                            contentDescription = null,
-                            tint = LocalTalkfrlyColors.current.bodyMuted
-                        )
 
-                        Text("Delete comment", color = LocalTalkfrlyColors.current.body)
+                    if (selectedCommentToBottomSheet?.user?.id
+                        == state.currentUser?.id && state.currentUser?.id != null) {
+                        Row(
+                            modifier = Modifier.clickable {
+                                viewModel.onIntent(
+                                    PublicationScreenIntent.DeleteComment(publicationId,
+                                        selectedCommentToBottomSheet?.id ?: ""
+                                    )
+                                )
+                                scope.launch { commentSheetState.hide()
+                                    selectedCommentToBottomSheet = null } },
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.delete),
+                                contentDescription = null,
+                                tint = LocalTalkfrlyColors.current.bodyMuted
+                            )
+
+                            Text("Delete comment", color = LocalTalkfrlyColors.current.body)
+                        }
                     }
                 }
             }
@@ -303,24 +426,145 @@ fun PublicationScreenRoot(
                 )
             },
             bottomBar = {
-                BottomBarInput(
-                    value = "",
-                    onValueChange = { },
-                    onSendClick = { },
-                    placeholder = "Write a comment...",
-                )
+                Column(
+                    modifier = Modifier.background(color = LocalTalkfrlyColors.current.backgroundLighter),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ){
+                    if(isCommentTextFieldFocused){
+                        Row(modifier = Modifier.padding(8.dp)) {
+                            PhotoActionButton(
+                                label = "Photo",
+                                icon = Res.drawable.add_a_photo,
+                                enabled = state.imageUri == null,
+                                onClick = { picker.openCamera() },
+                            )
+
+                            PhotoActionButton(
+                                label = "Image",
+                                icon = Res.drawable.add_picture,
+                                enabled = state.imageUri == null,
+                                onClick = { picker.openGallery() },
+                            )
+
+                            state.imageUri?.let { uri ->
+                                val status = state.imageUploadStatus ?: ImageUploadStatus.PENDING
+                                val thumbnail = state.uploadedImageUrl ?: uri
+                                val errorText = state.imageUploadError
+
+                                ImageChip(
+                                    label = "Photo 1",
+                                    thumbnail = thumbnail,
+                                    status = status,
+                                    errorText = errorText,
+                                    enabled = true,
+                                    onRemove = { viewModel.onIntent(PublicationScreenIntent.RemoveImage) },
+                                    onRetry = { viewModel.onIntent(PublicationScreenIntent.RetryImage(uri)) }
+                                )
+                            }
+                        }
+                    }
+
+                    TextField(
+                        value = state.newCommentContent,
+                        onValueChange = { viewModel.onIntent(PublicationScreenIntent.SetNewCommentContent(it)) },
+                        label = { Text("Write something") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(60.dp, 160.dp)
+                            .onFocusChanged{ focusState ->
+                                isCommentTextFieldFocused = focusState.isFocused
+                            },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                            unfocusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                            disabledContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                            focusedTextColor = LocalTalkfrlyColors.current.body,
+                            unfocusedTextColor = LocalTalkfrlyColors.current.body,
+                            disabledTextColor = LocalTalkfrlyColors.current.body,
+                            focusedLabelColor = LocalTalkfrlyColors.current.body,
+                            unfocusedLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                            disabledLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                            unfocusedIndicatorColor = LocalTalkfrlyColors.current.primary20,
+                            focusedIndicatorColor = LocalTalkfrlyColors.current.primary,
+                            disabledIndicatorColor = LocalTalkfrlyColors.current.primary20,
+                            cursorColor = LocalTalkfrlyColors.current.surface,
+                        ),
+                        maxLines = 10,
+                        leadingIcon = {
+                            Icon(
+                            vectorResource(Res.drawable.icon_chat),
+                            "Comment"
+                            )
+                        },
+                        trailingIcon = {
+                            Column(
+                                Modifier.padding(end = 8.dp)
+                            ) {
+                                InteractionStatButton(
+                                    type = InteractionStatButtonType.OUTLINED,
+                                    isActive = state.newCommentContent.isNotBlank() && !state.isPostingComment && (state.imageUploadStatus == ImageUploadStatus.SUCCESS || state.imageUploadStatus == null),
+                                    icon = Res.drawable.chat_paste_go,
+                                    onClick = { viewModel.onIntent(PublicationScreenIntent.PostComment(
+                                        CreateCommentRequest(
+                                            publicationId = publicationId,
+                                            content = state.newCommentContent,
+                                            imageUrls = state.uploadedImageUrl?.let(::listOf).orEmpty(),
+                                        )
+                                    ))}
+                                )
+                            }
+                        }
+                    )
+                }
             }
-        ) {
+        ) { paddingValues ->
             LazyColumn(
-                Modifier.padding(it)
+                state = listState,
+                modifier = Modifier.padding(paddingValues),
             ) {
-                item {
-                    PublicationScreen(
+                item(key = "publication") {
+                    PublicationContent(
                         state = state,
                         isLoading = loadingCount > 0,
-                        onAction = { intent -> viewModel.onIntent(intent)},
-                        onCommentOptionClick = { comment -> selectedCommentToBottomSheet = comment }
+                        onAction = { intent: PublicationScreenIntent -> viewModel.onIntent(intent) },
                     )
+                }
+
+                if (state.publication != null) {
+                    if (state.isLoadingComments || state.isPostingComment) {
+                        item(key = "comments_loading") {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(24.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                CircularProgressIndicator(
+                                    color = LocalTalkfrlyColors.current.primary,
+                                    trackColor = LocalTalkfrlyColors.current.surface
+                                )
+                            }
+                        }
+                    } else {
+                        val publication = state.publication
+
+                        item(key = "comments_header") {
+                            Spacer(Modifier.height(16.dp))
+
+                            CommentsHeader(
+                                commentCount = publication?.commentCount ?: 0,
+                                isEmpty = state.comments?.isEmpty() == true,
+                            )
+                        }
+
+                        items(
+                            items = state.comments.orEmpty(),
+                            key = { it.id },
+                        ) { comment ->
+                            CommentItem(
+                                comment = comment,
+                                onOptionClick = { selectedCommentToBottomSheet = comment },
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -328,11 +572,10 @@ fun PublicationScreenRoot(
 }
 
 @Composable
-private fun PublicationScreen(
+private fun PublicationContent(
     state: PublicationScreenState,
     isLoading: Boolean,
     onAction: (PublicationScreenIntent) -> Unit,
-    onCommentOptionClick: (Comment) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -340,9 +583,6 @@ private fun PublicationScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        /**
-         * Publication content
-         */
         if (state.publication == null) {
             if (isLoading) {
                 SplashScreen()
@@ -355,62 +595,58 @@ private fun PublicationScreen(
             return
         }
 
-        state.publication.content.let { pub ->
-            val lines = pub.lines()
-            val headerLine = lines.firstOrNull { it.startsWith("#") }
-            val bodyText = lines.firstOrNull { !it.startsWith("#") && it.isNotBlank() }.orEmpty()
+        val pub = state.publication
+        val lines = pub.content.lines()
+        val headerLine = lines.firstOrNull { it.startsWith("#") }
+        val bodyText = lines.firstOrNull { !it.startsWith("#") && it.isNotBlank() }.orEmpty()
 
-            if (headerLine != null) {
-                Text(
-                    text = headerLine.removePrefix("#").trimStart(),
-                    color = LocalTalkfrlyColors.current.body,
-                    fontSize = 18.sp,
-                    letterSpacing = 0.8.sp,
-                    lineHeight = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-            if (bodyText.isNotBlank()) {
-                Text(
-                    text = bodyText,
-                    color = LocalTalkfrlyColors.current.body,
-                    fontSize = 16.sp,
-                    letterSpacing = 0.8.sp,
-                    lineHeight = 28.sp,
-                    fontWeight = FontWeight.Light,
-                )
-            }
+        if (headerLine != null) {
+            Text(
+                text = headerLine.removePrefix("#").trimStart(),
+                color = LocalTalkfrlyColors.current.body,
+                fontSize = 18.sp,
+                letterSpacing = 0.8.sp,
+                lineHeight = 28.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
 
-        state.publication.imageUrls.let {
+        if (bodyText.isNotBlank()) {
+            Text(
+                text = bodyText,
+                color = LocalTalkfrlyColors.current.body,
+                fontSize = 16.sp,
+                letterSpacing = 0.8.sp,
+                lineHeight = 28.sp,
+                fontWeight = FontWeight.Light,
+            )
+        }
+
+        if (pub.imageUrls.isNotEmpty()) {
             Image(
                 modifier = Modifier.clip(ShapeDefaults.ExtraSmall),
-                painter = rememberAsyncImagePainter(model = it.firstOrNull()),
+                painter = rememberAsyncImagePainter(model = pub.imageUrls.first()),
                 contentDescription = "Publication picture",
                 contentScale = ContentScale.FillWidth,
             )
         }
 
-        /**
-         * Interaction buttons
-         */
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             InteractionStatButton(
-                isActive = state.publication.likedByUser,
+                isActive = pub.likedByUser,
                 type = InteractionStatButtonType.OUTLINED,
-                label = state.publication.likeCount,
+                label = pub.likeCount,
                 icon = Res.drawable.record_voice_over,
                 onClick = {
                     onAction(
-                        if (state.publication.likedByUser) PublicationScreenIntent.UnlikePublication(state.publication.id)
-                        else PublicationScreenIntent.LikePublication(state.publication.id)
+                        if (pub.likedByUser) PublicationScreenIntent.UnlikePublication(pub.id)
+                        else PublicationScreenIntent.LikePublication(pub.id)
                     )
                 }
             )
@@ -418,89 +654,9 @@ private fun PublicationScreen(
             InteractionStatButton(
                 type = InteractionStatButtonType.SIMPLE,
                 icon = Res.drawable.icon_visibility_on,
-                label = state.publication.views,
+                label = pub.views,
                 isActive = false,
             )
-        }
-
-        /**
-         * Comments
-         */
-        state.comments?.let {
-            Text(
-                text = "Comments (${state.publication.commentCount})",
-                color = LocalTalkfrlyColors.current.body,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-            )
-
-            if (state.comments.isEmpty()) {
-                Text(
-                    text = "No comments yet. Be first!",
-                    color = LocalTalkfrlyColors.current.bodyMuted,
-                )
-            }
-
-            state.comments.forEach { comment ->
-                Column {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        FeedAvatar(
-                            avatarUrl = comment.user?.avatarUrl,
-                            label = comment.user?.displayName ?: "Anonymous",
-                        )
-
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Text(
-                                    text = comment.user?.displayName ?: "Anonymous",
-                                    color = LocalTalkfrlyColors.current.body,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 14.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Text(
-                                        text = formatRelativeTime(comment.createdAt),
-                                        color = LocalTalkfrlyColors.current.bodyMuted,
-                                        fontSize = 14.sp,
-                                    )
-
-                                    Icon(
-                                        modifier = Modifier
-                                            .size(16.dp)
-                                            .clickable(onClick = { onCommentOptionClick(comment) }),
-                                        imageVector = vectorResource(Res.drawable.more_vert),
-                                        contentDescription = "feed view",
-                                        tint = LocalTalkfrlyColors.current.bodyMuted,
-                                    )
-                                }
-                            }
-
-                            Text(
-                                text = comment.content,
-                                color = LocalTalkfrlyColors.current.body,
-                            )
-                        }
-                    }
-                }
-
-                HorizontalDivider(
-                    modifier = Modifier.height(1.dp),
-                    color = LocalTalkfrlyColors.current.backgroundLighter
-                )
-            }
         }
     }
 }

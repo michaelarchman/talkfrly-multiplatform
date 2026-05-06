@@ -32,6 +32,8 @@ data class ThreadDto(
     @SerialName("slug") val slug: String,
     @SerialName("description") val description: String? = null,
     @SerialName("creator_id") val creatorId: String,
+    @SerialName("member_count") val memberCount: Int,
+    @SerialName("is_member") val isMember: Boolean? = null,
     @SerialName("role") val role: String? = null,
     @SerialName("created_at") val createdAt: String,
     @SerialName("updated_at") val updatedAt: String,

@@ -20,6 +20,8 @@ data object HomeRoute
 @Serializable
 data object AccountRoute
 
+@Serializable
+data object ThreadRoute
 
 @Serializable
 data class PublicationRoute(
@@ -28,6 +30,12 @@ data class PublicationRoute(
 
 @Serializable
 data object NewPublicationRoute
+
+@Serializable
+data object ForgotPasswordRoute
+
+@Serializable
+data class ResetPasswordRoute(val email: String)
 
 @Serializable
 data object ErrorRoute

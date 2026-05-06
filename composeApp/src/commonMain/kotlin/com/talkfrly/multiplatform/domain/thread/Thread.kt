@@ -6,6 +6,8 @@ data class Thread(
     val slug: String,
     val description: String? = null,
     val creatorId: String,
+    val memberCount: Int,
+    val isMember: Boolean? = null,
     val role: String? = null,
     val createdAt: String,
     val updatedAt: String,

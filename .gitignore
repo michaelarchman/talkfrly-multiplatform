@@ -21,3 +21,5 @@ scripts/
 /AGENTS.md
 /CLAUDE.md
 /internal/
+*.aab
+*.apk

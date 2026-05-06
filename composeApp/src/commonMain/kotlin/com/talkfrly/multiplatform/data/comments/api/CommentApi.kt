@@ -3,6 +3,7 @@ package com.talkfrly.multiplatform.data.comments.api
 import com.talkfrly.multiplatform.data.comments.dto.CommentDto
 import com.talkfrly.multiplatform.data.comments.dto.CommentListResponseDto
 import com.talkfrly.multiplatform.data.comments.dto.CreateCommentRequestDto
+import com.talkfrly.multiplatform.data.core.MessageDto
 import com.talkfrly.multiplatform.data.core.makeRequest
 import com.talkfrly.multiplatform.domain.core.DataError
 import com.talkfrly.multiplatform.domain.core.DataResult
@@ -11,7 +12,9 @@ import io.ktor.http.HttpMethod
 
 interface CommentApi {
     suspend fun getComments(publicationId: String): DataResult<CommentListResponseDto, DataError.Remote>
-    suspend fun createComment(publicationId: String, request: CreateCommentRequestDto): DataResult<CommentDto, DataError.Remote>
+    suspend fun postComment(publicationId: String, request: CreateCommentRequestDto): DataResult<CommentDto, DataError.Remote>
+    suspend fun updateComment(commentId: String, request: CreateCommentRequestDto): DataResult<CommentDto, DataError.Remote>
+    suspend fun deleteComment(commentId: String): DataResult<MessageDto, DataError.Remote>
 }
 
 class CommentApiImpl(
@@ -25,7 +28,7 @@ class CommentApiImpl(
         )
     }
 
-    override suspend fun createComment(
+    override suspend fun postComment(
         publicationId: String,
         request: CreateCommentRequestDto,
     ): DataResult<CommentDto, DataError.Remote> {
@@ -34,6 +37,26 @@ class CommentApiImpl(
             httpClient = httpClient,
             urlString = "/publications/$publicationId/comments",
             body = request,
+        )
+    }
+
+    override suspend fun updateComment(
+        commentId: String,
+        request: CreateCommentRequestDto
+    ): DataResult<CommentDto, DataError.Remote> {
+        return makeRequest(
+            httpMethod = HttpMethod.Put,
+            httpClient = httpClient,
+            urlString = "/comments/$commentId",
+            body = request
+        )
+    }
+
+    override suspend fun deleteComment(commentId: String): DataResult<MessageDto, DataError.Remote> {
+        return makeRequest(
+            httpMethod = HttpMethod.Delete,
+            httpClient = httpClient,
+            urlString = "/comments/$commentId",
         )
     }
 }

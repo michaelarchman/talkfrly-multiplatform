@@ -7,13 +7,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.talkfrly.multiplatform.ui.screens.account.AccountScreenRoot
 import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationScreenRoot
-import com.talkfrly.multiplatform.ui.screens.error.ErrorScreenRoot
+import com.talkfrly.multiplatform.ui.screens.forgotpassword.ForgotPasswordScreenRoot
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
+import com.talkfrly.multiplatform.ui.screens.resetpassword.ResetPasswordScreenRoot
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.screens.stream.StreamScreenRoot
+import com.talkfrly.multiplatform.ui.screens.thread.ThreadScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
 import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
@@ -61,6 +63,11 @@ fun AppNavHost(
                 onLogout = { sessionViewModel.logout() }
             )
         }
+        composable<ThreadRoute> {
+            ThreadScreenRoot(
+                navController = navController,
+            )
+        }
         composable<PublicationRoute> { backStackEntry ->
             val args = backStackEntry.toRoute<PublicationRoute>()
             PublicationScreenRoot(
@@ -74,8 +81,19 @@ fun AppNavHost(
                 navController = navController,
             )
         }
-        composable<ErrorRoute>{
-           ErrorScreenRoot(navController = navController)
+        composable<ForgotPasswordRoute> {
+            ForgotPasswordScreenRoot(
+                viewModel = koinViewModel(),
+                navController = navController,
+            )
+        }
+        composable<ResetPasswordRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<ResetPasswordRoute>()
+            ResetPasswordScreenRoot(
+                email = route.email,
+                viewModel = koinViewModel(),
+                navController = navController,
+            )
         }
         composable<StreamRoute> { backStackEntry ->
             val route = backStackEntry.toRoute<StreamRoute>()

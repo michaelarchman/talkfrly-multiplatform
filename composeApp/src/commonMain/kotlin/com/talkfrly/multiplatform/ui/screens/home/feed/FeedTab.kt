@@ -12,9 +12,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.talkfrly.multiplatform.domain.feed.FeedItem
 import com.talkfrly.multiplatform.ui.components.feed.FeedCard
 import com.talkfrly.multiplatform.ui.components.feed.FeedCardSkeleton
+import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -24,11 +28,14 @@ fun FeedTab(
     onFeedItemClick: (FeedItem) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
-    val isLoading by viewModel.loadingCount.collectAsState()
+    val loadingCount by viewModel.loadingCount.collectAsState()
     val listState = rememberLazyListState()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
-        viewModel.onIntent(FeedTabIntent.GetFeed(1, 3))
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.onIntent(FeedTabIntent.GetFeed(1, 3))
+        }
     }
 
     LazyColumn(
@@ -44,7 +51,7 @@ fun FeedTab(
             )
             HorizontalDivider(color = LocalTalkfrlyColors.current.backgroundLighter)
         }
-        if (state.hasNextPage && isLoading == 0) {
+        if (state.hasNextPage && loadingCount == 0) {
             item {
                 LaunchedEffect(Unit) {
                     viewModel.onIntent(FeedTabIntent.GetFeed(page = state.feed?.page?.plus(1) ?: 1, limit = 3))
@@ -53,7 +60,7 @@ fun FeedTab(
             }
         }
 
-        if (isLoading > 0) {
+        if (state.isLoading || loadingCount > 0) {
             items(3) {
                 FeedCardSkeleton()
                 HorizontalDivider(color = LocalTalkfrlyColors.current.backgroundLighter)

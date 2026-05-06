@@ -50,6 +50,6 @@ class PublicationRepositoryImpl(
     }
 
     override suspend fun unlikePublicationById(id: String): DataResult<Unit, DataError.Remote> {
-        return api.likePublication(id)
+        return api.unlikePublication(id)
     }
 }

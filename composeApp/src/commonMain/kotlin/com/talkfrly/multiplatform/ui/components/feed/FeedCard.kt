@@ -101,7 +101,9 @@ fun FeedCard(
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                var isOverflow by remember { mutableStateOf(false) }
+                var isOverflow by remember(feedItem.id, feedItem.updatedAt, feedItem.content) {
+                    mutableStateOf(false)
+                }
 
                 val lines = feedItem.content.lines()
                 val headerLine = lines.firstOrNull { it.startsWith("#") }
@@ -178,7 +180,10 @@ fun FeedCard(
                         type = InteractionStatButtonType.OUTLINED,
                         icon = Res.drawable.record_voice_over,
                         label = feedItem.likeCount,
-                        onClick = {},
+                        onClick = {
+                            if (feedItem.likedByUser) onAction(FeedTabIntent.UnlikePublication(feedItem.id))
+                            else onAction(FeedTabIntent.LikePublication(feedItem.id))
+                        },
                     )
 
                     InteractionStatButton(

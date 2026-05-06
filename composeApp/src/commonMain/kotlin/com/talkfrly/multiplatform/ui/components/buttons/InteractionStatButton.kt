@@ -28,7 +28,7 @@ fun InteractionStatButton(
     isActive: Boolean,
     type: InteractionStatButtonType,
     icon: DrawableResource,
-    label: Int,
+    label: Any? = null,
     onClick: (() -> Unit)? = null,
 ) {
     val colors = LocalTalkfrlyColors.current
@@ -56,13 +56,16 @@ fun InteractionStatButton(
 
         Spacer(Modifier.width(4.dp))
 
-        Text(
-            text = label.toString(),
-            color = if (type == InteractionStatButtonType.OUTLINED) {
-                if (isActive) colors.body else colors.bodyMuted
-            } else colors.bodyMuted,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-        )
+        label?.let {
+            Text(
+                text = it.toString(),
+                color = if (type == InteractionStatButtonType.OUTLINED) {
+                    if (isActive) colors.body else colors.bodyMuted
+                } else colors.bodyMuted,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+
     }
 }
