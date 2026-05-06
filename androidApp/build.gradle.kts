@@ -12,8 +12,8 @@ android {
 
     defaultConfig {
         minSdk = 29
-        versionCode = 9
-        versionName = "0.0.2"
+        versionCode = 11
+        versionName = "1.0.0"
 //        consumerProguardFiles("consumer-rules.pro")
     }
 

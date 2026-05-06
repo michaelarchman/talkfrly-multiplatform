@@ -71,7 +71,7 @@ private fun ThreadScreen(
     val ownedThreadIds = state.ownedThreads.map { it.id }.toSet()
     val joinedThreadIds = state.joinedThreads.map { it.id }.toSet()
     val userThreadIds = ownedThreadIds + joinedThreadIds
-    val availableThreads = state.threads.filterNot { it.id in userThreadIds }
+    val availableThreads = state.allThreads.filterNot { it.id in userThreadIds }
 
     Scaffold(
         containerColor = LocalTalkfrlyColors.current.background,

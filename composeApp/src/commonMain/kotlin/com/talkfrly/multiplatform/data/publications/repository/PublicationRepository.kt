@@ -15,15 +15,20 @@ interface PublicationRepository {
     suspend fun getPublications(page: Int, limit: Int, filter: PublicationFilter?): DataResult<PublicationList, DataError.Remote>
     suspend fun getPublicationById(id: String): DataResult<Publication, DataError.Remote>
     suspend fun createPublication(request: CreatePublicationRequest): DataResult<Publication, DataError.Remote>
+    suspend fun updatePublication(id: String, request: CreatePublicationRequest): DataResult<Publication, DataError.Remote>
     suspend fun deletePublication(id: String): DataResult<Unit, DataError.Remote>
     suspend fun likePublicationById(id: String): DataResult<Unit, DataError.Remote>
     suspend fun unlikePublicationById(id: String): DataResult<Unit, DataError.Remote>
 }
 
 class PublicationRepositoryImpl(
-    private val api: PublicationApi
-): PublicationRepository {
-    override suspend fun getPublications(page: Int, limit: Int, filter: PublicationFilter?): DataResult<PublicationList, DataError.Remote> {
+    private val api: PublicationApi,
+) : PublicationRepository {
+    override suspend fun getPublications(
+        page: Int,
+        limit: Int,
+        filter: PublicationFilter?,
+    ): DataResult<PublicationList, DataError.Remote> {
         return api
             .getPublications(page, limit, filter?.toDto())
             .map { it.toDomain() }
@@ -38,6 +43,15 @@ class PublicationRepositoryImpl(
     override suspend fun createPublication(request: CreatePublicationRequest): DataResult<Publication, DataError.Remote> {
         return api
             .createPublication(request.toDto())
+            .map { it.toDomain() }
+    }
+
+    override suspend fun updatePublication(
+        id: String,
+        request: CreatePublicationRequest,
+    ): DataResult<Publication, DataError.Remote> {
+        return api
+            .updatePublication(id, request.toDto())
             .map { it.toDomain() }
     }
 

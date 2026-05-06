@@ -43,7 +43,7 @@ class ThreadViewModel(
             .onSuccess { response ->
                 _state.update {
                     it.copy(
-                        threads = response.threads,
+                        allThreads = response.threads,
                         totalCount = response.totalCount,
                         page = response.page,
                         limit = response.limit,
@@ -53,7 +53,7 @@ class ThreadViewModel(
             .onError { error ->
                 _state.update {
                     it.copy(
-                        threads = emptyList(),
+                        allThreads = emptyList(),
                         errorMessage = error.message ?: error.error ?: "Failed to load threads",
                     )
                 }

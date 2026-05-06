@@ -14,7 +14,7 @@ import com.talkfrly.multiplatform.domain.core.DataResult
 import com.talkfrly.multiplatform.domain.core.map
 
 interface CommentRepository {
-    suspend fun getComments(publicationId: String): DataResult<CommentList, DataError.Remote>
+    suspend fun getComments(publicationId: String, page: Int = 1, limit: Int = 20): DataResult<CommentList, DataError.Remote>
     suspend fun createComment(request: CreateCommentRequest): DataResult<Comment, DataError.Remote>
     suspend fun updateComment(commentId: String, request: CreateCommentRequest): DataResult<Comment, DataError.Remote>
     suspend fun deleteComment(commentId: String): DataResult<Unit, DataError.Remote>
@@ -23,8 +23,8 @@ interface CommentRepository {
 class CommentRepositoryImpl(
     private val api: CommentApi,
 ) : CommentRepository {
-    override suspend fun getComments(publicationId: String): DataResult<CommentList, DataError.Remote> {
-        return api.getComments(publicationId).map { it.toDomain() }
+    override suspend fun getComments(publicationId: String, page: Int, limit: Int): DataResult<CommentList, DataError.Remote> {
+        return api.getComments(publicationId, page, limit).map { it.toDomain() }
     }
 
     override suspend fun createComment(request: CreateCommentRequest): DataResult<Comment, DataError.Remote> {
