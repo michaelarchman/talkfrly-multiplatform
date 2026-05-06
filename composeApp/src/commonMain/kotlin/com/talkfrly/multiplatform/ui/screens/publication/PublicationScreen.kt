@@ -68,6 +68,7 @@ import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButtonTyp
 import com.talkfrly.multiplatform.ui.components.buttons.PhotoActionButton
 import com.talkfrly.multiplatform.ui.components.chips.ImageChip
 import com.talkfrly.multiplatform.ui.components.feed.FeedAvatar
+import com.talkfrly.multiplatform.ui.components.feed.FeedRankingDisplay
 import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
 import com.talkfrly.multiplatform.ui.screens.publication.comment.CommentItem
 import com.talkfrly.multiplatform.ui.screens.publication.comment.CommentsHeader
@@ -630,6 +631,15 @@ private fun PublicationContent(
                 painter = rememberAsyncImagePainter(model = pub.imageUrls.first()),
                 contentDescription = "Publication picture",
                 contentScale = ContentScale.FillWidth,
+            )
+        }
+
+        if (pub.type == "ranking" && pub.ranking != null) {
+            FeedRankingDisplay(
+                ranking = pub.ranking,
+                onVote = { itemId, value ->
+                    onAction(PublicationScreenIntent.VoteRankingItem(pub.id, itemId, value))
+                },
             )
         }
 

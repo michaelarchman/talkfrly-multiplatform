@@ -159,7 +159,6 @@ private fun RankingItem(
                     label = "+",
                     active = currentVote == 1,
                     enabled = !voting,
-                    isNegative = false,
                     onClick = {
                         onVote(if (currentVote == 1) 0 else 1)
                     },
@@ -168,7 +167,6 @@ private fun RankingItem(
                     label = "\u2212",
                     active = currentVote == -1,
                     enabled = !voting,
-                    isNegative = true,
                     onClick = {
                         onVote(if (currentVote == -1) 0 else -1)
                     },
@@ -205,7 +203,6 @@ private fun VoteButton(
     label: String,
     active: Boolean,
     enabled: Boolean,
-    isNegative: Boolean,
     onClick: () -> Unit,
 ) {
     val colors = LocalTalkfrlyColors.current
@@ -215,12 +212,12 @@ private fun VoteButton(
             .size(26.dp)
             .alpha(if (enabled) 1f else 0.5f)
             .clickable(enabled = enabled, onClick = onClick),
-        color = if (isNegative) colors.backgroundDarker else colors.primary,
-        contentColor = if (isNegative) colors.body else colors.black,
+        color = if (active) colors.primary else colors.backgroundDarker,
+        contentColor = if (active) colors.black else colors.body,
         shape = RoundedCornerShape(8.dp),
-        shadowElevation = if (active) 2.dp else 0.dp,
+        shadowElevation = 0.dp,
         tonalElevation = 0.dp,
-        border = if (active) androidx.compose.foundation.BorderStroke(2.dp, colors.bodyMuted) else null,
+        border = null,
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(

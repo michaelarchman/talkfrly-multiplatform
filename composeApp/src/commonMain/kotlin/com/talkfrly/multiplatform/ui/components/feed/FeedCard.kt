@@ -149,12 +149,7 @@ fun FeedCard(
                 }
 
                 if (feedItem.publicationType == "ranking" && feedItem.ranking != null) {
-                    FeedRankingDisplay(
-                        ranking = feedItem.ranking,
-                        onVote = { itemId, value ->
-                            onAction(FeedTabIntent.VoteRankingItem(feedItem.id, itemId, value))
-                        }
-                    )
+                    FeedRankingDisplay(ranking = feedItem.ranking)
                 }
 
                 feedItem.imageUrls.let { url ->
