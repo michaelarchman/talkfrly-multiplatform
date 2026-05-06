@@ -1,10 +1,10 @@
 package com.talkfrly.multiplatform.data.publications.api
 
 import com.talkfrly.multiplatform.data.core.makeRequest
-import com.talkfrly.multiplatform.data.publications.dto.PublicationRequest
 import com.talkfrly.multiplatform.data.publications.dto.PublicationDto
 import com.talkfrly.multiplatform.data.publications.dto.PublicationFilterDto
 import com.talkfrly.multiplatform.data.publications.dto.PublicationListResponseDto
+import com.talkfrly.multiplatform.data.publications.dto.PublicationRequestDto
 import com.talkfrly.multiplatform.domain.core.DataError
 import com.talkfrly.multiplatform.domain.core.DataResult
 import io.ktor.client.HttpClient
@@ -12,12 +12,9 @@ import io.ktor.http.HttpMethod
 
 interface PublicationApi {
     suspend fun getPublications(page: Int, limit: Int, filter: PublicationFilterDto?): DataResult<PublicationListResponseDto, DataError.Remote>
-    suspend fun getPopularPublications(page: Int, limit: Int): DataResult<PublicationListResponseDto, DataError.Remote>
-    suspend fun getLatestPublications(page: Int, limit: Int): DataResult<PublicationListResponseDto, DataError.Remote>
-    suspend fun getPrivatePublications(page: Int, limit: Int): DataResult<PublicationListResponseDto, DataError.Remote>
     suspend fun getPublicationById(id: String): DataResult<PublicationDto, DataError.Remote>
-    suspend fun createPublication(request: PublicationRequest): DataResult<PublicationDto, DataError.Remote>
-    suspend fun updatePublication(id: String, request: PublicationRequest): DataResult<PublicationDto, DataError.Remote>
+    suspend fun createPublication(request: PublicationRequestDto): DataResult<PublicationDto, DataError.Remote>
+    suspend fun updatePublication(id: String, request: PublicationRequestDto): DataResult<PublicationDto, DataError.Remote>
     suspend fun deletePublication(id: String): DataResult<Unit, DataError.Remote>
     suspend fun likePublication(id: String): DataResult<Unit, DataError.Remote>
     suspend fun unlikePublication(id: String): DataResult<Unit, DataError.Remote>
@@ -29,65 +26,22 @@ class PublicationApiImpl(
     override suspend fun getPublications(
         page: Int,
         limit: Int,
-        filter: PublicationFilterDto?
+        filter: PublicationFilterDto?,
     ): DataResult<PublicationListResponseDto, DataError.Remote> {
+        val params = mutableMapOf<String, Any>(
+            "page" to page,
+            "limit" to limit,
+        )
+        filter?.channelId?.let { params["channel_id"] = it }
+        filter?.threadId?.let { params["thread_id"] = it }
+        filter?.type?.let { params["type"] = it }
+        filter?.sort?.let { params["sort"] = it }
+        filter?.private?.let { params["private"] = it }
         return makeRequest(
             httpMethod = HttpMethod.Get,
             httpClient = httpClient,
-            queryParams = mapOf(
-                "page" to page.toString(),
-                "limit" to limit.toString(),
-                "channel_id" to (filter?.channelId ?: ""),
-                "topic_id" to (filter?.topicId ?: ""),
-                "thread_id" to (filter?.threadId ?: ""),
-                "module_type" to (filter?.moduleType ?: ""),
-            ).filterValues { it.isNotEmpty() },
+            queryParams = params,
             urlString = "/publications",
-        )
-    }
-
-    override suspend fun getPopularPublications(
-        page: Int,
-        limit: Int,
-    ): DataResult<PublicationListResponseDto, DataError.Remote> {
-        return makeRequest(
-            httpMethod = HttpMethod.Get,
-            httpClient = httpClient,
-            queryParams = mapOf(
-                "page" to page,
-                "limit" to limit,
-            ),
-            urlString = "/publications/popular",
-        )
-    }
-
-    override suspend fun getLatestPublications(
-        page: Int,
-        limit: Int,
-    ): DataResult<PublicationListResponseDto, DataError.Remote> {
-        return makeRequest(
-            httpMethod = HttpMethod.Get,
-            httpClient = httpClient,
-            queryParams = mapOf(
-                "page" to page,
-                "limit" to limit,
-            ),
-            urlString = "/publications/latest",
-        )
-    }
-
-    override suspend fun getPrivatePublications(
-        page: Int,
-        limit: Int,
-    ): DataResult<PublicationListResponseDto, DataError.Remote> {
-        return makeRequest(
-            httpMethod = HttpMethod.Get,
-            httpClient = httpClient,
-            queryParams = mapOf(
-                "page" to page,
-                "limit" to limit,
-            ),
-            urlString = "/publications/private",
         )
     }
 
@@ -99,7 +53,7 @@ class PublicationApiImpl(
         )
     }
 
-    override suspend fun createPublication(request: PublicationRequest): DataResult<PublicationDto, DataError.Remote> {
+    override suspend fun createPublication(request: PublicationRequestDto): DataResult<PublicationDto, DataError.Remote> {
         return makeRequest(
             httpMethod = HttpMethod.Post,
             httpClient = httpClient,
@@ -110,7 +64,7 @@ class PublicationApiImpl(
 
     override suspend fun updatePublication(
         id: String,
-        request: PublicationRequest,
+        request: PublicationRequestDto,
     ): DataResult<PublicationDto, DataError.Remote> {
         return makeRequest(
             httpMethod = HttpMethod.Put,

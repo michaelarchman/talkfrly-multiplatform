@@ -1,12 +1,20 @@
 package com.talkfrly.multiplatform.di
 
 import com.talkfrly.multiplatform.AppViewModel
+import com.talkfrly.multiplatform.data.article.api.ArticleApi
+import com.talkfrly.multiplatform.data.article.api.ArticleApiImpl
+import com.talkfrly.multiplatform.data.article.repository.ArticleRepository
+import com.talkfrly.multiplatform.data.article.repository.ArticleRepositoryImpl
 import com.talkfrly.multiplatform.data.auth.api.AuthApi
 import com.talkfrly.multiplatform.data.auth.api.AuthApiImpl
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepository
 import com.talkfrly.multiplatform.data.auth.repository.AuthRepositoryImpl
 import com.talkfrly.multiplatform.data.cache.CoilImageCacheManager
 import com.talkfrly.multiplatform.data.cache.ImageCacheManager
+import com.talkfrly.multiplatform.data.chat.api.ChatApi
+import com.talkfrly.multiplatform.data.chat.api.ChatApiImpl
+import com.talkfrly.multiplatform.data.chat.repository.ChatRepository
+import com.talkfrly.multiplatform.data.chat.repository.ChatRepositoryImpl
 import com.talkfrly.multiplatform.data.comments.api.CommentApi
 import com.talkfrly.multiplatform.data.comments.api.CommentApiImpl
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
@@ -21,6 +29,18 @@ import com.talkfrly.multiplatform.data.publications.api.PublicationApi
 import com.talkfrly.multiplatform.data.publications.api.PublicationApiImpl
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepositoryImpl
+import com.talkfrly.multiplatform.data.ranking.api.RankingApi
+import com.talkfrly.multiplatform.data.ranking.api.RankingApiImpl
+import com.talkfrly.multiplatform.data.ranking.repository.RankingRepository
+import com.talkfrly.multiplatform.data.ranking.repository.RankingRepositoryImpl
+import com.talkfrly.multiplatform.data.review.api.ReviewApi
+import com.talkfrly.multiplatform.data.review.api.ReviewApiImpl
+import com.talkfrly.multiplatform.data.review.repository.ReviewRepository
+import com.talkfrly.multiplatform.data.review.repository.ReviewRepositoryImpl
+import com.talkfrly.multiplatform.data.search.api.SearchApi
+import com.talkfrly.multiplatform.data.search.api.SearchApiImpl
+import com.talkfrly.multiplatform.data.search.repository.SearchRepository
+import com.talkfrly.multiplatform.data.search.repository.SearchRepositoryImpl
 import com.talkfrly.multiplatform.data.stream.api.StreamApi
 import com.talkfrly.multiplatform.data.stream.api.StreamApiImpl
 import com.talkfrly.multiplatform.data.stream.repository.StreamRepository
@@ -46,6 +66,7 @@ import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublication
 import com.talkfrly.multiplatform.ui.screens.forgotpassword.ForgotPasswordViewModel
 import com.talkfrly.multiplatform.ui.screens.home.HomeViewModel
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTabViewModel
+import com.talkfrly.multiplatform.ui.screens.home.streams.StreamsTabViewModel
 import com.talkfrly.multiplatform.ui.screens.login.LoginViewModel
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationScreenViewModel
 import com.talkfrly.multiplatform.ui.screens.register.RegisterViewModel
@@ -65,7 +86,7 @@ val sharedModule: Module = module {
     single { HttpClientFactory.create(get(), get<PreferencesRepository>()) }
     single<ImageCacheManager> { CoilImageCacheManager() }
 
-    // Data sources / Api
+    // APIs
     singleOf(::AuthApiImpl).bind<AuthApi>()
     singleOf(::PublicationApiImpl).bind<PublicationApi>()
     singleOf(::CommentApiImpl).bind<CommentApi>()
@@ -75,6 +96,11 @@ val sharedModule: Module = module {
     singleOf(::UserPreferencesApiImpl).bind<UserPreferencesApi>()
     singleOf(::FeedApiImpl).bind<FeedApi>()
     singleOf(::StreamApiImpl).bind<StreamApi>()
+    singleOf(::RankingApiImpl).bind<RankingApi>()
+    singleOf(::ArticleApiImpl).bind<ArticleApi>()
+    singleOf(::ReviewApiImpl).bind<ReviewApi>()
+    singleOf(::ChatApiImpl).bind<ChatApi>()
+    singleOf(::SearchApiImpl).bind<SearchApi>()
 
     // Repositories
     singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
@@ -86,6 +112,11 @@ val sharedModule: Module = module {
     singleOf(::UserPreferencesRepositoryImpl).bind<UserPreferencesRepository>()
     singleOf(::FeedRepositoryImpl).bind<FeedRepository>()
     singleOf(::StreamRepositoryImpl).bind<StreamRepository>()
+    singleOf(::RankingRepositoryImpl).bind<RankingRepository>()
+    singleOf(::ArticleRepositoryImpl).bind<ArticleRepository>()
+    singleOf(::ReviewRepositoryImpl).bind<ReviewRepository>()
+    singleOf(::ChatRepositoryImpl).bind<ChatRepository>()
+    singleOf(::SearchRepositoryImpl).bind<SearchRepository>()
 
     // ViewModels
     viewModelOf(::AppViewModel)
@@ -101,6 +132,7 @@ val sharedModule: Module = module {
     viewModelOf(::PublicationScreenViewModel)
     viewModelOf(::StreamViewModel)
     viewModelOf(::FeedTabViewModel)
+    viewModelOf(::StreamsTabViewModel)
     viewModelOf(::ThreadsViewModel)
 }
 

@@ -11,12 +11,6 @@ import com.talkfrly.multiplatform.domain.thread.ThreadListRequest
 import com.talkfrly.multiplatform.domain.thread.ThreadListResponse
 import com.talkfrly.multiplatform.domain.thread.UpdateThreadRequest
 
-fun ThreadListRequestDto.toDomain(): ThreadListRequest = ThreadListRequest(
-    page = page,
-    limit = limit,
-    role = role,
-)
-
 fun ThreadListRequest.toDto(): ThreadListRequestDto = ThreadListRequestDto(
     page = page,
     limit = limit,
@@ -28,12 +22,6 @@ fun ThreadListResponseDto.toDomain(): ThreadListResponse = ThreadListResponse(
     totalCount = totalCount,
     page = page,
     limit = limit,
-)
-
-fun ThreadCreateRequestDto.toDomain(): ThreadCreateRequest = ThreadCreateRequest(
-    name = name,
-    slug = slug,
-    description = description,
 )
 
 fun ThreadCreateRequest.toDto(): ThreadCreateRequestDto = ThreadCreateRequestDto(
@@ -49,15 +37,11 @@ fun ThreadDto.toDomain(): Thread = Thread(
     description = description,
     creatorId = creatorId,
     memberCount = memberCount,
-    isMember = isMember,
     role = role,
+    streamId = streamId,
+    isLive = isLive,
     createdAt = createdAt,
     updatedAt = updatedAt,
-)
-
-fun UpdateThreadRequestDto.toDomain(): UpdateThreadRequest = UpdateThreadRequest(
-    name = name,
-    description = description,
 )
 
 fun UpdateThreadRequest.toDto(): UpdateThreadRequestDto = UpdateThreadRequestDto(

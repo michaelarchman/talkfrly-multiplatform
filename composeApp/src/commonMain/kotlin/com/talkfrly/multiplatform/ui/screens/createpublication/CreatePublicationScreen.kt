@@ -130,7 +130,7 @@ private fun CreatePublicationScreen(
                             imageVector = vectorResource(
                                 when (state.selectedType) {
                                     PublicationType.GENERAL -> Res.drawable.chat_paste_go
-                                    PublicationType.NEWS -> Res.drawable.campaign
+                                    PublicationType.ARTICLE -> Res.drawable.campaign
                                     PublicationType.REVIEW -> Res.drawable.star
                                     PublicationType.RANKING -> Res.drawable.icon_chat
                                 }
@@ -204,7 +204,7 @@ private fun CreatePublicationScreen(
                                 imageVector = vectorResource(
                                     when (type) {
                                         PublicationType.GENERAL -> Res.drawable.chat_paste_go
-                                        PublicationType.NEWS -> Res.drawable.campaign
+                                        PublicationType.ARTICLE -> Res.drawable.campaign
                                         PublicationType.REVIEW -> Res.drawable.star
                                         PublicationType.RANKING -> Res.drawable.icon_chat
                                     }
