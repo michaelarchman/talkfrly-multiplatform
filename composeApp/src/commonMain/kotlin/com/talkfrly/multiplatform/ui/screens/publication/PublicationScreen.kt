@@ -599,7 +599,10 @@ private fun PublicationContent(
         val pub = state.publication
         val lines = pub.content.lines()
         val headerLine = lines.firstOrNull { it.startsWith("#") }
-        val bodyText = lines.firstOrNull { !it.startsWith("#") && it.isNotBlank() }.orEmpty()
+        val bodyText = lines
+            .dropWhile { it.startsWith("#") || it.isBlank() }
+            .joinToString("\n")
+            .trim()
 
         if (headerLine != null) {
             Text(

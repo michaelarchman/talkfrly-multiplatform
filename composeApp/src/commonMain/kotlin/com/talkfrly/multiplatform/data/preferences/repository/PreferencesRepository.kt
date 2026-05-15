@@ -19,6 +19,11 @@ interface PreferencesRepository : CookiesStorage {
     fun getRefreshToken(): Flow<String?>
     suspend fun saveRefreshToken(refreshToken: String)
 
+    suspend fun getSavedEmail(): String?
+    suspend fun getSavedPassword(): String?
+    suspend fun saveCredentials(email: String, password: String)
+    suspend fun clearSavedCredentials()
+
     suspend fun clearPreferences()
 }
 
@@ -29,6 +34,8 @@ class PreferencesRepositoryImpl(
     private object PreferenceKeys {
         val ACCESS_TOKEN = stringPreferencesKey("access_token")
         val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+        val SAVED_EMAIL = stringPreferencesKey("saved_email")
+        val SAVED_PASSWORD = stringPreferencesKey("saved_password")
     }
 
     override fun getAccessToken(): Flow<String?> {
@@ -52,6 +59,26 @@ class PreferencesRepositoryImpl(
     override suspend fun saveRefreshToken(refreshToken: String) {
         dataStore.edit {
             it[PreferenceKeys.REFRESH_TOKEN] = refreshToken
+        }
+    }
+
+    override suspend fun getSavedEmail(): String? =
+        dataStore.data.map { it[PreferenceKeys.SAVED_EMAIL] }.firstOrNull()
+
+    override suspend fun getSavedPassword(): String? =
+        dataStore.data.map { it[PreferenceKeys.SAVED_PASSWORD] }.firstOrNull()
+
+    override suspend fun saveCredentials(email: String, password: String) {
+        dataStore.edit {
+            it[PreferenceKeys.SAVED_EMAIL] = email
+            it[PreferenceKeys.SAVED_PASSWORD] = password
+        }
+    }
+
+    override suspend fun clearSavedCredentials() {
+        dataStore.edit {
+            it.remove(PreferenceKeys.SAVED_EMAIL)
+            it.remove(PreferenceKeys.SAVED_PASSWORD)
         }
     }
 
