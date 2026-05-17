@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,12 +35,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.domain.feed.FeedItem
+import com.talkfrly.multiplatform.domain.publication.PublicationType
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButton
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButtonType
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTabIntent
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
+import org.jetbrains.compose.resources.vectorResource
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.forum
+import talkfrly_multiplatform.composeapp.generated.resources.icon_ranking
 import talkfrly_multiplatform.composeapp.generated.resources.icon_sms
 import talkfrly_multiplatform.composeapp.generated.resources.icon_visibility_on
 import talkfrly_multiplatform.composeapp.generated.resources.record_voice_over
@@ -83,15 +87,34 @@ fun FeedCard(
                         avatarUrl = feedItem.user?.avatarUrl,
                         label = feedItem.user?.displayName ?: "",
                     )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ){
+                        Text(
+                            text = feedItem.user?.displayName ?: "Anonymous",
+                            color = colors.body,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
 
-                    Text(
-                        text = feedItem.user?.displayName ?: "",
-                        color = colors.body,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                        Row {
+                            feedItem.publicationType?.let {
+                                PublicationLabel(
+                                    title = it,
+                                    type = PublicationLabelType.PUBLICATION_TYPE
+                                )
+                            }
+
+                            feedItem.threadName?.let {
+                                PublicationLabel(
+                                    title = it,
+                                    type = PublicationLabelType.THREAD_NAME,
+                                )
+                            }
+                        }
+                    }
                 }
 
                 Text(
@@ -176,6 +199,12 @@ fun FeedCard(
                 }
             }
 
+            if (feedItem.tags.isNotEmpty()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    feedItem.tags.forEach { FeedTagChip(it) }
+                }
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -211,12 +240,6 @@ fun FeedCard(
                     isActive = false,
                     onClick = {}
                 )
-            }
-
-            Row {
-                feedItem.tags.forEach {
-                    FeedTagChip(it)
-                }
             }
         }
     }

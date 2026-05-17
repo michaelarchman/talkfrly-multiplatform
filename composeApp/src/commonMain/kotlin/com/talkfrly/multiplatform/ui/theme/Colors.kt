@@ -10,6 +10,8 @@ data class TalkfrlyColors(
     val body: Color,
     val bodyMuted: Color,
 
+    val accent: Color,
+
     val background: Color,
     val backgroundDarker: Color,
     val backgroundLighter: Color,
@@ -32,6 +34,8 @@ fun talkfrlyLightThemeColors(): TalkfrlyColors = TalkfrlyColors(
     body = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.05f),
     bodyMuted = Color.hsl(hue = 210f, saturation = 0f, lightness = 0.4f),
 
+    accent = Color.hsl(hue = 194f, saturation = 0.86f, lightness = 0.48f),
+
     background = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.95f),
     backgroundDarker = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.9f),
     backgroundLighter = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 1f),
@@ -53,6 +57,8 @@ fun talkfrlyDarkThemeColors(): TalkfrlyColors = TalkfrlyColors(
 
     body = Color.hsl(hue = 0f, saturation = 0.1f, lightness = 0.95f),
     bodyMuted = Color.hsl(hue = 0f, saturation = 0f, lightness = 0.6f),
+
+    accent = Color.hsl(hue = 194f, saturation = 0.86f, lightness = 0.48f),
 
     background = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0.05f),
     backgroundDarker = Color.hsl(hue = 210f, saturation = 0.1f, lightness = 0f),
