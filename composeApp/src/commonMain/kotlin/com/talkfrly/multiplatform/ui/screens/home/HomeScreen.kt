@@ -268,7 +268,10 @@ private fun HomeScreen(
             FeedTab(
                 onFeedItemClick = { feedItem ->
                     navController.navigate(PublicationRoute(feedItem.id))
-                }
+                },
+                onThreadClick = { threadId ->
+                    navController.navigate(ThreadRoute(threadId))
+                },
             )
         }
         1 -> {

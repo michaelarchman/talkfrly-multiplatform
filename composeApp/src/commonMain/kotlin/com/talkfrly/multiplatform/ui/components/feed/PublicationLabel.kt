@@ -2,6 +2,7 @@ package com.talkfrly.multiplatform.ui.components.feed
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ enum class PublicationLabelType {
 fun PublicationLabel(
     title: String,
     type: PublicationLabelType,
+    onClick: (() -> Unit)? = null,
 ) {
     val chipIcon: ImageVector = when(type) {
         PublicationLabelType.THREAD_NAME -> vectorResource(Res.drawable.icon_sms)
@@ -71,12 +73,14 @@ fun PublicationLabel(
     }
 
     if (type == PublicationLabelType.THREAD_NAME) {
+        val threadModifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(LocalTalkfrlyColors.current.accent)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(horizontal = 6.dp, vertical = 4.dp)
+
         Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(LocalTalkfrlyColors.current.accent)
-                .padding(horizontal = 6.dp, vertical = 4.dp)
-            ,
+            modifier = threadModifier,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {

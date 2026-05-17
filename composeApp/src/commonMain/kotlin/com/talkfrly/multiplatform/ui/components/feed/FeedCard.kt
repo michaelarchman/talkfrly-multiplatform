@@ -54,6 +54,7 @@ fun FeedCard(
     modifier: Modifier = Modifier,
     onAction: (FeedTabIntent) -> Unit,
     onItemClick: (FeedItem) -> Unit,
+    onThreadClick: ((String) -> Unit)? = null,
 ) {
     val colors = LocalTalkfrlyColors.current
 
@@ -111,6 +112,9 @@ fun FeedCard(
                                 PublicationLabel(
                                     title = it,
                                     type = PublicationLabelType.THREAD_NAME,
+                                    onClick = feedItem.threadId?.let { id ->
+                                        onThreadClick?.let { cb -> { cb(id) } }
+                                    },
                                 )
                             }
                         }

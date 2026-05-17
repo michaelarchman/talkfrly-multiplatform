@@ -26,6 +26,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun FeedTab(
     viewModel: FeedTabViewModel = koinViewModel(),
     onFeedItemClick: (FeedItem) -> Unit,
+    onThreadClick: ((String) -> Unit)? = null,
 ) {
     val state by viewModel.state.collectAsState()
     val loadingCount by viewModel.loadingCount.collectAsState()
@@ -48,6 +49,7 @@ fun FeedTab(
                 feedItem = item,
                 onAction = { },
                 onItemClick = { feedItem -> onFeedItemClick(feedItem) },
+                onThreadClick = onThreadClick,
             )
             HorizontalDivider(color = LocalTalkfrlyColors.current.backgroundLighter)
         }
