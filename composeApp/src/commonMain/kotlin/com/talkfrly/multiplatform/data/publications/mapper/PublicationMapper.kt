@@ -6,6 +6,8 @@ import com.talkfrly.multiplatform.data.publications.dto.PublicationListResponseD
 import com.talkfrly.multiplatform.data.publications.dto.PublicationRequestDto
 import com.talkfrly.multiplatform.data.publications.dto.UserSummaryDto
 import com.talkfrly.multiplatform.data.ranking.mapper.toDomain
+import com.talkfrly.multiplatform.domain.feed.FeedItem
+import com.talkfrly.multiplatform.domain.feed.FeedUser
 import com.talkfrly.multiplatform.domain.publication.CreatePublicationRequest
 import com.talkfrly.multiplatform.domain.publication.Publication
 import com.talkfrly.multiplatform.domain.publication.PublicationFilter

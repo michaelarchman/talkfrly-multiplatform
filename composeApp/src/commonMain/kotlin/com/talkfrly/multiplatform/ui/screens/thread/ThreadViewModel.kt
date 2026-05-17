@@ -2,6 +2,7 @@ package com.talkfrly.multiplatform.ui.screens.thread
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
+import com.talkfrly.multiplatform.data.feed.repository.FeedRepository
 import com.talkfrly.multiplatform.data.threads.repository.ThreadRepository
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class ThreadViewModel(
     private val threadRepository: ThreadRepository,
+    private val feedRepository: FeedRepository,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(ThreadState())
     val state: StateFlow<ThreadState> get() = _state
@@ -23,10 +25,38 @@ class ThreadViewModel(
             is ThreadIntent.GetThreads -> getThreads()
             is ThreadIntent.GetJoinedThreads -> getJoinedThreads()
             is ThreadIntent.GetOwnedThreads -> getOwnedThreads()
+            is ThreadIntent.GetThreadById -> getThreadById(intent.id)
+            is ThreadIntent.GetPublicationsForThread -> getPublicationsForThread(intent.threadId)
             is ThreadIntent.JoinThread -> joinThread(intent.id)
             is ThreadIntent.LeaveThread -> leaveThread(intent.id)
-
+            is ThreadIntent.SetFilter -> _state.update { it.copy(filter = intent.filter) }
         }
+    }
+
+    private fun getPublicationsForThread(threadId: String) = viewModelScope.launch {
+        startLoading()
+        feedRepository.getThreadFeed(threadId, 1, 20)
+            .onSuccess { feed ->
+                _state.update { it.copy(publications = feed.publications) }
+            }
+            .onError { error ->
+                _state.update { it.copy(errorMessage = error.message ?: error.error ?: "Failed to load feed") }
+            }
+            .onFinally { stopLoading() }
+    }
+
+    private fun getThreadById(id: String) = viewModelScope.launch {
+        startLoading()
+        threadRepository.getThreadById(id)
+            .onSuccess { thread ->
+                _state.update { it.copy(currentThread = thread) }
+            }
+            .onError { error ->
+                _state.update {
+                    it.copy(errorMessage = error.message ?: error.error ?: "Failed to load thread")
+                }
+            }
+            .onFinally { stopLoading() }
     }
 
     private fun getThreads() = viewModelScope.launch {

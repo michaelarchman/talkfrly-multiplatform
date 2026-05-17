@@ -42,6 +42,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.ui.nav.AccountRoute
 import com.talkfrly.multiplatform.ui.nav.NewPublicationRoute
 import com.talkfrly.multiplatform.ui.nav.PublicationRoute
+import com.talkfrly.multiplatform.ui.nav.ThreadRoute
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTab
 import com.talkfrly.multiplatform.ui.screens.home.threads.ThreadsTab
 import com.talkfrly.multiplatform.ui.screens.home.streams.StreamsTab
@@ -271,7 +272,11 @@ private fun HomeScreen(
             )
         }
         1 -> {
-            ThreadsTab()
+            ThreadsTab(
+                onThreadClick = { threadId ->
+                    navController.navigate(ThreadRoute(threadId))
+                },
+            )
         }
         2 -> {
             StreamsTab(

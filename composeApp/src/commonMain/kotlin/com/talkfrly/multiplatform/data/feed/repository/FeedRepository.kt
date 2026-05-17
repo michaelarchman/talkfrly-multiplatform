@@ -10,6 +10,7 @@ import com.talkfrly.multiplatform.domain.feed.Feed
 interface FeedRepository {
     suspend fun getFeed(page: Int, limit: Int): DataResult<Feed, DataError.Remote>
     suspend fun getPopularFeed(page: Int, limit: Int): DataResult<Feed, DataError.Remote>
+    suspend fun getThreadFeed(threadId: String, page: Int, limit: Int): DataResult<Feed, DataError.Remote>
 }
 
 class FeedRepositoryImpl(
@@ -25,6 +26,12 @@ class FeedRepositoryImpl(
     override suspend fun getPopularFeed(page: Int, limit: Int): DataResult<Feed, DataError.Remote> {
         return api
             .getPopularFeed(page, limit)
+            .map { it.toDomain() }
+    }
+
+    override suspend fun getThreadFeed(threadId: String, page: Int, limit: Int): DataResult<Feed, DataError.Remote> {
+        return api
+            .getThreadFeed(threadId, page, limit)
             .map { it.toDomain() }
     }
 }

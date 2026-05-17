@@ -21,7 +21,7 @@ data object HomeRoute
 data object AccountRoute
 
 @Serializable
-data object ThreadRoute
+data class ThreadRoute(val threadId: String)
 
 @Serializable
 data class PublicationRoute(

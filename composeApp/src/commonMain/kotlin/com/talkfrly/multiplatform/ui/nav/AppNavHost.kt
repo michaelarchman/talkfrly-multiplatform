@@ -63,8 +63,10 @@ fun AppNavHost(
                 onLogout = { sessionViewModel.logout() }
             )
         }
-        composable<ThreadRoute> {
+        composable<ThreadRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<ThreadRoute>()
             ThreadScreenRoot(
+                threadId = route.threadId,
                 navController = navController,
             )
         }
