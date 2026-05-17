@@ -45,7 +45,7 @@ import com.talkfrly.multiplatform.ui.nav.PublicationRoute
 import com.talkfrly.multiplatform.ui.nav.ThreadRoute
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTab
 import com.talkfrly.multiplatform.ui.screens.home.threads.ThreadsTab
-import com.talkfrly.multiplatform.ui.screens.home.streams.StreamsTab
+//import com.talkfrly.multiplatform.ui.screens.home.streams.StreamsTab
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
@@ -70,7 +70,7 @@ fun HomeScreenRoot(
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(HomeIntent.GetCurrentUser)
-        viewModel.onIntent(HomeIntent.GetStreams)
+//        viewModel.onIntent(HomeIntent.GetStreams)
     }
 
     Scaffold (
@@ -223,28 +223,28 @@ private fun HomeScreen(
                         )
                     }
                 }
-                Tab(
-                    selectedContentColor = LocalTalkfrlyColors.current.body,
-                    unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
-                    selected = state.selectedTabIndex == 2,
-                    onClick = { onAction(HomeIntent.SetSelectedTab(2)) },
-                    modifier = Modifier.height(40.dp).padding(2.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.speed_camera),
-                            contentDescription = null,
-                            Modifier.size(24.dp).padding(end = 4.dp)
-                        )
-                        Text(
-                            text = "Streams",
-                            fontWeight = FontWeight(600),
-                        )
-                    }
-                }
+//                Tab(
+//                    selectedContentColor = LocalTalkfrlyColors.current.body,
+//                    unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
+//                    selected = state.selectedTabIndex == 2,
+//                    onClick = { onAction(HomeIntent.SetSelectedTab(2)) },
+//                    modifier = Modifier.height(40.dp).padding(2.dp)
+//                ) {
+//                    Row(
+//                        horizontalArrangement = Arrangement.SpaceBetween,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Icon(
+//                            imageVector = vectorResource(Res.drawable.speed_camera),
+//                            contentDescription = null,
+//                            Modifier.size(24.dp).padding(end = 4.dp)
+//                        )
+//                        Text(
+//                            text = "Streams",
+//                            fontWeight = FontWeight(600),
+//                        )
+//                    }
+//                }
             }
         }
 
@@ -281,11 +281,11 @@ private fun HomeScreen(
                 },
             )
         }
-        2 -> {
-            StreamsTab(
-                onCategoryClick = { },
-            )
-        }
+//        2 -> {
+//            StreamsTab(
+//                onCategoryClick = { },
+//            )
+//        }
     }
 }
 
