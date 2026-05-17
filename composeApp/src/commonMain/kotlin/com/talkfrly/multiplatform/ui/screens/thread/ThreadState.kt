@@ -21,4 +21,7 @@ data class ThreadState(
     val errorMessage: String? = null,
 
     val filter: ThreadFilter = ThreadFilter.ALL,
+
+    val searchQuery: String = "",
+    val searchResults: List<Thread> = emptyList(),
 )

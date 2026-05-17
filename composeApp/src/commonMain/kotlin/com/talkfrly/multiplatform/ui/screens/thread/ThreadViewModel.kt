@@ -30,7 +30,25 @@ class ThreadViewModel(
             is ThreadIntent.JoinThread -> joinThread(intent.id)
             is ThreadIntent.LeaveThread -> leaveThread(intent.id)
             is ThreadIntent.SetFilter -> _state.update { it.copy(filter = intent.filter) }
+            is ThreadIntent.SetSearchQuery -> _state.update { it.copy(searchQuery = intent.query, searchResults = if (intent.query.isEmpty()) emptyList() else it.searchResults) }
+            is ThreadIntent.SearchThreads -> searchThreads(intent.query)
         }
+    }
+
+    private fun searchThreads(q: String) = viewModelScope.launch {
+        if (q.isBlank()) {
+            _state.update { it.copy(searchResults = emptyList()) }
+            return@launch
+        }
+        startLoading()
+        threadRepository.searchThreads(q, 1, 20)
+            .onSuccess { response ->
+                _state.update { it.copy(searchResults = response.threads) }
+            }
+            .onError { error ->
+                _state.update { it.copy(errorMessage = error.message ?: error.error ?: "Search failed") }
+            }
+            .onFinally { stopLoading() }
     }
 
     private fun getPublicationsForThread(threadId: String) = viewModelScope.launch {

@@ -19,6 +19,7 @@ interface ThreadRepository {
     suspend fun updateThread(id: String, updateThreadRequest: UpdateThreadRequest): DataResult<Thread, DataError.Remote>
     suspend fun deleteThread(id: String): DataResult<Unit, DataError.Remote>
     suspend fun getThreadBySlug(slug: String): DataResult<Thread, DataError.Remote>
+    suspend fun searchThreads(q: String, page: Int, limit: Int): DataResult<ThreadListResponse, DataError.Remote>
     suspend fun joinThread(id: String): DataResult<Unit, DataError.Remote>
     suspend fun leaveThread(id: String): DataResult<Unit, DataError.Remote>
 }
@@ -62,6 +63,10 @@ class ThreadRepositoryImpl(
         return api
             .getThreadBySlug(slug)
             .map { it.toDomain() }
+    }
+
+    override suspend fun searchThreads(q: String, page: Int, limit: Int): DataResult<ThreadListResponse, DataError.Remote> {
+        return api.searchThreads(q, page, limit).map { it.toDomain() }
     }
 
     override suspend fun joinThread(id: String): DataResult<Unit, DataError.Remote> {

@@ -11,4 +11,6 @@ sealed class ThreadIntent {
     data class JoinThread(val id: String) : ThreadIntent()
     data class LeaveThread(val id: String) : ThreadIntent()
     data class SetFilter(val filter: ThreadFilter) : ThreadIntent()
+    data class SetSearchQuery(val query: String) : ThreadIntent()
+    data class SearchThreads(val query: String) : ThreadIntent()
 }

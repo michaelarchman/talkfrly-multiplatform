@@ -1156,6 +1156,24 @@
         }
       }
     },
+    "/threads/search": {
+      "get": {
+        "tags": ["Thread"],
+        "summary": "Search threads",
+        "description": "Full-text search across thread name, description, and publication tags. Results ranked: exact name match > prefix match > partial match > tag match.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "q", "required": true, "schema": {"type": "string"}, "description": "Search query"},
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 10}}
+        ],
+        "responses": {
+          "200": {"description": "Search results", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ThreadListResponse"}}}},
+          "400": {"description": "Missing query param 'q'"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
     "/threads": {
       "get": {
         "tags": ["Thread"],
@@ -3885,4 +3903,3 @@
     }
   }
 }
-0

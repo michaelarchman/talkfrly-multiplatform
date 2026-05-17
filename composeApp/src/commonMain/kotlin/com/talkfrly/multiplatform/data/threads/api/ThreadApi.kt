@@ -19,6 +19,7 @@ interface ThreadApi {
     suspend fun updateThread(id: String, updateThreadRequestDto: UpdateThreadRequestDto): DataResult<ThreadDto, DataError.Remote>
     suspend fun deleteThread(id: String): DataResult<Unit, DataError.Remote>
     suspend fun getThreadBySlug(slug: String): DataResult<ThreadDto, DataError.Remote>
+    suspend fun searchThreads(q: String, page: Int, limit: Int): DataResult<ThreadListResponseDto, DataError.Remote>
     suspend fun joinThread(id: String): DataResult<Unit, DataError.Remote>
     suspend fun leaveThread(id: String): DataResult<Unit, DataError.Remote>
 }
@@ -81,6 +82,15 @@ class ThreadApiImpl(
             httpClient = httpClient,
             urlString = "/threads/slug/$slug",
             httpMethod = HttpMethod.Get,
+        )
+    }
+
+    override suspend fun searchThreads(q: String, page: Int, limit: Int): DataResult<ThreadListResponseDto, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "/threads/search",
+            httpMethod = HttpMethod.Get,
+            queryParams = mapOf("q" to q, "page" to page, "limit" to limit),
         )
     }
 

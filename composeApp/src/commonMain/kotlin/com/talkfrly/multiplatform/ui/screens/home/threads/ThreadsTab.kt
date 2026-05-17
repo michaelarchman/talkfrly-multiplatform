@@ -87,9 +87,12 @@ fun ThreadsTab(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             TextField(
-                value = "",
-                onValueChange = {},
-                enabled = false,
+                value = state.searchQuery,
+                onValueChange = { q ->
+                    viewModel.onIntent(ThreadIntent.SetSearchQuery(q))
+                    if (q.length >= 3) viewModel.onIntent(ThreadIntent.SearchThreads(q))
+                    else if (q.isEmpty()) viewModel.onIntent(ThreadIntent.SearchThreads(""))
+                },
                 placeholder = {
                     Text(
                         text = "Search threads...",
@@ -109,11 +112,16 @@ fun ThreadsTab(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = TextFieldDefaults.colors(
-                    disabledContainerColor = colors.backgroundDarker,
-                    disabledIndicatorColor = Color.Transparent,
-                    disabledTextColor = colors.body,
-                    disabledPlaceholderColor = colors.bodyMuted,
-                    disabledLeadingIconColor = colors.bodyMuted,
+                    focusedContainerColor = colors.backgroundDarker,
+                    unfocusedContainerColor = colors.backgroundDarker,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = colors.body,
+                    unfocusedTextColor = colors.body,
+                    focusedPlaceholderColor = colors.bodyMuted,
+                    unfocusedPlaceholderColor = colors.bodyMuted,
+                    focusedLeadingIconColor = colors.bodyMuted,
+                    unfocusedLeadingIconColor = colors.bodyMuted,
                 ),
             )
 
@@ -145,20 +153,24 @@ fun ThreadsTab(
             }
         }
 
+        val isSearching = state.searchQuery.length >= 3
+        val activeList = if (isSearching) state.searchResults else displayList
+
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             item {}
 
-            if (displayList.isEmpty() && !state.isLoading) {
+            if (activeList.isEmpty() && !state.isLoading) {
                 item {
                     Box(
                         modifier = Modifier.fillMaxWidth().padding(top = 48.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = when (state.filter) {
+                            text = if (isSearching) "No threads found"
+                            else when (state.filter) {
                                 ThreadFilter.MINE -> "You don't own any threads yet"
                                 ThreadFilter.MEMBER -> "You haven't joined any threads yet"
                                 ThreadFilter.ALL -> "No threads to explore"
@@ -170,7 +182,7 @@ fun ThreadsTab(
                 }
             }
 
-            items(displayList, key = { "${state.filter}-${it.id}" }) { thread ->
+            items(activeList, key = { if (isSearching) "search-${it.id}" else "${state.filter}-${it.id}" }) { thread ->
                 val isOwned = thread.id in ownedThreadIds
                 val isJoined = thread.id in joinedThreadIds
 
