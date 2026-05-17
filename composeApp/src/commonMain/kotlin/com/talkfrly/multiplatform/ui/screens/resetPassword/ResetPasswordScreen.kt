@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.verifyemail
+package com.talkfrly.multiplatform.ui.screens.resetPassword
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
@@ -17,6 +16,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.talkfrly.multiplatform.ui.components.buttons.ButtonPrimary
 import com.talkfrly.multiplatform.ui.components.buttons.ButtonSizeType
+import com.talkfrly.multiplatform.ui.components.inputs.InputText
+import com.talkfrly.multiplatform.ui.nav.LoginRoute
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
 import org.jetbrains.compose.resources.imageResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -39,49 +41,39 @@ import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
 
 @Composable
-fun VerifyEmailScreenRoot(
+fun ResetPasswordScreenRoot(
     email: String = "",
-    viewModel: VerifyEmailViewModel = koinViewModel(),
+    viewModel: ResetPasswordViewModel = koinViewModel(),
     navController: NavController,
-    onVerifySuccess: (() -> Unit)? = null,
 ) {
     val state by viewModel.state.collectAsState()
 
-    // Initialize email if provided
     if (email.isNotEmpty() && state.email.isEmpty()) {
         viewModel.initializeEmail(email)
     }
 
-    VerifyEmailScreen(
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) {
+            navController.navigate(LoginRoute) {
+                popUpTo(LoginRoute) { inclusive = true }
+            }
+        }
+    }
+
+    ResetPasswordScreen(
         state = state,
-        navController = navController,
-        onAction = { intent ->
-            viewModel.onIntent(intent)
-        },
-        onVerifySuccess = onVerifySuccess
+        onAction = { viewModel.onIntent(it) },
     )
 }
 
 @Composable
-private fun VerifyEmailScreen(
-    state: VerifyEmailState,
-    navController: NavController,
-    onAction: (VerifyEmailIntent) -> Unit,
-    onVerifySuccess: (() -> Unit)? = null,
+private fun ResetPasswordScreen(
+    state: ResetPasswordState,
+    onAction: (ResetPasswordIntent) -> Unit,
 ) {
-    val email = state.email
     val code = state.code
-    val message = state.message
-    val isLoading = state.isLoading
-    val resendLoading = state.resendLoading
-    val resendCooldown = state.resendCooldown
     val codeChars = code.padEnd(6, ' ').take(6)
     val focusRequesters = remember { List(6) { FocusRequester() } }
-
-    // Check if verification was successful
-    if (message?.contains("verified", ignoreCase = true) == true) {
-        onVerifySuccess?.invoke()
-    }
 
     Column(
         modifier = Modifier
@@ -96,17 +88,16 @@ private fun VerifyEmailScreen(
             bitmap = if (isSystemInDarkTheme())
                 imageResource(Res.drawable.talkfrly_logo_dark)
             else imageResource(Res.drawable.talkfrly_logo_light),
-            contentDescription = null,
-            modifier = Modifier.size(128.dp),
+            contentDescription = null
         )
 
         Text(
-            text = "Verify your email",
+            text = "Reset your password",
             textAlign = TextAlign.Center,
         )
 
         Text(
-            text = "We sent a code to\n$email",
+            text = "Enter the code sent to\n${state.email}",
             textAlign = TextAlign.Center,
             color = LocalTalkfrlyColors.current.bodyMuted
         )
@@ -116,10 +107,10 @@ private fun VerifyEmailScreen(
             color = LocalTalkfrlyColors.current.surface
         )
 
-        if (message != null) {
+        if (state.message != null) {
             Text(
-                text = message,
-                color = if (message.contains("verified", ignoreCase = true))
+                text = state.message,
+                color = if (state.isSuccess)
                     LocalTalkfrlyColors.current.primary
                 else
                     LocalTalkfrlyColors.current.error,
@@ -155,7 +146,7 @@ private fun VerifyEmailScreen(
                             }
                         }.replace(" ", "")
 
-                        onAction(VerifyEmailIntent.UpdateCode(updated))
+                        onAction(ResetPasswordIntent.UpdateCode(updated))
 
                         when {
                             digits.length > 1 -> {
@@ -187,14 +178,32 @@ private fun VerifyEmailScreen(
             }
         }
 
+        InputText(
+            value = state.newPassword,
+            placeholder = "New password",
+            onValueChange = { onAction(ResetPasswordIntent.UpdateNewPassword(it)) },
+            label = "New password",
+            isPassword = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        InputText(
+            value = state.confirmPassword,
+            placeholder = "Confirm new password",
+            onValueChange = { onAction(ResetPasswordIntent.UpdateConfirmPassword(it)) },
+            label = "Confirm password",
+            isPassword = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
         ButtonPrimary(
-            text = if (isLoading) "Verifying..." else "Verify",
-            enabled = code.length == 6 && !isLoading,
+            text = if (state.isLoading) "Resetting..." else "Reset password",
+            enabled = code.length == 6 && state.newPassword.isNotEmpty() && !state.isLoading,
             size = ButtonSizeType.LARGE,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
-            onClick = { onAction(VerifyEmailIntent.VerifyCode) }
+            onClick = { onAction(ResetPasswordIntent.Submit) }
         )
 
         HorizontalDivider(
@@ -213,17 +222,16 @@ private fun VerifyEmailScreen(
             )
 
             TextButton(
-                onClick = { onAction(VerifyEmailIntent.ResendCode) },
-                enabled = resendCooldown == 0 && !resendLoading,
+                onClick = { onAction(ResetPasswordIntent.ResendCode) },
+                enabled = state.resendCooldown == 0 && !state.resendLoading,
                 modifier = Modifier.padding(top = 4.dp)
             ) {
                 Text(
-                    text = if (resendCooldown > 0)
-                        "Resend in ${resendCooldown}s"
-                    else if (resendLoading)
-                        "Sending..."
-                    else
-                        "Resend code",
+                    text = when {
+                        state.resendCooldown > 0 -> "Resend in ${state.resendCooldown}s"
+                        state.resendLoading -> "Sending..."
+                        else -> "Resend code"
+                    },
                     color = LocalTalkfrlyColors.current.body
                 )
             }

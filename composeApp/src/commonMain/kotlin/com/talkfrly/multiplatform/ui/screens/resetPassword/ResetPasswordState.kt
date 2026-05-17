@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.resetpassword
+package com.talkfrly.multiplatform.ui.screens.resetPassword
 
 data class ResetPasswordState(
     val email: String = "",

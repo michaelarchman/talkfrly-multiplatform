@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.verifyemail
+package com.talkfrly.multiplatform.ui.screens.verifyEmail
 
 sealed class VerifyEmailIntent {
     data class UpdateCode(val value: String) : VerifyEmailIntent()

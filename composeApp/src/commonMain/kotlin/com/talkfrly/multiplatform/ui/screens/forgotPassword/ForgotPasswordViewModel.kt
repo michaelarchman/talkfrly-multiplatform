@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.forgotpassword
+package com.talkfrly.multiplatform.ui.screens.forgotPassword
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel

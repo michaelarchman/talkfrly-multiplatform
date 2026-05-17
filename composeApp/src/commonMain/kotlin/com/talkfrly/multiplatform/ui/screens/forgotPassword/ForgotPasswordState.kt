@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.forgotpassword
+package com.talkfrly.multiplatform.ui.screens.forgotPassword
 
 data class ForgotPasswordState(
     val email: String = "",

@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.verifyemail
+package com.talkfrly.multiplatform.ui.screens.verifyEmail
 
 data class VerifyEmailState(
     val email: String = "",

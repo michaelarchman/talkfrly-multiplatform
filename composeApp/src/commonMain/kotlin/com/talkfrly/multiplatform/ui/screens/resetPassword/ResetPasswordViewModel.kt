@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.verifyemail
+package com.talkfrly.multiplatform.ui.screens.resetPassword
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
@@ -11,45 +11,49 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class VerifyEmailViewModel(
+class ResetPasswordViewModel(
     private val authRepository: AuthRepository,
 ) : BaseViewModel() {
-    private val _state = MutableStateFlow(VerifyEmailState())
-    val state: StateFlow<VerifyEmailState> get() = _state
+    private val _state = MutableStateFlow(ResetPasswordState())
+    val state: StateFlow<ResetPasswordState> get() = _state
 
     fun initializeEmail(email: String) {
         _state.update { it.copy(email = email) }
     }
 
-    fun onIntent(intent: VerifyEmailIntent) {
+    fun onIntent(intent: ResetPasswordIntent) {
         when (intent) {
-            is VerifyEmailIntent.UpdateCode -> {
+            is ResetPasswordIntent.UpdateCode -> {
                 val filtered = intent.value.filter { it.isDigit() }.take(6)
                 _state.update { it.copy(code = filtered) }
             }
-            is VerifyEmailIntent.VerifyCode -> verifyEmail()
-            is VerifyEmailIntent.ResendCode -> resendCode()
-            is VerifyEmailIntent.UpdateMessage -> _state.update { it.copy(message = intent.value) }
+            is ResetPasswordIntent.UpdateNewPassword -> _state.update { it.copy(newPassword = intent.value) }
+            is ResetPasswordIntent.UpdateConfirmPassword -> _state.update { it.copy(confirmPassword = intent.value) }
+            is ResetPasswordIntent.UpdateMessage -> _state.update { it.copy(message = intent.value) }
+            is ResetPasswordIntent.Submit -> submit()
+            is ResetPasswordIntent.ResendCode -> resendCode()
         }
     }
 
-    private fun verifyEmail() = viewModelScope.launch {
-        val email = _state.value.email
-        val code = _state.value.code
-
-        if (code.length != 6) {
+    private fun submit() = viewModelScope.launch {
+        val s = _state.value
+        if (s.code.length != 6) {
             _state.update { it.copy(message = "Code must be 6 digits") }
             return@launch
         }
-
+        if (s.newPassword.length < 8) {
+            _state.update { it.copy(message = "Password must be at least 8 characters") }
+            return@launch
+        }
+        if (s.newPassword != s.confirmPassword) {
+            _state.update { it.copy(message = "Passwords do not match") }
+            return@launch
+        }
         _state.update { it.copy(isLoading = true, message = null) }
-
         try {
-            authRepository.verifyEmail(email, code)
-                .onSuccess { response ->
-                    _state.update { it.copy(message = response.message) }
-                    // Success - update state to indicate verification complete
-                    delay(1500) // Give user time to see success message
+            authRepository.resetPassword(s.email, s.code, s.newPassword)
+                .onSuccess {
+                    _state.update { it.copy(isSuccess = true) }
                 }
                 .onError { error ->
                     _state.update { it.copy(message = error.message) }
@@ -60,24 +64,12 @@ class VerifyEmailViewModel(
     }
 
     private fun resendCode() = viewModelScope.launch {
-        val email = _state.value.email
-        val currentCooldown = _state.value.resendCooldown
-
-        if (currentCooldown > 0) {
-            return@launch
-        }
-
+        if (_state.value.resendCooldown > 0) return@launch
         _state.update { it.copy(resendLoading = true, message = null) }
-
         try {
-            authRepository.resendVerification(email)
-                .onSuccess { response ->
-                    _state.update { it.copy(message = response.message) }
-                    startCooldown()
-                }
-                .onError { error ->
-                    _state.update { it.copy(message = error.message) }
-                }
+            authRepository.resendResetCode(_state.value.email)
+                .onSuccess { startCooldown() }
+                .onError { error -> _state.update { it.copy(message = error.message) } }
         } finally {
             _state.update { it.copy(resendLoading = false) }
         }
@@ -85,7 +77,6 @@ class VerifyEmailViewModel(
 
     private fun startCooldown() {
         _state.update { it.copy(resendCooldown = 60) }
-
         viewModelScope.launch {
             repeat(60) {
                 delay(1000)

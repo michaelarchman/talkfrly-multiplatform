@@ -6,18 +6,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.talkfrly.multiplatform.ui.screens.account.AccountScreenRoot
-import com.talkfrly.multiplatform.ui.screens.createpublication.CreatePublicationScreenRoot
-import com.talkfrly.multiplatform.ui.screens.forgotpassword.ForgotPasswordScreenRoot
+import com.talkfrly.multiplatform.ui.screens.createPublication.CreatePublicationScreenRoot
+import com.talkfrly.multiplatform.ui.screens.forgotPassword.ForgotPasswordScreenRoot
 import com.talkfrly.multiplatform.ui.screens.home.HomeScreenRoot
 import com.talkfrly.multiplatform.ui.screens.login.LoginScreenRoot
 import com.talkfrly.multiplatform.ui.screens.publication.PublicationScreenRoot
 import com.talkfrly.multiplatform.ui.screens.register.RegisterScreenRoot
-import com.talkfrly.multiplatform.ui.screens.resetpassword.ResetPasswordScreenRoot
+import com.talkfrly.multiplatform.ui.screens.resetPassword.ResetPasswordScreenRoot
 import com.talkfrly.multiplatform.ui.screens.splash.SplashScreen
 import com.talkfrly.multiplatform.ui.screens.stream.StreamScreenRoot
 import com.talkfrly.multiplatform.ui.screens.thread.ThreadScreenRoot
-import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailScreenRoot
-import com.talkfrly.multiplatform.ui.screens.verifyemail.VerifyEmailViewModel
+import com.talkfrly.multiplatform.ui.screens.verifyEmail.VerifyEmailScreenRoot
+import com.talkfrly.multiplatform.ui.screens.verifyEmail.VerifyEmailViewModel
 import com.talkfrly.multiplatform.ui.session.SessionViewModel
 import org.koin.compose.viewmodel.koinViewModel
 

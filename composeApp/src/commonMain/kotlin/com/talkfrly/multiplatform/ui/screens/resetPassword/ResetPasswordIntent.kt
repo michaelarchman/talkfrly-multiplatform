@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.resetpassword
+package com.talkfrly.multiplatform.ui.screens.resetPassword
 
 sealed class ResetPasswordIntent {
     data class UpdateCode(val value: String) : ResetPasswordIntent()

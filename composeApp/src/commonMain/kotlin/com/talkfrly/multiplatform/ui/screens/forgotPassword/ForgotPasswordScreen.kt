@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.forgotpassword
+package com.talkfrly.multiplatform.ui.screens.forgotPassword
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme

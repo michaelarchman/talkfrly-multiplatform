@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.forgotpassword
+package com.talkfrly.multiplatform.ui.screens.forgotPassword
 
 sealed class ForgotPasswordIntent {
     data class UpdateEmail(val value: String) : ForgotPasswordIntent()

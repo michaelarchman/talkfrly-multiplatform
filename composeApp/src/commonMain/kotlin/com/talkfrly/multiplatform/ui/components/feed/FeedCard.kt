@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Label
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -196,7 +197,7 @@ fun FeedCard(
 
                     InteractionStatButton(
                         isActive = false,
-                        type = InteractionStatButtonType.OUTLINED,
+                        type = InteractionStatButtonType.SIMPLE,
                         icon = Res.drawable.icon_sms,
                         label = feedItem.commentCount,
                         onClick = {}
@@ -211,42 +212,11 @@ fun FeedCard(
                     onClick = {}
                 )
             }
-        }
-    }
-}
 
-@Composable
-fun FeedAvatar(
-    avatarUrl: String?,
-    label: String,
-) {
-    val colors = LocalTalkfrlyColors.current
-
-    Surface(
-        modifier = Modifier.size(36.dp),
-        shape = CircleShape,
-        color = colors.backgroundDarker,
-    ) {
-        if (!avatarUrl.isNullOrBlank()) {
-            Image(
-                painter = rememberAsyncImagePainter(model = avatarUrl),
-                contentDescription = null,
-                modifier = Modifier.size(36.dp),
-                contentScale = ContentScale.Crop,
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(colors.primary20),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = label.firstOrNull()?.uppercase() ?: "?",
-                    color = colors.body,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
-                )
+            Row {
+                feedItem.tags.forEach {
+                    FeedTagChip(it)
+                }
             }
         }
     }

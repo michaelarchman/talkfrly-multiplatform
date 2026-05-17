@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.createpublication
+package com.talkfrly.multiplatform.ui.screens.createPublication
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel

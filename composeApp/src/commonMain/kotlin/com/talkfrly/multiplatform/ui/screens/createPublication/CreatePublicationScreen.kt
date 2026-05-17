@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.createpublication
+package com.talkfrly.multiplatform.ui.screens.createPublication
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

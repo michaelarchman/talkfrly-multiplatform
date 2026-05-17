@@ -1,4 +1,4 @@
-package com.talkfrly.multiplatform.ui.screens.createpublication
+package com.talkfrly.multiplatform.ui.screens.createPublication
 
 import com.talkfrly.multiplatform.domain.publication.PublicationType
 
