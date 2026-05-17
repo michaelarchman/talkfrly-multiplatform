@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Talkfrly Core Auth/User API",
-    "version": "1.0.0"
+    "version": "1.0.2"
   },
   "servers": [
     {
@@ -1084,7 +1084,8 @@
         "security": [{"bearerAuth": []}, {"cookieAuth": []}],
         "parameters": [
           {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
-          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 10}}
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 10}},
+          {"in": "query", "name": "lesson_id", "schema": {"type": "string", "format": "uuid"}, "description": "Filter publications by lesson ID"}
         ],
         "responses": {
           "200": {"description": "Feed items", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/FeedResponse"}}}},
@@ -1270,7 +1271,8 @@
           {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 5}},
           {"in": "query", "name": "type", "schema": {"type": "string", "enum": ["general","article","review","ranking"]}, "description": "Filter by publication type"},
           {"in": "query", "name": "sort", "schema": {"type": "string", "enum": ["latest","popular"]}, "description": "Sort order"},
-          {"in": "query", "name": "private", "schema": {"type": "boolean"}, "description": "Show only private publications"}
+          {"in": "query", "name": "private", "schema": {"type": "boolean"}, "description": "Show only private publications"},
+          {"in": "query", "name": "lesson_id", "schema": {"type": "string", "format": "uuid"}, "description": "Filter by lesson ID"}
         ],
         "responses": {
           "200": {"description": "Publication list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PublicationListResponse"}}}},
@@ -1334,25 +1336,109 @@
         }
       }
     },
-    "/publications/{id}/like": {
+    "/interactions": {
       "post": {
-        "tags": ["Publication"],
+        "tags": ["Interaction"],
         "summary": "Like a publication",
         "security": [{"bearerAuth": []}, {"cookieAuth": []}],
-        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateInteractionRequest"}}}
+        },
         "responses": {
-          "204": {"description": "Liked"},
+          "201": {"description": "Liked"},
+          "400": {"description": "Invalid request body"},
           "401": {"description": "Unauthorized"},
           "500": {"description": "Internal server error"}
         }
       },
       "delete": {
-        "tags": ["Publication"],
+        "tags": ["Interaction"],
         "summary": "Unlike a publication",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateInteractionRequest"}}}
+        },
+        "responses": {
+          "204": {"description": "Unliked"},
+          "400": {"description": "Invalid request body"},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "tags": ["Notification"],
+        "summary": "List user notifications",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 20, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Notification list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NotificationListResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "delete": {
+        "tags": ["Notification"],
+        "summary": "Delete all notifications",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "responses": {
+          "200": {"description": "All notifications deleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/notifications/unread-count": {
+      "get": {
+        "tags": ["Notification"],
+        "summary": "Get unread notification count",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "responses": {
+          "200": {"description": "Unread count", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UnreadCountResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/notifications/read-all": {
+      "put": {
+        "tags": ["Notification"],
+        "summary": "Mark all notifications as read",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "responses": {
+          "200": {"description": "All notifications marked as read", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/notifications/{id}/read": {
+      "put": {
+        "tags": ["Notification"],
+        "summary": "Mark notification as read",
         "security": [{"bearerAuth": []}, {"cookieAuth": []}],
         "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
         "responses": {
-          "204": {"description": "Unliked"},
+          "200": {"description": "Notification marked as read", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/notifications/{id}": {
+      "delete": {
+        "tags": ["Notification"],
+        "summary": "Delete notification",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Notification deleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
           "401": {"description": "Unauthorized"},
           "500": {"description": "Internal server error"}
         }
@@ -1893,6 +1979,418 @@
         }
       }
     },
+    "/threads/{id}/courses": {
+      "post": {
+        "tags": ["Course"],
+        "summary": "Create course in thread",
+        "description": "Thread owner only. Creates a new course within the given thread.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateCourseRequest"}}}
+        },
+        "responses": {
+          "201": {"description": "Course created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CourseResponse"}}}},
+          "400": {"description": "Invalid request or slug format"},
+          "401": {"description": "Unauthorized"},
+          "409": {"description": "Slug already taken in this thread"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "get": {
+        "tags": ["Course"],
+        "summary": "List courses in thread",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "id", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Course list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CourseListResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/courses/{courseId}": {
+      "get": {
+        "tags": ["Course"],
+        "summary": "Get course by ID",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Course", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CourseResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Course not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "put": {
+        "tags": ["Course"],
+        "summary": "Update course",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UpdateCourseRequest"}}}
+        },
+        "responses": {
+          "200": {"description": "Updated course", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CourseResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — not the course owner"},
+          "404": {"description": "Course not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "delete": {
+        "tags": ["Course"],
+        "summary": "Delete course",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Course deleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — not the course owner"},
+          "404": {"description": "Course not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/courses/{courseId}/enroll": {
+      "post": {
+        "tags": ["Course"],
+        "summary": "Enroll in course",
+        "description": "For paid courses deducts tc_price TC from the user's wallet (80% credited to owner). Returns 402 with InsufficientTCResponse if balance is too low.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Enrolled", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "402": {"description": "Insufficient TalkfrlyCoins", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/InsufficientTCResponse"}}}},
+          "404": {"description": "Course not found"},
+          "409": {"description": "Already enrolled or course full"},
+          "422": {"description": "Course is archived"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "delete": {
+        "tags": ["Course"],
+        "summary": "Unenroll from course",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Unenrolled", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "409": {"description": "Not enrolled"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/courses/{courseId}/members": {
+      "get": {
+        "tags": ["Course"],
+        "summary": "List course members",
+        "description": "Owner only. Returns list of enrolled users.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}},
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 50, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Members list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CourseMembersResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — not the course owner"},
+          "404": {"description": "Course not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/courses/{courseId}/members/{userId}": {
+      "delete": {
+        "tags": ["Course"],
+        "summary": "Remove member from course",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}},
+          {"in": "path", "name": "userId", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Member removed", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — not the course owner"},
+          "404": {"description": "Course not found or user not enrolled"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/courses/{courseId}/stats": {
+      "get": {
+        "tags": ["Course"],
+        "summary": "Get course statistics",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Course stats", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CourseStatsResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — not the course owner"},
+          "404": {"description": "Course not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/courses/{courseId}/my-progress": {
+      "get": {
+        "tags": ["Course"],
+        "summary": "Get authenticated user's progress in a course",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Progress", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CourseProgressResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Course not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/courses/{courseId}/members/{userId}/progress": {
+      "get": {
+        "tags": ["Course"],
+        "summary": "Get a member's progress",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}},
+          {"in": "path", "name": "userId", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Member progress", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CourseProgressResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden — not the course owner"},
+          "404": {"description": "Course not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/courses/{courseId}/modules": {
+      "post": {
+        "tags": ["Course"],
+        "summary": "Create module",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateModuleRequest"}}}},
+        "responses": {
+          "201": {"description": "Module created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ModuleResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Course not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "get": {
+        "tags": ["Course"],
+        "summary": "List modules",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Module list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ModuleListResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/courses/{courseId}/modules/order": {
+      "patch": {
+        "tags": ["Course"],
+        "summary": "Reorder modules",
+        "description": "Owner only. Supply array of {id, position} pairs.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "courseId", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReorderRequest"}}}},
+        "responses": {
+          "200": {"description": "Order updated", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Course not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/modules/{moduleId}": {
+      "put": {
+        "tags": ["Course"],
+        "summary": "Update module",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "moduleId", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UpdateModuleRequest"}}}},
+        "responses": {
+          "200": {"description": "Updated module", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ModuleResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Module not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "delete": {
+        "tags": ["Course"],
+        "summary": "Delete module",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "moduleId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Module deleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Module not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/modules/{moduleId}/lessons": {
+      "post": {
+        "tags": ["Course"],
+        "summary": "Create lesson",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "moduleId", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateLessonRequest"}}}},
+        "responses": {
+          "201": {"description": "Lesson created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LessonResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Module not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "get": {
+        "tags": ["Course"],
+        "summary": "List lessons in module",
+        "description": "Returns lessons with is_completed flag populated for the authenticated user.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "moduleId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Lesson list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LessonListResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/modules/{moduleId}/lessons/order": {
+      "patch": {
+        "tags": ["Course"],
+        "summary": "Reorder lessons",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "moduleId", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReorderRequest"}}}},
+        "responses": {
+          "200": {"description": "Order updated", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Module not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/lessons/{lessonId}": {
+      "put": {
+        "tags": ["Course"],
+        "summary": "Update lesson",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "lessonId", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UpdateLessonRequest"}}}},
+        "responses": {
+          "200": {"description": "Updated lesson", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LessonResponse"}}}},
+          "400": {"description": "Invalid request"},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Lesson not found"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "delete": {
+        "tags": ["Course"],
+        "summary": "Delete lesson",
+        "description": "Owner only.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "lessonId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Lesson deleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "403": {"description": "Forbidden"},
+          "404": {"description": "Lesson not found"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/lessons/{lessonId}/complete": {
+      "post": {
+        "tags": ["Course"],
+        "summary": "Mark lesson as completed",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "lessonId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Lesson completed", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Lesson not found"},
+          "409": {"description": "Lesson already completed"},
+          "500": {"description": "Internal server error"}
+        }
+      },
+      "delete": {
+        "tags": ["Course"],
+        "summary": "Mark lesson as not completed",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [{"in": "path", "name": "lessonId", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "Lesson uncompleted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/MessageResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "404": {"description": "Lesson not found"},
+          "409": {"description": "Lesson not completed"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/users/me/wallet": {
+      "get": {
+        "tags": ["Wallet"],
+        "summary": "Get TC wallet",
+        "description": "Returns the authenticated user's TalkfrlyCoins wallet. Creates it with 3 TC initial grant if it does not yet exist.",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "responses": {
+          "200": {"description": "Wallet", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/WalletResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
+    "/users/me/wallet/transactions": {
+      "get": {
+        "tags": ["Wallet"],
+        "summary": "List TC transactions",
+        "security": [{"bearerAuth": []}, {"cookieAuth": []}],
+        "parameters": [
+          {"in": "query", "name": "page", "schema": {"type": "integer", "default": 1}},
+          {"in": "query", "name": "limit", "schema": {"type": "integer", "default": 50, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Transaction list", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TransactionListResponse"}}}},
+          "401": {"description": "Unauthorized"},
+          "500": {"description": "Internal server error"}
+        }
+      }
+    },
     "/streams/{id}/viewers/ws": {
       "get": {
         "tags": ["Stream"],
@@ -2402,6 +2900,11 @@
           "is_anonymous": {"type": "boolean"},
           "is_private": {"type": "boolean"},
           "thread_members_only": {"type": "boolean"},
+          "course_members_only": {"type": "boolean"},
+          "course_id": {"type": "string", "nullable": true},
+          "lesson_id": {"type": "string", "nullable": true},
+          "lesson_title": {"type": "string", "nullable": true},
+          "module_title": {"type": "string", "nullable": true},
           "thread_id": {"type": "string", "nullable": true},
           "thread_slug": {"type": "string", "nullable": true},
           "thread_name": {"type": "string", "nullable": true},
@@ -2522,13 +3025,16 @@
           "tags": {"type": "array", "maxItems": 6, "items": {"type": "string"}},
           "criteria": {"type": "array", "items": {"$ref": "#/components/schemas/CriterionRequest"}},
           "thread_members_only": {"type": "boolean"},
+          "course_id": {"type": "string", "nullable": true, "description": "ID of the course this publication belongs to. Required when course_members_only=true."},
+          "course_members_only": {"type": "boolean", "description": "If true, only enrolled course members can see this publication."},
+          "lesson_id": {"type": "string", "nullable": true, "description": "Optional lesson this publication is attached to. Automatically sets course_members_only=true on the frontend."},
           "video_id": {"type": "string", "nullable": true},
           "video_stream_uid": {"type": "string", "nullable": true}
         }
       },
       "PublicationResponse": {
         "type": "object",
-        "required": ["id", "content", "is_anonymous", "is_private", "thread_members_only", "is_thread_member", "image_urls", "tags", "languages", "comment_count", "vote_score", "liked_by_user", "like_count", "views", "created_at", "updated_at"],
+        "required": ["id", "content", "is_anonymous", "is_private", "thread_members_only", "course_members_only", "is_thread_member", "image_urls", "tags", "languages", "comment_count", "vote_score", "liked_by_user", "like_count", "views", "created_at", "updated_at"],
         "properties": {
           "id": {"type": "string"},
           "user": {"allOf": [{"$ref": "#/components/schemas/UserSummaryResponse"}], "nullable": true, "description": "Author. Absent when is_anonymous=true."},
@@ -2543,6 +3049,11 @@
           "is_anonymous": {"type": "boolean"},
           "is_private": {"type": "boolean"},
           "thread_members_only": {"type": "boolean"},
+          "course_members_only": {"type": "boolean", "description": "True = only enrolled course members can see this post."},
+          "course_id": {"type": "string", "nullable": true, "description": "ID of the course this publication belongs to."},
+          "lesson_id": {"type": "string", "nullable": true, "description": "Lesson this post belongs to, if any."},
+          "lesson_title": {"type": "string", "nullable": true, "description": "Lesson title — present when lesson_id is set."},
+          "module_title": {"type": "string", "nullable": true, "description": "Module title — present when lesson_id is set. Use for badge: '{module_title} · {lesson_title}'."},
           "is_thread_member": {"type": "boolean"},
           "image_urls": {"type": "array", "items": {"type": "string"}},
           "tags": {"type": "array", "items": {"type": "string"}},
@@ -3062,12 +3573,294 @@
           "limit": {"type": "integer"}
         }
       },
+      "CreateInteractionRequest": {
+        "type": "object",
+        "required": ["publication_id"],
+        "properties": {
+          "publication_id": {"type": "string"}
+        }
+      },
+      "ActorInfo": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {"type": "string"},
+          "display_name": {"type": "string", "nullable": true},
+          "avatar_url": {"type": "string", "nullable": true}
+        }
+      },
+      "NotificationResponse": {
+        "type": "object",
+        "required": ["id", "user_id", "type", "read", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string"},
+          "user_id": {"type": "string"},
+          "actor_id": {"type": "string", "nullable": true},
+          "actor": {"allOf": [{"$ref": "#/components/schemas/ActorInfo"}], "nullable": true},
+          "type": {"type": "string", "enum": ["new_post_like", "new_comment_like", "new_comment", "new_reply", "new_follow", "new_repost", "new_mention", "new_thread_invite", "thread_member_joined", "thread_new_publication", "thread_went_live"]},
+          "entity_id": {"type": "string", "nullable": true},
+          "entity_type": {"type": "string", "nullable": true},
+          "content": {"type": "string", "nullable": true},
+          "read": {"type": "boolean"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "NotificationListResponse": {
+        "type": "object",
+        "required": ["notifications", "total", "page", "limit"],
+        "properties": {
+          "notifications": {"type": "array", "items": {"$ref": "#/components/schemas/NotificationResponse"}},
+          "total": {"type": "integer"},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "UnreadCountResponse": {
+        "type": "object",
+        "required": ["count"],
+        "properties": {
+          "count": {"type": "integer"}
+        }
+      },
       "ViewersWsClosedEvent": {
         "type": "object",
         "required": ["type", "payload"],
         "properties": {
           "type": {"type": "string", "enum": ["viewers.closed"]},
           "payload": {"$ref": "#/components/schemas/ViewersWsClosedPayload"}
+        }
+      },
+      "CreateCourseRequest": {
+        "type": "object",
+        "required": ["name", "slug", "max_slots"],
+        "properties": {
+          "name": {"type": "string", "maxLength": 255},
+          "slug": {"type": "string", "maxLength": 255, "description": "Lowercase letters, numbers and hyphens only. Unique within the thread."},
+          "description": {"type": "string"},
+          "max_slots": {"type": "integer", "enum": [100, 250, 1000], "description": "Maximum number of enrolled users."},
+          "tc_price": {"type": "integer", "minimum": 1, "description": "Price in TalkfrlyCoins. Ignored when is_free=true."},
+          "is_free": {"type": "boolean", "description": "If true enrollment is free regardless of tc_price."}
+        }
+      },
+      "UpdateCourseRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {"type": "string", "maxLength": 255},
+          "description": {"type": "string"},
+          "status": {"type": "string", "enum": ["draft", "active", "archived"], "description": "draft = hidden, active = enrollable, archived = read-only"},
+          "tc_price": {"type": "integer", "minimum": 1},
+          "is_free": {"type": "boolean"}
+        }
+      },
+      "CourseResponse": {
+        "type": "object",
+        "required": ["id", "thread_id", "owner_user_id", "name", "slug", "max_slots", "slots_used", "slots_available", "storage_gb", "status", "tc_price", "is_free", "module_count", "lesson_count", "total_duration_minutes", "is_enrolled", "is_owner", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string", "format": "uuid"},
+          "thread_id": {"type": "string", "format": "uuid"},
+          "owner_user_id": {"type": "string", "format": "uuid"},
+          "name": {"type": "string"},
+          "slug": {"type": "string", "description": "Used to build the URL: /thr/{thread_slug}/course/{slug}"},
+          "description": {"type": "string"},
+          "max_slots": {"type": "integer", "description": "Maximum enrolled users (100 / 250 / 1000)"},
+          "slots_used": {"type": "integer", "description": "Current number of enrolled users"},
+          "slots_available": {"type": "integer", "description": "max_slots - slots_used"},
+          "storage_gb": {"type": "integer", "description": "Storage budget for course materials in GB"},
+          "status": {"type": "string", "enum": ["draft", "active", "archived"]},
+          "tc_price": {"type": "integer", "description": "Enrollment price in TalkfrlyCoins"},
+          "is_free": {"type": "boolean", "description": "True when enrollment is free"},
+          "module_count": {"type": "integer", "description": "Number of modules in this course"},
+          "lesson_count": {"type": "integer", "description": "Total number of lessons across all modules"},
+          "total_duration_minutes": {"type": "integer", "description": "Sum of lesson durations in minutes"},
+          "is_enrolled": {"type": "boolean", "description": "Whether the authenticated user is enrolled in this course"},
+          "is_owner": {"type": "boolean", "description": "Whether the authenticated user is the course owner"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "CourseListResponse": {
+        "type": "object",
+        "required": ["courses"],
+        "properties": {
+          "courses": {"type": "array", "items": {"$ref": "#/components/schemas/CourseResponse"}}
+        }
+      },
+      "CourseEnrollmentResponse": {
+        "type": "object",
+        "required": ["id", "course_id", "user_id", "enrolled_at"],
+        "properties": {
+          "id": {"type": "string", "format": "uuid"},
+          "course_id": {"type": "string", "format": "uuid"},
+          "user_id": {"type": "string", "format": "uuid"},
+          "enrolled_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "CourseMembersResponse": {
+        "type": "object",
+        "required": ["members", "total_count", "page", "limit"],
+        "properties": {
+          "members": {"type": "array", "items": {"$ref": "#/components/schemas/CourseEnrollmentResponse"}},
+          "total_count": {"type": "integer"},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
+        }
+      },
+      "CourseStatsResponse": {
+        "type": "object",
+        "required": ["enrolled_count", "completion_rate", "avg_progress", "tc_earned"],
+        "properties": {
+          "enrolled_count": {"type": "integer", "description": "Total enrolled users"},
+          "completion_rate": {"type": "number", "format": "float", "description": "% of enrolled users who completed all lessons"},
+          "avg_progress": {"type": "number", "format": "float", "description": "Average completion % across enrolled users"},
+          "tc_earned": {"type": "integer", "description": "Total TC earned from enrollment fees"}
+        }
+      },
+      "CourseProgressResponse": {
+        "type": "object",
+        "required": ["total_lessons", "completed_lessons", "percent_complete"],
+        "properties": {
+          "total_lessons": {"type": "integer"},
+          "completed_lessons": {"type": "integer"},
+          "percent_complete": {"type": "number", "format": "float", "description": "0-100"}
+        }
+      },
+      "InsufficientTCResponse": {
+        "type": "object",
+        "required": ["error", "balance", "required"],
+        "properties": {
+          "error": {"type": "string", "enum": ["insufficient_tc"]},
+          "balance": {"type": "integer", "description": "Current user balance"},
+          "required": {"type": "integer", "description": "TC required for enrollment"}
+        }
+      },
+      "CreateModuleRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {"type": "string", "maxLength": 255},
+          "description": {"type": "string"},
+          "position": {"type": "integer", "description": "Display order. Defaults to 0."}
+        }
+      },
+      "UpdateModuleRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {"type": "string", "maxLength": 255},
+          "description": {"type": "string"}
+        }
+      },
+      "ModuleResponse": {
+        "type": "object",
+        "required": ["id", "course_id", "title", "position", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string", "format": "uuid"},
+          "course_id": {"type": "string", "format": "uuid"},
+          "title": {"type": "string"},
+          "description": {"type": "string"},
+          "position": {"type": "integer"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "ModuleListResponse": {
+        "type": "object",
+        "required": ["modules"],
+        "properties": {
+          "modules": {"type": "array", "items": {"$ref": "#/components/schemas/ModuleResponse"}}
+        }
+      },
+      "ReorderRequest": {
+        "type": "object",
+        "required": ["items"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "position"],
+              "properties": {
+                "id": {"type": "string", "format": "uuid"},
+                "position": {"type": "integer"}
+              }
+            }
+          }
+        }
+      },
+      "CreateLessonRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {"type": "string", "maxLength": 255},
+          "description": {"type": "string"},
+          "duration_minutes": {"type": "integer", "minimum": 0},
+          "position": {"type": "integer"}
+        }
+      },
+      "UpdateLessonRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {"type": "string", "maxLength": 255},
+          "description": {"type": "string"},
+          "duration_minutes": {"type": "integer", "minimum": 0}
+        }
+      },
+      "LessonResponse": {
+        "type": "object",
+        "required": ["id", "module_id", "course_id", "title", "duration_minutes", "position", "is_completed", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string", "format": "uuid"},
+          "module_id": {"type": "string", "format": "uuid"},
+          "course_id": {"type": "string", "format": "uuid"},
+          "title": {"type": "string"},
+          "description": {"type": "string"},
+          "duration_minutes": {"type": "integer"},
+          "position": {"type": "integer"},
+          "is_completed": {"type": "boolean", "description": "Whether the authenticated user has completed this lesson"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "LessonListResponse": {
+        "type": "object",
+        "required": ["lessons"],
+        "properties": {
+          "lessons": {"type": "array", "items": {"$ref": "#/components/schemas/LessonResponse"}}
+        }
+      },
+      "WalletResponse": {
+        "type": "object",
+        "required": ["id", "user_id", "balance", "created_at", "updated_at"],
+        "properties": {
+          "id": {"type": "string", "format": "uuid"},
+          "user_id": {"type": "string", "format": "uuid"},
+          "balance": {"type": "integer", "description": "Current TC balance"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "TransactionResponse": {
+        "type": "object",
+        "required": ["id", "amount", "type", "created_at"],
+        "properties": {
+          "id": {"type": "string", "format": "uuid"},
+          "amount": {"type": "integer", "description": "Positive = credit, negative = debit"},
+          "type": {"type": "string", "enum": ["initial_grant", "enrollment_fee", "course_revenue", "refund"]},
+          "reference_id": {"type": "string", "format": "uuid", "nullable": true, "description": "Course ID for enrollment_fee / course_revenue transactions"},
+          "created_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "TransactionListResponse": {
+        "type": "object",
+        "required": ["transactions", "total_count", "page", "limit"],
+        "properties": {
+          "transactions": {"type": "array", "items": {"$ref": "#/components/schemas/TransactionResponse"}},
+          "total_count": {"type": "integer"},
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"}
         }
       }
     }
