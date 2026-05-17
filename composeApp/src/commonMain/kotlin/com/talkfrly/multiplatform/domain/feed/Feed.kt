@@ -1,5 +1,7 @@
 package com.talkfrly.multiplatform.domain.feed
 
+import com.talkfrly.multiplatform.domain.ranking.Ranking
+
 data class Feed(
     val publications: List<FeedItem>,
     val page: Int,
@@ -14,14 +16,29 @@ data class FeedUser(
 
 data class FeedItem(
     val id: String,
-    val user : FeedUser,
+    val user: FeedUser? = null,
     val content: String,
+    val publicationType: String? = null,
+    val ranking: Ranking? = null,
+    val articleCategory: String? = null,
     val isAnonymous: Boolean,
     val isPrivate: Boolean,
     val threadMembersOnly: Boolean,
+    val courseMembersOnly: Boolean = false,
+    val courseId: String? = null,
+    val lessonId: String? = null,
+    val lessonTitle: String? = null,
+    val moduleTitle: String? = null,
     val threadId: String? = null,
+    val threadSlug: String? = null,
+    val threadName: String? = null,
     val imageUrls: List<String> = emptyList(),
     val tags: List<String> = emptyList(),
+    val videoId: String? = null,
+    val videoStreamUid: String? = null,
+    val videoUrl: String? = null,
+    val videoThumbnail: String? = null,
+    val videoEmbedUrl: String? = null,
     val commentCount: Int,
     val voteScore: Int,
     val likedByUser: Boolean,
@@ -29,16 +46,4 @@ data class FeedItem(
     val views: Int,
     val createdAt: String,
     val updatedAt: String,
-//    val channelId: String? = null,
-//    val threadSlug: String? = null,
-//    val threadName: String? = null,
-//    val publicationType: String? = null,
-//    val articleCategory: String? = null,
-//    val isThreadMember: Boolean,
-//    val languages: List<String> = emptyList(),
-//    val videoId: String? = null,
-//    val videoUrl: String? = null,
-//    val videoThumbnail: String? = null,
-//    val videoEmbedUrl: String? = null,
-//    val videoStreamUid: String? = null,
 )

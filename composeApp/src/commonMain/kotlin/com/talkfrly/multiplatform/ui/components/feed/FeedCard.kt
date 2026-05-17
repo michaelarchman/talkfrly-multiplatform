@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Label
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,12 +35,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.talkfrly.multiplatform.domain.feed.FeedItem
+import com.talkfrly.multiplatform.domain.publication.PublicationType
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButton
 import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButtonType
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTabIntent
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
+import org.jetbrains.compose.resources.vectorResource
 import talkfrly_multiplatform.composeapp.generated.resources.Res
 import talkfrly_multiplatform.composeapp.generated.resources.forum
+import talkfrly_multiplatform.composeapp.generated.resources.icon_ranking
+import talkfrly_multiplatform.composeapp.generated.resources.icon_sms
 import talkfrly_multiplatform.composeapp.generated.resources.icon_visibility_on
 import talkfrly_multiplatform.composeapp.generated.resources.record_voice_over
 
@@ -48,6 +54,7 @@ fun FeedCard(
     modifier: Modifier = Modifier,
     onAction: (FeedTabIntent) -> Unit,
     onItemClick: (FeedItem) -> Unit,
+    onThreadClick: ((String) -> Unit)? = null,
 ) {
     val colors = LocalTalkfrlyColors.current
 
@@ -78,18 +85,40 @@ fun FeedCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     FeedAvatar(
-                        avatarUrl = feedItem.user.avatarUrl,
-                        label = feedItem.user.displayName,
+                        avatarUrl = feedItem.user?.avatarUrl,
+                        label = feedItem.user?.displayName ?: "",
                     )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ){
+                        Text(
+                            text = feedItem.user?.displayName ?: "Anonymous",
+                            color = colors.body,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
 
-                    Text(
-                        text = feedItem.user.displayName,
-                        color = colors.body,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                        Row {
+                            feedItem.publicationType?.let {
+                                PublicationLabel(
+                                    title = it,
+                                    type = PublicationLabelType.PUBLICATION_TYPE
+                                )
+                            }
+
+                            feedItem.threadName?.let {
+                                PublicationLabel(
+                                    title = it,
+                                    type = PublicationLabelType.THREAD_NAME,
+                                    onClick = feedItem.threadId?.let { id ->
+                                        onThreadClick?.let { cb -> { cb(id) } }
+                                    },
+                                )
+                            }
+                        }
+                    }
                 }
 
                 Text(
@@ -107,7 +136,10 @@ fun FeedCard(
 
                 val lines = feedItem.content.lines()
                 val headerLine = lines.firstOrNull { it.startsWith("#") }
-                val bodyText = lines.firstOrNull { !it.startsWith("#") && it.isNotBlank() }.orEmpty()
+                val bodyText = lines
+                    .dropWhile { it.startsWith("#") || it.isBlank() }
+                    .joinToString("\n")
+                    .trim()
 
                 if (headerLine != null) {
                     Text(
@@ -147,6 +179,10 @@ fun FeedCard(
                     )
                 }
 
+                if (feedItem.publicationType == "ranking" && feedItem.ranking != null) {
+                    FeedRankingDisplay(ranking = feedItem.ranking)
+                }
+
                 feedItem.imageUrls.let { url ->
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -164,6 +200,12 @@ fun FeedCard(
                             )
                         }
                     }
+                }
+            }
+
+            if (feedItem.tags.isNotEmpty()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    feedItem.tags.forEach { FeedTagChip(it) }
                 }
             }
 
@@ -188,8 +230,8 @@ fun FeedCard(
 
                     InteractionStatButton(
                         isActive = false,
-                        type = InteractionStatButtonType.OUTLINED,
-                        icon = Res.drawable.forum,
+                        type = InteractionStatButtonType.SIMPLE,
+                        icon = Res.drawable.icon_sms,
                         label = feedItem.commentCount,
                         onClick = {}
                     )
@@ -201,43 +243,6 @@ fun FeedCard(
                     label = feedItem.views,
                     isActive = false,
                     onClick = {}
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun FeedAvatar(
-    avatarUrl: String?,
-    label: String,
-) {
-    val colors = LocalTalkfrlyColors.current
-
-    Surface(
-        modifier = Modifier.size(36.dp),
-        shape = CircleShape,
-        color = colors.backgroundDarker,
-    ) {
-        if (!avatarUrl.isNullOrBlank()) {
-            Image(
-                painter = rememberAsyncImagePainter(model = avatarUrl),
-                contentDescription = null,
-                modifier = Modifier.size(36.dp),
-                contentScale = ContentScale.Crop,
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(colors.primary20),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = label.firstOrNull()?.uppercase() ?: "?",
-                    color = colors.body,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
                 )
             }
         }

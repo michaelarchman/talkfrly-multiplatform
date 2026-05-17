@@ -68,6 +68,10 @@ import com.talkfrly.multiplatform.ui.components.buttons.InteractionStatButtonTyp
 import com.talkfrly.multiplatform.ui.components.buttons.PhotoActionButton
 import com.talkfrly.multiplatform.ui.components.chips.ImageChip
 import com.talkfrly.multiplatform.ui.components.feed.FeedAvatar
+import com.talkfrly.multiplatform.ui.components.feed.FeedRankingDisplay
+import com.talkfrly.multiplatform.ui.components.feed.FeedTagChip
+import com.talkfrly.multiplatform.ui.components.feed.PublicationLabel
+import com.talkfrly.multiplatform.ui.components.feed.PublicationLabelType
 import com.talkfrly.multiplatform.ui.pickers.rememberImagePickerController
 import com.talkfrly.multiplatform.ui.screens.publication.comment.CommentItem
 import com.talkfrly.multiplatform.ui.screens.publication.comment.CommentsHeader
@@ -598,7 +602,19 @@ private fun PublicationContent(
         val pub = state.publication
         val lines = pub.content.lines()
         val headerLine = lines.firstOrNull { it.startsWith("#") }
-        val bodyText = lines.firstOrNull { !it.startsWith("#") && it.isNotBlank() }.orEmpty()
+        val bodyText = lines
+            .dropWhile { it.startsWith("#") || it.isBlank() }
+            .joinToString("\n")
+            .trim()
+
+        Row {
+            pub.type?.let {
+                PublicationLabel(title = it, type = PublicationLabelType.PUBLICATION_TYPE)
+            }
+            pub.threadName?.let {
+                PublicationLabel(title = it, type = PublicationLabelType.THREAD_NAME)
+            }
+        }
 
         if (headerLine != null) {
             Text(
@@ -631,6 +647,21 @@ private fun PublicationContent(
                 contentDescription = "Publication picture",
                 contentScale = ContentScale.FillWidth,
             )
+        }
+
+        if (pub.type == "ranking" && pub.ranking != null) {
+            FeedRankingDisplay(
+                ranking = pub.ranking,
+                onVote = { itemId, value ->
+                    onAction(PublicationScreenIntent.VoteRankingItem(pub.id, itemId, value))
+                },
+            )
+        }
+
+        if (pub.tags.isNotEmpty()) {
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                pub.tags.forEach { FeedTagChip(it) }
+            }
         }
 
         Row(

@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
 import com.talkfrly.multiplatform.data.comments.repository.CommentRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
+import com.talkfrly.multiplatform.data.ranking.repository.RankingRepository
 import com.talkfrly.multiplatform.data.uploads.ImageUploadStatus
 import com.talkfrly.multiplatform.data.uploads.repository.UploadRepository
 import com.talkfrly.multiplatform.data.user.repository.UserRepository
@@ -11,6 +12,8 @@ import com.talkfrly.multiplatform.domain.comment.CreateCommentRequest
 import com.talkfrly.multiplatform.domain.core.onError
 import com.talkfrly.multiplatform.domain.core.onFinally
 import com.talkfrly.multiplatform.domain.core.onSuccess
+import com.talkfrly.multiplatform.domain.publication.Publication
+import com.talkfrly.multiplatform.domain.ranking.RankedItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -20,6 +23,7 @@ class PublicationScreenViewModel(
     private val publicationRepository: PublicationRepository,
     private val commentRepository: CommentRepository,
     private val userRepository: UserRepository,
+    private val rankingRepository: RankingRepository,
     private val uploadRepository: UploadRepository,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(PublicationScreenState())
@@ -34,6 +38,7 @@ class PublicationScreenViewModel(
             is PublicationScreenIntent.PostComment -> postComment(intent.createCommentRequest)
             is PublicationScreenIntent.LikePublication -> likePublication(intent.publicationId)
             is PublicationScreenIntent.UnlikePublication -> unlikePublication(intent.publicationId)
+            is PublicationScreenIntent.VoteRankingItem -> voteRankingItem(intent.publicationId, intent.itemId, intent.value)
             is PublicationScreenIntent.AddImage -> addImage(intent.uri)
             is PublicationScreenIntent.RemoveImage -> removeImage()
             is PublicationScreenIntent.RetryImage -> retryImage(intent.uri)
@@ -189,6 +194,30 @@ class PublicationScreenViewModel(
             }
     }
 
+    private fun voteRankingItem(
+        publicationId: String,
+        itemId: String,
+        value: Int,
+    ) = viewModelScope.launch {
+        val previousPublication = state.value.publication ?: return@launch
+
+        _state.update { current ->
+            current.copy(publication = current.publication?.withUpdatedRankingVote(itemId, value))
+        }
+
+        val result = if (value == 0) {
+            rankingRepository.removeVote(publicationId, itemId)
+        } else {
+            rankingRepository.vote(publicationId, itemId, value)
+        }
+
+        result.onError {
+            _state.update { current ->
+                current.copy(publication = previousPublication)
+            }
+        }
+    }
+
     private fun addImage(uri: String) = viewModelScope.launch {
         startLoading()
         _state.update {
@@ -264,4 +293,36 @@ class PublicationScreenViewModel(
                 }
             }
     }
+}
+
+private fun Publication.withUpdatedRankingVote(
+    itemId: String,
+    nextVote: Int,
+): Publication {
+    val currentRanking = ranking ?: return this
+    val updatedItems = currentRanking.items.map { rankedItem ->
+        if (rankedItem.id != itemId) return@map rankedItem
+        rankedItem.withUpdatedVote(nextVote, currentRanking.noNegativeScores)
+    }
+
+    return copy(ranking = currentRanking.copy(items = updatedItems))
+}
+
+private fun RankedItem.withUpdatedVote(
+    nextVote: Int,
+    noNegativeScores: Boolean,
+): RankedItem {
+    val previousVote = userVote ?: 0
+    val nextUserVote = nextVote.takeIf { it != 0 }
+    val scoreDelta = nextVote - previousVote
+    val updatedScore = if (noNegativeScores) {
+        (score + scoreDelta).coerceAtLeast(0)
+    } else {
+        score + scoreDelta
+    }
+
+    return copy(
+        score = updatedScore,
+        userVote = nextUserVote,
+    )
 }

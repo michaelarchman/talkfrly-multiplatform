@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,24 +39,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
-import com.talkfrly.multiplatform.ui.components.streams.StreamCard
 import com.talkfrly.multiplatform.ui.nav.AccountRoute
 import com.talkfrly.multiplatform.ui.nav.NewPublicationRoute
 import com.talkfrly.multiplatform.ui.nav.PublicationRoute
-import com.talkfrly.multiplatform.ui.nav.StreamRoute
 import com.talkfrly.multiplatform.ui.nav.ThreadRoute
 import com.talkfrly.multiplatform.ui.screens.home.feed.FeedTab
+import com.talkfrly.multiplatform.ui.screens.home.threads.ThreadsTab
+//import com.talkfrly.multiplatform.ui.screens.home.streams.StreamsTab
 import com.talkfrly.multiplatform.ui.theme.LocalTalkfrlyColors
-import kotlinx.coroutines.async
-import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import talkfrly_multiplatform.composeapp.generated.resources.Res
-import talkfrly_multiplatform.composeapp.generated.resources.add
-import talkfrly_multiplatform.composeapp.generated.resources.follow_the_signs
-import talkfrly_multiplatform.composeapp.generated.resources.gesture
+import talkfrly_multiplatform.composeapp.generated.resources.forum
+import talkfrly_multiplatform.composeapp.generated.resources.icon_add_ad
 import talkfrly_multiplatform.composeapp.generated.resources.person
+import talkfrly_multiplatform.composeapp.generated.resources.siren_open
 import talkfrly_multiplatform.composeapp.generated.resources.speed_camera
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_dark
 import talkfrly_multiplatform.composeapp.generated.resources.talkfrly_logo_light
@@ -74,7 +70,7 @@ fun HomeScreenRoot(
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(HomeIntent.GetCurrentUser)
-        viewModel.onIntent(HomeIntent.GetStreams)
+//        viewModel.onIntent(HomeIntent.GetStreams)
     }
 
     Scaffold (
@@ -103,18 +99,8 @@ fun HomeScreenRoot(
                         enabled = true,
                     ) {
                         Icon(
-                            imageVector = vectorResource(Res.drawable.add),
+                            imageVector = vectorResource(Res.drawable.icon_add_ad),
                             contentDescription = "Create publication",
-                        )
-                    }
-
-                    IconButton(
-                        onClick = { navController.navigate(ThreadRoute) },
-                        enabled = true,
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.gesture),
-                            contentDescription = "Go to Thread",
                         )
                     }
 
@@ -208,11 +194,11 @@ private fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = vectorResource(Res.drawable.gesture),
+                            imageVector = vectorResource(Res.drawable.siren_open),
                             contentDescription = null,
-                            Modifier.size(18.dp).padding(end = 4.dp)
+                            Modifier.size(24.dp).padding(end = 4.dp)
                         )
-                        Text(text = "Threads", fontWeight = FontWeight(600))
+                        Text(text = "Feed", fontWeight = FontWeight(600))
                     }
                 }
                 Tab(
@@ -223,39 +209,42 @@ private fun HomeScreen(
                     modifier = Modifier.height(40.dp).padding(2.dp)
                 ) {
                     Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.speed_camera),
-                            contentDescription = null,
-                            Modifier.size(18.dp).padding(end = 4.dp)
-                        )
-                        Text(
-                            text = "Streams",
-                            fontWeight = FontWeight(600),
-                        )
-                    }
-                }
-                Tab(
-                    selectedContentColor = LocalTalkfrlyColors.current.body,
-                    unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
-                    selected = state.selectedTabIndex == 2,
-                    onClick = { onAction(HomeIntent.SetSelectedTab(2)) },
-                    modifier = Modifier.height(40.dp).padding(2.dp)
-                ) {
-                    Row(
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = vectorResource(Res.drawable.follow_the_signs),
+                            imageVector = vectorResource(Res.drawable.forum),
                             contentDescription = null,
-                            Modifier.size(18.dp).padding(end = 4.dp)
+                            Modifier.size(24.dp).padding(end = 4.dp)
                         )
-                        Text(text = "Followed", fontWeight = FontWeight(600))
+                        Text(
+                            text = "Threads",
+                            fontWeight = FontWeight(600)
+                        )
                     }
                 }
+//                Tab(
+//                    selectedContentColor = LocalTalkfrlyColors.current.body,
+//                    unselectedContentColor = LocalTalkfrlyColors.current.bodyMuted,
+//                    selected = state.selectedTabIndex == 2,
+//                    onClick = { onAction(HomeIntent.SetSelectedTab(2)) },
+//                    modifier = Modifier.height(40.dp).padding(2.dp)
+//                ) {
+//                    Row(
+//                        horizontalArrangement = Arrangement.SpaceBetween,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Icon(
+//                            imageVector = vectorResource(Res.drawable.speed_camera),
+//                            contentDescription = null,
+//                            Modifier.size(24.dp).padding(end = 4.dp)
+//                        )
+//                        Text(
+//                            text = "Streams",
+//                            fontWeight = FontWeight(600),
+//                        )
+//                    }
+//                }
             }
         }
 
@@ -279,42 +268,24 @@ private fun HomeScreen(
             FeedTab(
                 onFeedItemClick = { feedItem ->
                     navController.navigate(PublicationRoute(feedItem.id))
-                }
-            )
-        }
-        1 -> {
-            StreamsTabContent(
-                state = state,
-                onStreamClick = { streamId ->
-                    navController.navigate(StreamRoute(streamId))
+                },
+                onThreadClick = { threadId ->
+                    navController.navigate(ThreadRoute(threadId))
                 },
             )
         }
-        2 -> {
-           Text("Followed stuff")
+        1 -> {
+            ThreadsTab(
+                onThreadClick = { threadId ->
+                    navController.navigate(ThreadRoute(threadId))
+                },
+            )
         }
+//        2 -> {
+//            StreamsTab(
+//                onCategoryClick = { },
+//            )
+//        }
     }
 }
 
-@Composable
-private fun StreamsTabContent(
-    state: HomeState,
-    onStreamClick: (String) -> Unit,
-) {
-    if (state.isLoadingStreams && state.streams.isEmpty()) {
-        Text("Loading streams...")
-    }
-    else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(state.streams, key = { it.id }) { stream ->
-                StreamCard(
-                    stream = stream,
-                    onClick = { onStreamClick(stream.id) },
-                )
-            }
-        }
-    }
-}

@@ -10,6 +10,7 @@ import io.ktor.http.HttpMethod
 interface FeedApi{
     suspend fun getFeed(page: Int, limit: Int): DataResult<FeedResponseDto, DataError.Remote>
     suspend fun getPopularFeed(page: Int, limit: Int): DataResult<FeedResponseDto, DataError.Remote>
+    suspend fun getThreadFeed(threadId: String, page: Int, limit: Int): DataResult<FeedResponseDto, DataError.Remote>
 }
 
 class FeedApiImpl(
@@ -37,6 +38,22 @@ class FeedApiImpl(
         return makeRequest(
             httpClient = httpClient,
             urlString = "/feed/popular",
+            httpMethod = HttpMethod.Get,
+            queryParams = mapOf(
+                "page" to page,
+                "limit" to limit,
+            )
+        )
+    }
+
+    override suspend fun getThreadFeed(
+        threadId: String,
+        page: Int,
+        limit: Int,
+    ): DataResult<FeedResponseDto, DataError.Remote> {
+        return makeRequest(
+            httpClient = httpClient,
+            urlString = "/feed/thread/$threadId",
             httpMethod = HttpMethod.Get,
             queryParams = mapOf(
                 "page" to page,
