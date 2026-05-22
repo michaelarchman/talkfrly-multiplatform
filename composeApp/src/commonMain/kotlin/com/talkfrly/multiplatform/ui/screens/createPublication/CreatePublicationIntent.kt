@@ -18,4 +18,9 @@ sealed class CreatePublicationIntent {
     data class RemoveTag(val tag: String) : CreatePublicationIntent()
     data object Submit : CreatePublicationIntent()
     data object NavigateBack : CreatePublicationIntent()
+    data object GetArticleCategories : CreatePublicationIntent()
+    data class SetArticleCategory(val category: String) : CreatePublicationIntent()
+    data class SetArticleSource(val source: String) : CreatePublicationIntent()
+    data class SetArticleAuthorName(val authorName: String) : CreatePublicationIntent()
+    data class SetArticleBibliographyInput(val bibliography: String) : CreatePublicationIntent()
 }

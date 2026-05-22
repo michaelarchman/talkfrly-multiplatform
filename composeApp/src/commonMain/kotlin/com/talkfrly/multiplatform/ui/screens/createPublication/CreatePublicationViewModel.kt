@@ -2,12 +2,16 @@ package com.talkfrly.multiplatform.ui.screens.createPublication
 
 import androidx.lifecycle.viewModelScope
 import com.talkfrly.multiplatform.BaseViewModel
+import com.talkfrly.multiplatform.data.article.repository.ArticleRepository
 import com.talkfrly.multiplatform.data.publications.repository.PublicationRepository
 import com.talkfrly.multiplatform.data.uploads.ImageUploadStatus
 import com.talkfrly.multiplatform.data.uploads.repository.UploadRepository
+import com.talkfrly.multiplatform.domain.article.CreateArticleRequest
 import com.talkfrly.multiplatform.domain.core.onError
+import com.talkfrly.multiplatform.domain.core.onFinally
 import com.talkfrly.multiplatform.domain.core.onSuccess
 import com.talkfrly.multiplatform.domain.publication.CreatePublicationRequest
+import com.talkfrly.multiplatform.domain.publication.PublicationType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -16,6 +20,7 @@ import kotlinx.coroutines.launch
 class CreatePublicationViewModel(
     private val publicationRepository: PublicationRepository,
     private val uploadRepository: UploadRepository,
+    private val articleRepository: ArticleRepository,
 ) : BaseViewModel() {
 
     private val _state = MutableStateFlow(CreatePublicationState())
@@ -48,6 +53,11 @@ class CreatePublicationViewModel(
             is CreatePublicationIntent.RemoveTag -> removeTag(intent.tag)
             is CreatePublicationIntent.Submit -> submit()
             is CreatePublicationIntent.NavigateBack -> {} // Handled in UI
+            is CreatePublicationIntent.GetArticleCategories -> getArticleCategories()
+            is CreatePublicationIntent.SetArticleCategory -> setArticleCategory(intent.category)
+            is CreatePublicationIntent.SetArticleSource -> setArticleSource(intent.source)
+            is CreatePublicationIntent.SetArticleAuthorName -> setArticleAuthorName(intent.authorName)
+            is CreatePublicationIntent.SetArticleBibliographyInput -> setArticleBibliographyInput(intent.bibliography)
         }
     }
 
@@ -190,12 +200,40 @@ class CreatePublicationViewModel(
             threadId = currentState.threadId,
             isAnonymous = currentState.isAnonymous,
             imageUrls = imageUrls,
+            tags = currentState.tags
         )
 
         publicationRepository.createPublication(request)
-            .onSuccess {
-                // Success handled in UI navigation
-                _state.update { it.copy(isSubmitting = false, isSubmitted = true) }
+            .onSuccess { publication ->
+                if (currentState.selectedType == PublicationType.ARTICLE) {
+                    articleRepository.createArticle(
+                        publicationId = publication.id,
+                        request = CreateArticleRequest(
+                            category = currentState.articleCategory ?: "other",
+                            source = currentState.articleSource.takeIf { it.isNotBlank() },
+                            authorName = currentState.articleAuthorName.takeIf { it.isNotBlank() },
+                            bibliography = currentState.articleBibliographyInput
+                                .lines()
+                                .map { it.trim() }
+                                .filter { it.isNotBlank() }
+                                .takeIf { it.isNotEmpty() },
+                        )
+                    )
+                        .onSuccess { _state.update { it.copy(isSubmitting = false, isSubmitted = true) } }
+                        .onError { error ->
+                            _state.update {
+                                it.copy(
+                                    isSubmitting = false,
+                                    error = error.message
+                                )
+                            }
+                        }
+                }
+                else{
+                    // Success handled in UI navigation
+                    _state.update { it.copy(isSubmitting = false, isSubmitted = true) }
+                }
+
             }
             .onError { error ->
                 _state.update {
@@ -204,6 +242,37 @@ class CreatePublicationViewModel(
                         error = error.message
                     )
                 }
+            }
+    }
+
+    private fun setArticleCategory(category: String){
+        _state.update { it.copy(articleCategory = category) }
+    }
+
+    private fun setArticleSource(source: String) {
+        _state.update { it.copy(articleSource = source) }
+    }
+
+    private fun setArticleAuthorName(authorName: String) {
+        _state.update { it.copy(articleAuthorName = authorName) }
+    }
+
+    private fun setArticleBibliographyInput(bibliography: String) {
+        _state.update { it.copy(articleBibliographyInput = bibliography) }
+    }
+
+    private fun getArticleCategories() = viewModelScope.launch {
+        startLoading()
+
+        articleRepository.getCategories()
+            .onSuccess { categories ->
+                _state.update { it.copy(articleAvailableCategories = categories) }
+            }
+            .onError { error ->
+                _state.update { it.copy(error = error.message) }
+            }
+            .onFinally {
+                stopLoading()
             }
     }
 }
