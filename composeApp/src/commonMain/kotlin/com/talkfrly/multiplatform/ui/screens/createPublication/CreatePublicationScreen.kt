@@ -24,9 +24,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -41,10 +46,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -234,6 +243,16 @@ private fun CreatePublicationScreen(
                 when (state.selectedType) {
                     PublicationType.GENERAL -> {
                         GeneralPublicationForm(
+                            state = state,
+                            onIntent = onIntent,
+                            onOpenCamera = { picker.openCamera() },
+                            onOpenGallery = { picker.openGallery() },
+                            onPasteFromClipboard = { picker.pasteFromClipboard() },
+                            hasImageInClipboard = picker.hasImageInClipboard(),
+                        )
+                    }
+                    PublicationType.ARTICLE -> {
+                        ArticlePublicationForm(
                             state = state,
                             onIntent = onIntent,
                             onOpenCamera = { picker.openCamera() },
@@ -519,6 +538,362 @@ private fun GeneralPublicationForm(
             onTagRemoved = { onIntent(CreatePublicationIntent.RemoveTag(it)) },
             enabled = !state.isSubmitting
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ArticlePublicationForm(
+    state: CreatePublicationState,
+    onIntent: (CreatePublicationIntent) -> Unit,
+    onOpenCamera: () -> Unit,
+    onOpenGallery: () -> Unit,
+    onPasteFromClipboard: () -> Unit,
+    hasImageInClipboard: Boolean,
+) {
+    LaunchedEffect(Unit) {
+        onIntent(CreatePublicationIntent.GetArticleCategories)
+    }
+
+    var expanded by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Visibility Section
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Visibility",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = LocalTalkfrlyColors.current.body
+            )
+
+            // Anonymous checkbox
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(enabled = !state.isSubmitting) {
+                        onIntent(CreatePublicationIntent.SetAnonymous(!state.isAnonymous))
+                    }
+                    .padding(vertical = 4.dp)
+            ) {
+                Checkbox(
+                    checked = state.isAnonymous,
+                    onCheckedChange = { onIntent(CreatePublicationIntent.SetAnonymous(it)) },
+                    enabled = !state.isSubmitting,
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = LocalTalkfrlyColors.current.primary
+                    )
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Post anonymously",
+                    fontSize = 14.sp,
+                    color = LocalTalkfrlyColors.current.body
+                )
+            }
+
+            // Visibility options
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    VisibilityRadioOption(
+                        label = "Public",
+                        description = "Visible to everyone",
+                        isSelected = state.visibility == VisibilityOption.PUBLIC,
+                        enabled = !state.isSubmitting,
+                        onClick = { onIntent(CreatePublicationIntent.SetVisibility(VisibilityOption.PUBLIC)) },
+                        modifier = Modifier.weight(1f)
+                    )
+                    VisibilityRadioOption(
+                        label = "Private",
+                        description = "Only visible to you",
+                        isSelected = state.visibility == VisibilityOption.PRIVATE,
+                        enabled = !state.isSubmitting,
+                        onClick = { onIntent(CreatePublicationIntent.SetVisibility(VisibilityOption.PRIVATE)) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                if (state.inThreadContext) {
+                    VisibilityRadioOption(
+                        label = "Thread members only",
+                        description = "Only visible to thread members",
+                        isSelected = state.visibility == VisibilityOption.THREAD_ONLY,
+                        enabled = !state.isSubmitting,
+                        onClick = { onIntent(CreatePublicationIntent.SetVisibility(VisibilityOption.THREAD_ONLY)) }
+                    )
+                }
+            }
+        }
+
+        // Category
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Category",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = LocalTalkfrlyColors.current.body
+            )
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                    value = state.articleCategory?: "Select category",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Category") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = LocalTalkfrlyColors.current.primary60,
+                        unfocusedBorderColor = LocalTalkfrlyColors.current.primary20,
+                        focusedLabelColor = LocalTalkfrlyColors.current.primary60,
+                        unfocusedLabelColor = LocalTalkfrlyColors.current.primary20,
+                        focusedTextColor = LocalTalkfrlyColors.current.white,
+                        unfocusedTextColor = LocalTalkfrlyColors.current.white,
+                        cursorColor = LocalTalkfrlyColors.current.white,
+                        focusedContainerColor = LocalTalkfrlyColors.current.background,
+                        unfocusedContainerColor = LocalTalkfrlyColors.current.background,
+                    ),
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    containerColor = LocalTalkfrlyColors.current.background
+                ) {
+                    state.articleAvailableCategories?.forEach { category ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    category,
+                                    color = LocalTalkfrlyColors.current.white,
+                                )
+                            },
+                            onClick = {
+                                onIntent(CreatePublicationIntent.SetArticleCategory(category))
+                                expanded = false
+                                focusManager.clearFocus()
+                            },
+                        )
+                    }
+                }
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Source",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = LocalTalkfrlyColors.current.body
+                )
+                OutlinedTextField(
+                    value = state.articleSource,
+                    onValueChange = { onIntent(CreatePublicationIntent.SetArticleSource(it)) },
+                    placeholder = { Text("Publisher or outlet name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isSubmitting,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = LocalTalkfrlyColors.current.primary60,
+                        unfocusedBorderColor = LocalTalkfrlyColors.current.primary20,
+                        focusedTextColor = LocalTalkfrlyColors.current.white,
+                        unfocusedTextColor = LocalTalkfrlyColors.current.white,
+                        cursorColor = LocalTalkfrlyColors.current.white,
+                        focusedContainerColor = LocalTalkfrlyColors.current.background,
+                        unfocusedContainerColor = LocalTalkfrlyColors.current.background,
+                    ),
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Author",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = LocalTalkfrlyColors.current.body
+                )
+                OutlinedTextField(
+                    value = state.articleAuthorName,
+                    onValueChange = { onIntent(CreatePublicationIntent.SetArticleAuthorName(it)) },
+                    placeholder = { Text("Article author name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isSubmitting,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = LocalTalkfrlyColors.current.primary60,
+                        unfocusedBorderColor = LocalTalkfrlyColors.current.primary20,
+                        focusedTextColor = LocalTalkfrlyColors.current.white,
+                        unfocusedTextColor = LocalTalkfrlyColors.current.white,
+                        cursorColor = LocalTalkfrlyColors.current.white,
+                        focusedContainerColor = LocalTalkfrlyColors.current.background,
+                        unfocusedContainerColor = LocalTalkfrlyColors.current.background,
+                    ),
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Bibliography",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = LocalTalkfrlyColors.current.body
+                )
+                OutlinedTextField(
+                    value = state.articleBibliographyInput,
+                    onValueChange = { onIntent(CreatePublicationIntent.SetArticleBibliographyInput(it)) },
+                    placeholder = { Text("One URL per line") },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isSubmitting,
+                    minLines = 3,
+                    maxLines = 6,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = LocalTalkfrlyColors.current.primary60,
+                        unfocusedBorderColor = LocalTalkfrlyColors.current.primary20,
+                        focusedTextColor = LocalTalkfrlyColors.current.white,
+                        unfocusedTextColor = LocalTalkfrlyColors.current.white,
+                        cursorColor = LocalTalkfrlyColors.current.white,
+                        focusedContainerColor = LocalTalkfrlyColors.current.background,
+                        unfocusedContainerColor = LocalTalkfrlyColors.current.background,
+                    ),
+                )
+                Text(
+                    text = "Add source or reference URLs, one per line.",
+                    fontSize = 12.sp,
+                    color = LocalTalkfrlyColors.current.bodyMuted,
+                )
+            }
+
+            // Photos
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Photos",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = LocalTalkfrlyColors.current.body
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val canAddMorePhotos = state.imageUris.size < 4
+                    PhotoActionButton(
+                        label = "Camera",
+                        icon = Res.drawable.add_a_photo,
+                        enabled = !state.isSubmitting && canAddMorePhotos,
+                        onClick = onOpenCamera
+                    )
+                    PhotoActionButton(
+                        label = "Gallery",
+                        icon = Res.drawable.add_picture,
+                        enabled = !state.isSubmitting && canAddMorePhotos,
+                        onClick = onOpenGallery
+                    )
+                    if (hasImageInClipboard) {
+                        PhotoActionButton(
+                            label = "Paste",
+                            icon = Res.drawable.content_paste_go,
+                            enabled = !state.isSubmitting && canAddMorePhotos,
+                            onClick = onPasteFromClipboard
+                        )
+                    }
+                }
+
+                if (state.imageUris.isNotEmpty()) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        state.imageUris.forEachIndexed { index, uri ->
+                            val status = state.imageUploadStatus[uri] ?: ImageUploadStatus.PENDING
+                            val thumbnail = state.uploadedImageUrls[uri] ?: uri
+                            val errorText = state.imageUploadErrors[uri]
+                            ImageChip(
+                                label = "Photo ${index + 1}",
+                                thumbnail = thumbnail,
+                                status = status,
+                                errorText = errorText,
+                                enabled = !state.isSubmitting,
+                                onRemove = { onIntent(CreatePublicationIntent.RemoveImage(uri)) },
+                                onRetry = { onIntent(CreatePublicationIntent.RetryImage(uri)) }
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Content input with character counter
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                TextField(
+                    value = state.content,
+                    onValueChange = { onIntent(CreatePublicationIntent.SetContent(it)) },
+                    label = { Text("Write something") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                        unfocusedContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                        disabledContainerColor = LocalTalkfrlyColors.current.backgroundLighter,
+                        focusedTextColor = LocalTalkfrlyColors.current.body,
+                        unfocusedTextColor = LocalTalkfrlyColors.current.body,
+                        disabledTextColor = LocalTalkfrlyColors.current.body,
+                        focusedLabelColor = LocalTalkfrlyColors.current.body,
+                        unfocusedLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                        disabledLabelColor = LocalTalkfrlyColors.current.bodyMuted,
+                        unfocusedIndicatorColor = LocalTalkfrlyColors.current.primary20,
+                        focusedIndicatorColor = LocalTalkfrlyColors.current.primary,
+                        disabledIndicatorColor = LocalTalkfrlyColors.current.primary20,
+                        cursorColor = LocalTalkfrlyColors.current.surface,
+                    ),
+                    maxLines = 10,
+                    enabled = !state.isSubmitting
+                )
+                Text(
+                    text = "${state.content.length} / 5000",
+                    fontSize = 12.sp,
+                    color = if (state.content.length > 5000) Color.Red else LocalTalkfrlyColors.current.bodyMuted,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Tags input
+            TagsInput(
+                tags = state.tags,
+                tagInput = state.tagInput,
+                onTagInputChanged = { onIntent(CreatePublicationIntent.SetTagInput(it)) },
+                onTagAdded = { onIntent(CreatePublicationIntent.AddTag(it)) },
+                onTagRemoved = { onIntent(CreatePublicationIntent.RemoveTag(it)) },
+                enabled = !state.isSubmitting
+            )
+        }
     }
 }
 

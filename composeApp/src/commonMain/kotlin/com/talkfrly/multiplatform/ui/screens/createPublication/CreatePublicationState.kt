@@ -27,4 +27,9 @@ data class CreatePublicationState(
     val inThreadContext: Boolean = false,
     val threadId: String? = null,
     val threadName: String? = null,
+    val articleCategory: String? = null,
+    val articleAvailableCategories: List<String>? = emptyList(),
+    val articleSource: String = "",
+    val articleAuthorName: String = "",
+    val articleBibliographyInput: String = "",
 )
